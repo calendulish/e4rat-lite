@@ -1,0 +1,130 @@
+=pod
+
+=head1 NAME
+
+e4rat-collect - Generate a list of relevant files by monitoring applications
+
+=head1 SYNOPSIS
+
+B<e4rat-collect>  B<[> option(s) B<]>  B<[> application name(s) B<]>
+
+=head1 DESCRIPTION
+
+e4rat-collect listens to the Linux audit socket to monitor filesystem activities and generates a list of relevant files retaining their access order. 
+Temporary files or files opened with write access, like log-files, are excluded automatically.
+
+You can either monitor applications or the entire operating system. If an I<application name> is supplied, the processes to monitor are selected according to their process name, which is usually the name of the running executable and shown by the ps(1) command. Paths are removed from the process names. The application you specify are just monitored and does not get executed. To execute a command see I<--execute>.
+
+In addition, the collector follows child processes, which allows to monitor shell scripts correctly.
+
+To stop scanning process press STR-C or run `e4rat-collect --stop'. Unless otherwise stated, the generated file list is written to './e4rat-collect.log'.
+
+=head1 OPTIONS
+
+Some options require a path to a file, directory or device. Feel free to use relative paths and or paths containing wildcard characters like '*' or '?'.
+
+=over
+
+=item -V --version
+
+show version information and exit.
+
+=item -h --help
+
+display usage message and exit.
+
+=item -v --verbose
+
+increment verbosity level.
+
+=item -q --quiet
+
+set verbose level to 0. This means that no messages will be displayed.
+
+=item -l --loglevel <number>
+
+set loglevel mask to <number>. All log messages are sent either to the Kernel log (see dmesg(1)) or to syslog(3).
+
+=item -k --stop
+
+kill already running e4rat-collect process
+
+=item -x --execute <command>
+
+collect while executing command. e4rat-collect stops running after <command> terminates. Be aware that <command> gets executed with root privileges if no username is specified. See --user.
+
+=item -u --user <username>
+
+specify username the command gets executed. See --execute.
+
+=item -o --output [file]
+
+set the output file in which the generated file list is written to. If no path is specified, the list is written to stdout.
+
+=item -d --device         <dev>
+
+=item -D --exclude-device <dev>
+
+limit monitoring to a special device. <dev> is a path to device normally in /dev.
+[example: /dev/sda1]
+
+=item -p --path         <path>
+
+=item -P --exclude-path <path>
+
+limit monitoring to a special path.
+[example: '*/bin/*']
+
+=item -L --exclude-list <file>
+
+The <file> contains a list of files, which e4rat-collect should exclude.
+
+=item -e --watch-ext4 [true|false]
+
+select whether e4rat-collect is limited to devices formatted with the ext4 filesystem.
+[Default: true]
+
+=item -O --exclude-of [true|false]
+
+select true or false whether e4rat-collect should ignore already opened files before start monitoring.
+[Default: true]
+
+=back
+
+=head1 EXAMPLES
+
+=head2 Scan Thunderbird and a locally running Imap daemon
+
+=head4 Run collector as root:
+
+    ~# sudo e4rat-collect thunderbird imapd
+
+=head4 Once collector is running execute thunderbird as a normal user:
+
+    ~# thunderbird
+
+=head4 Alternatively combine it to one call
+
+    ~# sudo e4rat-collect thunderbird imapd --execute 'thunderbird' --user `whoami`
+
+=head2 Scan boot process:
+
+Run e4rat-collect as early as possible to scan the whole startup process. It is recommended to run e4rat-collect as init process. To do so, add the following lines to the Kernel parameters in grub(8) or lilo(8).
+  init=/sbin/e4rat-collect
+
+=head1 FILES
+
+F</etc/e4rat.conf>
+     E4rat configuration file.
+
+=head1 AUTHOR
+
+Written by Andreas Rid and Gundolf Kiefer.
+
+=head1 REPORTING BUGS
+
+Report bugs to Andreas Rid <conso at rz.fh-augsburg.de>.
+
+=head1 SEE ALSO
+
+e4rat-realloc(8), e4rat-preload(8), e4rat.conf(8)

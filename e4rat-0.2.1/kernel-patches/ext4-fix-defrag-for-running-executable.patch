@@ -1,0 +1,15 @@
+diff --git a/fs/ext4/ioctl.c b/fs/ext4/ioctl.c
+index 352cb35..ae45380 100644
+--- a/fs/ext4/ioctl.c
++++ b/fs/ext4/ioctl.c
+@@ -242,8 +242,8 @@ setversion_out:
+ 		struct file *donor_filp;
+ 		int err;
+ 
+-		if (!(filp->f_mode & FMODE_READ) ||
+-		    !(filp->f_mode & FMODE_WRITE))
++		if (generic_permission(filp->f_dentry->d_inode,
++			MAY_READ | MAY_WRITE, NULL))
+ 			return -EBADF;
+ 
+ 		if (copy_from_user(&me,

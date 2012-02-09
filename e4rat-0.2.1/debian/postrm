@@ -1,0 +1,8 @@
+#!/bin/bash
+
+DIR="/var/lib/e4rat"
+if [ -d $DIR ]; then
+	if [ `ls -f $DIR | wc -l` == 2 ]; then
+	        rmdir /var/lib/e4rat
+	fi
+fi

@@ -1,0 +1,89 @@
+INTRODUCTION
+------------
+
+e4rat reduces disk access times through physical file reallocation. It is based
+on the online defragmentation ioctl EXT4_IOC_MOVE_EXT from the ext4 filesystem,
+which was introduced in Linux Kernel 2.6.31. Therefore, other filesystem types
+or earlier versions of extended filesystems are not supported.
+
+e4rat consists of three binaries. The first is e4rat-collect. Its purpose is to
+gather relevant files by monitoring file accesses during an application startup.
+The generated file list is the fundament of the second step. With the second
+step, e4rat-realloc, files are placed physically in a row on disk.
+The reallocation of the files' content yields a higher disk transfer rate which
+accelerates program start processes.
+
+Third, you can also read-ahead files to gain a higher cache hit rate.
+e4rat-preload transfers files into memory in parallel to program startup.
+
+Because a file consists of file content and its I-Node information the
+preloading process is divided into two steps. First, it reads the I-Nodes'
+information which are still spread over the entire filesystem. In the second
+step, the files' content is read without causing any disk seeks.
+
+For more information see: e4rat-collect(8), e4rat-realloc(8), e4rat-preload(8)
+                          and e4rat.conf(5).
+
+
+SAMPLE USAGE: Accelerate the boot process
+-------------
+
+Run e4rat-collect as init process through adding following line to Kernel
+parameters:
+    init=/sbin/e4rat-collect
+
+After e4rat-collect has terminated the generated file list is stored at:
+    /var/lib/e4rat/startup.log
+
+Before reallocating boot files it is recommaned to switch to runlevel 1 to
+stop most of all running proceses to gain write access to the process binary
+file:
+    init 1
+    
+Reallocating boot files:
+    e4rat-realloc  /var/lib/e4rat/startup.log
+
+To start e4rat-preload as initial process append following to kernel your
+parameters:
+    init=/sbin/e4rat-preload
+
+DEPENDENIES
+-----------
+The e4rat toolset has the following external dependencies:
+ - Linux Kernel (>= 2.6.31)
+ - CMake (>= 2.6)
+ - pod2man
+ - Boost Library (>=1.41): You need the following components installed:
+       system, filesytem, regex, signals2
+ - Linux Audit Library (libaudit >=0.1.7)
+ - Block Device Identification Library (libblkid)
+ - Ext2 File System Utilities (e2fsprogs)
+
+BUILDING
+--------
+
+The build system is based on CMake, which will generate a Makefile.
+To build the release version of e4rat run the following command:
+    cmake . -DCMAKE_BUILD_TYPE=release
+    make
+
+The default install prefix of e4rat is '/'. To use a different one 
+add the command line parameter to
+cmake as follow:
+    cmake . -DCMAKE_INSTALL_PREFIX=/opt -DCMAKE_BUILD_TYPE=release
+
+Once you have successfully built the source code install e4rat as root:
+    make install
+
+If you are running a Debian based Linux you can also install e4rat by
+generating a Debian package:
+    make package
+    dpkg -i e4rat_<version>_<arch>.deb
+
+
+AUTHORS
+-------
+
+e4rat has been developed by Andreas Rid <conso@hs-augsburg.de> under the
+guidance of Gundolf Kiefer <gundolf.kiefer@hs-augsburg.de> at
+the University of Applied Sciences, Augsburg.

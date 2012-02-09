@@ -1,0 +1,104 @@
+=pod
+
+=head1 NAME
+
+/etc/e4rat.conf - configuration file for the e4rat toolset
+
+=head1 DESCRIPTION
+
+B<e4rat.conf> is the configuration file all e4rat binaries. It allows to replace default parameters of the tools.
+
+=head1 FILE FORMAT
+
+The file is based on INFO format which is similar to C/C++. For more information see I<http://www.boost.org/doc/libs/1_45_0/doc/html/boost_propertytree/parsers.html>. 
+
+An option is declared like this:
+option1 value1
+
+Options can either be declared globally and/or below a section. Derived from its executable suffix name, each binary owns its own section. Values beyond this section applies to the binary only.
+
+
+collect
+{
+    option value
+
+}
+
+=head1 OPTIONS
+
+e4rat has a simple logging structure. Each event has a priority bit. The following priorities exist:
+    1   errors
+    2   warnings
+    4   task statistics
+    8   information about a single step
+   16   debug message
+
+=over
+
+=item B<verbose>
+
+set verbose bit mask of messages to be displayed. [Default: 7]
+
+=item B<loglevel>
+
+set bit mask of messages send to L<log_target>. [Default: 3]
+
+=item B<log_target>
+
+set target path where log messages should be written to. Default value is /dev/kmsg.
+It sends the message to Kernel's log ring buffer. (See also dmesg(1))
+Set <log_target> to 'syslog' to send the message to the syslog daemon.
+
+=item B<init>
+
+Set an alternative init process instead of /sbin/init
+
+=item B<startup_log_file>
+
+set path to startup log file. [Default: /var/lib/e4rat/startup.log]
+
+=back
+
+=head2 Specific for I<e4rat-collect>
+
+=over
+
+=item B<timeout>
+
+After the expiration of this value in seconds e4rat-collect automatically quits collecting. Timeout takes only into account when e4rat-collect was executed as init process. [Default: 120]
+
+=item B<ext4_only>
+
+Restrict file watches to ext4 filesystem types only. [Default: true]
+
+=item B<exclude_open_files>
+
+exclude files which are already opened. [Default: true]
+
+=back
+
+=head2 Specific for e4rat-realloc
+
+=over
+
+=item B<defrag_mode>
+
+set default rearrangement mode of e4rat-realloc. [Default: auto]
+    auto            choose mode automatically
+    prealloc        use user-space pre-allocate ioctl
+    locality-group  create files in locality group
+    tld             create files in top level directory
+
+=back
+
+=head1 AUTHOR
+
+Written by Andreas Rid and Gundolf Kiefer.
+
+=head1 REPORTING BUGS
+
+Report bugs to Andreas Rid <conso at rz.fh-augsburg.de>.
+
+=head1 SEE ALSO
+
+e4rat-collect(8), e4rat-realloc(8), e4rat-preload(8)

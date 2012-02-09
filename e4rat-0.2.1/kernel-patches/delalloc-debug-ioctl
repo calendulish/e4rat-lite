@@ -1,0 +1,148 @@
+ext4: add a delayed allocation debugging ioctl
+
+The debugging code must be triggered as root, using the following
+program:
+
+#include <stdio.h>
+#include <unistd.h>
+#include <stdlib.h>
+#include <fcntl.h>
+#include <sys/ioctl.h>
+
+#if (!defined(EXT4_IOC_DEBUG_DELALLOC) && defined(__linux__))
+#define EXT4_IOC_DEBUG_DELALLOC		_IO('f', 42)
+#endif
+
+int main(int argc, char **argv)
+{
+	int	fd;
+
+	if (argc != 2) {
+		fprintf(stderr, "Usage: %s disk\n", argv[0]);
+		exit(1);
+	}
+	fd = open(argv[1], O_RDONLY, 0);
+	if (fd < 0) {
+		perror("open");
+		exit(1);
+	}
+	if (ioctl(fd, EXT4_IOC_DEBUG_DELALLOC, 0) < 0) {
+		perror("ioctl EXT4_IOC_DEBUG_DELALLOC");
+		exit(1);
+	}
+	return 0;
+}
+
+Signed-off-by: "Theodore Ts'o" <tytso@mit.edu>
+---
+ fs/ext4/ext4.h  |    2 +
+ fs/ext4/ioctl.c |   66 +++++++++++++++++++++++++++++++++++++++++++++++++++++++
+ 2 files changed, 68 insertions(+), 0 deletions(-)
+
+diff --git a/fs/ext4/ext4.h b/fs/ext4/ext4.h
+index e9ddbe2..f015eaa 100644
+--- a/fs/ext4/ext4.h
++++ b/fs/ext4/ext4.h
+@@ -533,6 +533,8 @@ struct ext4_new_group_data {
+ #endif
+ 
+ 
++#define EXT4_IOC_DEBUG_DELALLOC		_IO('f', 42)
++
+ /*
+  *  Mount options
+  */
+diff --git a/fs/ext4/ioctl.c b/fs/ext4/ioctl.c
+index 9fb2d01..9673a40 100644
+--- a/fs/ext4/ioctl.c
++++ b/fs/ext4/ioctl.c
+@@ -15,9 +15,21 @@
+ #include <linux/mount.h>
+ #include <linux/file.h>
+ #include <asm/uaccess.h>
++#include <linux/smp_lock.h>
+ #include "ext4_jbd2.h"
+ #include "ext4.h"
+ 
++static void print_inode_dealloc_info(struct inode *inode)
++{
++	if (!EXT4_I(inode)->i_reserved_data_blocks ||
++	    !EXT4_I(inode)->i_reserved_meta_blocks)
++		return;
++
++	printk(KERN_DEBUG "ino %lu: %u %u\n", inode->i_ino,
++	       EXT4_I(inode)->i_reserved_data_blocks,
++	       EXT4_I(inode)->i_reserved_meta_blocks);
++}
++
+ long ext4_ioctl(struct file *filp, unsigned int cmd, unsigned long arg)
+ {
+ 	struct inode *inode = filp->f_dentry->d_inode;
+@@ -331,6 +343,59 @@ mext_out:
+ 		return err;
+ 	}
+ 
++	case EXT4_IOC_DEBUG_DELALLOC:
++	{
++#ifndef MODULE
++		extern spinlock_t inode_lock;
++#endif
++		struct super_block *sb = inode->i_sb;
++		struct ext4_sb_info *sbi = EXT4_SB(inode->i_sb);
++		struct inode *inode;
++
++		if (!capable(CAP_SYS_ADMIN))
++			return -EPERM;
++
++		printk(KERN_DEBUG "EXT4-fs debug delalloc of %s\n", sb->s_id);
++		printk(KERN_DEBUG "EXT4-fs: dirty blocks %lld free blocks %lld\n",
++		       percpu_counter_sum(&sbi->s_dirtyblocks_counter),
++		       percpu_counter_sum(&sbi->s_freeblocks_counter));
++#ifdef MODULE
++		/* Yuck; but the inode_lock spinlock is not exported */
++		lock_kernel();
++#else
++		spin_lock(&inode_lock);
++#endif
++		if (!list_empty(&sb->s_bdi->wb.b_dirty)) {
++			printk(KERN_DEBUG "s_bdi->wb.b_dirty list:\n");
++			list_for_each_entry(inode, &sb->s_bdi->wb.b_dirty,
++					    i_list) {
++				print_inode_dealloc_info(inode);
++			}
++		}
++		if (!list_empty(&sb->s_bdi->wb.b_io)) {
++			printk(KERN_DEBUG "s_bdi->wb.b_io list:\n");
++			list_for_each_entry(inode, &sb->s_bdi->wb.b_io,
++					    i_list) {
++				print_inode_dealloc_info(inode);
++			}
++		}
++		if (!list_empty(&sb->s_bdi->wb.b_more_io)) {
++			printk(KERN_DEBUG "s_bdi->wb.b_more_io list:\n");
++			list_for_each_entry(inode, &sb->s_bdi->wb.b_more_io,
++					    i_list) {
++				print_inode_dealloc_info(inode);
++			}
++		}
++#ifdef MODULE
++		lock_kernel();
++#else
++		spin_unlock(&inode_lock);
++#endif
++		printk(KERN_DEBUG "ext4 debug delalloc done\n");
++		return 0;
++	}
++
++
+ 	default:
+ 		return -ENOTTY;
+ 	}
+@@ -397,6 +462,7 @@ long ext4_compat_ioctl(struct file *file, unsigned int cmd, unsigned long arg)
+ 		return err;
+ 	}
+ 	case EXT4_IOC_MOVE_EXT:
++	case EXT4_IOC_DEBUG_DELALLOC:
+ 		break;
+ 	default:
+ 		return -ENOIOCTLCMD;
