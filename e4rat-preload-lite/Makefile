@@ -1,8 +1,8 @@
 # Script de compilação/instalação do e4rat-preload-lite
-# Autor: Lara Maia
+# Autor: Lara Maia <lara@craft.net.br>
+# Versão: 0.2
 
 CFLAGS = -Wall -O2
-SRCS = e4rat-preload-lite.c
 CC = @gcc
 FF = e4rat-preload-lite
 FS = e4rat-preload-lite.c
@@ -23,10 +23,10 @@ clean:
 
 install:
 	@printf 'Instalando...'
-	@cp $(FF) /usr/sbin/
+	@cp $(FF) /sbin/
 	@printf 'Instalado!\n'
 
 uninstall:
 	@printf 'Removendo Arquivos...'
-	@rm -f /usr/sbin/$(FF)
+	@rm -f /sbin/$(FF)
 	@printf 'Pronto!\n'
