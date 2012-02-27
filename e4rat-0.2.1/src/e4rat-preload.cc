@@ -234,11 +234,11 @@ int main(int argc, char* argv[])
     if(getpid() == 1)
     {
         const char* logfile = Config::get<std::string>("startup_log_file").c_str();
-        notice("Open %s ... ", logfile);
+        notice("Abrindo %s ... ", logfile);
         FILE* infile = fopen(logfile, "r");
         if(!infile)
         {
-            error("%s is not accessible", logfile);
+            error("%s não é acessível", logfile);
             execv(Config::get<std::string>("init").c_str(), argv);
         }
         
@@ -251,10 +251,10 @@ int main(int argc, char* argv[])
         {
             for(int i=optind; i < argc; i++)
             {
-                notice("Parsing file %s ...", argv[i]);
+                notice("Análise do arquivo %s ...", argv[i]);
                 FILE* file = fopen(argv[i], "r");
                 if(NULL == file)
-                    warn("File %s does not exist", argv[i]);
+                    warn("O arquivo %s não existe", argv[i]);
                 else
                 {
                     parseInputStream(file, filelist);
@@ -262,10 +262,10 @@ int main(int argc, char* argv[])
                     sortFileList();
                     file = fopen(argv[i], "w");
                     if(NULL == file)
-                        warn("Cannot save sorted list to %s: %s", argv[i], strerror(errno));
+                        warn("Não foi possível salvar lista sorteada em %s: %s", argv[i], strerror(errno));
                     else
                     {
-                        notice("Save sorted file list to %s ...", argv[i]);
+                        notice("Lista de arquivos classificodos salva em %s ...", argv[i]);
                         BOOST_FOREACH(FileInfo& f, filelist)
                             fprintf(file, "%u %u %s\n", (__u32)f.dev, (__u32)f.ino, f.path.string().c_str());
                         fclose(file);
@@ -279,10 +279,10 @@ int main(int argc, char* argv[])
         {
             for(int i=optind; i < argc; i++)
             {
-                notice("Parsing file %s ...", argv[i]);
+                notice("Análise do arquivo %s ...", argv[i]);
                 FILE* file = fopen(argv[i], "r");
                 if(NULL == file)
-                    warn("File %s does not exist", argv[i]);
+                    warn("O arquivo %s não existe", argv[i]);
                 else
                 {
                     parseInputStream(file, filelist);
@@ -292,7 +292,7 @@ int main(int argc, char* argv[])
             setStdIn2NonBlocking();
             if(EOF != peek(stdin))
             {
-                notice("Parsing from stdin ...");
+                notice("Análise do stdin ...");
                 parseInputStream(stdin, filelist);
 	    }
             if(filelist.empty())
@@ -305,11 +305,11 @@ int main(int argc, char* argv[])
         error(e.what());
         return 1;
     }
-    notice("%d files scanned", filelist.size());
+    notice("%d arquivos escaneados", filelist.size());
 
     if(flags & SORT)
     {
-        notice("Sort total file list ...");
+        notice("Ordem lista completa de arquivos...");
         sortFileList();
 
         // Dump sorted list
@@ -322,7 +322,7 @@ int main(int argc, char* argv[])
         else
         {
             if(outStream != stdout)
-                notice("Save sorted file list to %s ...", outPath);
+                notice("Lista de arquivos classificados salva em %s ...", outPath);
             
             BOOST_FOREACH(FileInfo& file, filelist)
                 fprintf(outStream, "%u %u %s\n", (__u32)file.dev, (__u32)file.ino, file.path.string().c_str());
@@ -334,7 +334,7 @@ int main(int argc, char* argv[])
     /*
      * Preload Inodes
      */
-    notice("Pre-loading I-Nodes ...");
+    notice("Pré carregando I-Nodes...");
     preloadInodes();
 
     /*
@@ -368,10 +368,10 @@ int main(int argc, char* argv[])
          }
     }
 
-    notice("Pre-loading file content ...");
+    notice("Pré carregando conteúdo do arquivo...");
     preloadFiles();
 
-    notice("Successfully transferred files into page cache");
+    notice("Todos os arquivos foram transferidos para o cache");
     exit(0);
 out:
     printUsage();
