@@ -1,63 +1,70 @@
-INTRODUCTION
-------------
+---------- e4rat ----------
 
-e4rat reduces disk access times through physical file reallocation. It is based
-on the online defragmentation ioctl EXT4_IOC_MOVE_EXT from the ext4 filesystem,
-which was introduced in Linux Kernel 2.6.31. Therefore, other filesystem types
-or earlier versions of extended filesystems are not supported.
+e4rat reduz o tempo de acesso ao disco por meio da realocação de arquivos físicos. Baseia-se
+na desfragmentação ioctl EXT4_IOC_MOVE_EXT do sistema de arquivos ext4,
+que foi introduzido no Kernel Linux 2.6.31. Portanto, outros tipos de sistemas de arquivos
+ou versões anteriores do sistema de arquivos estendidos não são suportados.
 
-e4rat consists of three binaries. The first is e4rat-collect. Its purpose is to
-gather relevant files by monitoring file accesses during an application startup.
-The generated file list is the fundament of the second step. With the second
-step, e4rat-realloc, files are placed physically in a row on disk.
-The reallocation of the files' content yields a higher disk transfer rate which
-accelerates program start processes.
+O e4rat não tem sido mais atualizado, por esta razão este repositório existe, com algumas
+atualizações importantes, como a correção de paths errados, compilação e a aceleração de
+execução do e4rat-preload, que faz com que seu sistema inicie ainda mais rápido do que o
+padrão do preload original.
 
-Third, you can also read-ahead files to gain a higher cache hit rate.
-e4rat-preload transfers files into memory in parallel to program startup.
+---------- Informações ----------
 
-Because a file consists of file content and its I-Node information the
-preloading process is divided into two steps. First, it reads the I-Nodes'
-information which are still spread over the entire filesystem. In the second
-step, the files' content is read without causing any disk seeks.
+e4rat consiste de três binários:
 
-For more information see: e4rat-collect(8), e4rat-realloc(8), e4rat-preload(8)
-                          and e4rat.conf(5).
+e4rat-collect: Reune arquivos relevantes através de um monitoramento dos acessos a arquivos
+durante a inicialização do aplicativo. A lista de arquivos gerada é o fundamento da
+segunda etapa.
+
+e4rat realloc: Coloca os arquivos fisicamente enfileirados no disco. A realocação dos arquivos
+produz uma taxa elevada de transferência de dados no disco, o que acelera o processo de
+inicialização dos programas.
+
+e4rat-preload: Transfere arquivos para a memória em paralelo a inicialização do programa.
+Porque um arquivo consiste de conteúdo de arquivo e suas informações de I-Node do processo
+de pré-carga é dividia em duas etapas. Primeiro, ele lê as informações dos I-Nodes que se
+encontram ainda repartidos ao longo de todo o sistema de arquivos, depois o conteúdo dos
+arquivos é lido sem causar qualquer busca no disco.
+
+---------- Exemplo de Uso ----------
+
+Execute o e4rat-collect em substituição ao seu init padrão. Para isso adicione
+a seguinte linha nos parâmetros do kernel:
+
+init=/sbin/e4rat-collect
+
+Após o processo e4rat-collect terminar ele vai gerar uma lista de arquivos.
+Ela está gravada em:
+
+/var/lib/e4rat/startup.log
+
+Antes de começar o processo de realocação, é recomendado que você mude para o runlevel 1,
+assim você garante acesso de gravação a todos os processos binários:
+
+init 1
+
+Faça então a realocação:
+
+e4rat-realloc /var/lib/e4rat/startup.log
+
+Altere agora os paramêtros do kernel para carregar o preload do e4rat:
+
+init=/sbin/e4rat-preload
 
 
-SAMPLE USAGE: Accelerate the boot process
--------------
+---------- Dependências ----------
 
-Run e4rat-collect as init process through adding following line to Kernel
-parameters:
-    init=/sbin/e4rat-collect
-
-After e4rat-collect has terminated the generated file list is stored at:
-    /var/lib/e4rat/startup.log
-
-Before reallocating boot files it is recommaned to switch to runlevel 1 to
-stop most of all running proceses to gain write access to the process binary
-file:
-    init 1
-    
-Reallocating boot files:
-    e4rat-realloc  /var/lib/e4rat/startup.log
-
-To start e4rat-preload as initial process append following to kernel your
-parameters:
-    init=/sbin/e4rat-preload
-
-DEPENDENIES
------------
-The e4rat toolset has the following external dependencies:
- - Linux Kernel (>= 2.6.31)
+O e4rat possuí algumas dependências externas, são elas:
+ - Kernel Linux (>= 2.6.31)
  - CMake (>= 2.6)
  - pod2man
- - Boost Library (>=1.41): You need the following components installed:
-       system, filesytem, regex, signals2
+ - Boost Library (>=1.41) [Necessita dos componentes: system, filesystem, regex, signals2]
  - Linux Audit Library (libaudit >=0.1.7)
  - Block Device Identification Library (libblkid)
  - Ext2 File System Utilities (e2fsprogs)
+
 
 BUILDING
 --------
@@ -81,9 +88,12 @@ generating a Debian package:
     dpkg -i e4rat_<version>_<arch>.deb
 
 
-AUTHORS
--------
+---------- Autores ----------
 
-e4rat has been developed by Andreas Rid <conso@hs-augsburg.de> under the
-guidance of Gundolf Kiefer <gundolf.kiefer@hs-augsburg.de> at
-the University of Applied Sciences, Augsburg.
+e4rat foi desenvolvido por Andreas Rid <conso@hs-augsburg.de> sob a orientação
+de Gundolf Kiefer <gundolf.kiefer@hs-augsburg.de> na Universidade de Ciências
+aplicadas, Augsburg.
+
+Este repositório está sendo mantido por Lara Maia <lara@craft.net.br>
+podem existir autores externos em algumas atualizações, nesta situação, sendo
+indicado no cabeçário do arquivo. 

@@ -1,40 +1,40 @@
 ;
-; Configuration file for e4rat (reduce access time for ext4 filesystems)
-; if option is not specified. e4rat will use default values.
+; Arquivo de configuração do e4rat (Reduz tempo de acesso em sistemas de arquivos ext4)
+; Se a opção não for indicada, o e4rat usará os valores padrões
 ;
-; e4rat has a simple logging structure. Each event has a priority bit. The
-; following priorities exist
-;       1   errors
-;       2   warnings
-;       4   task statistics
-;       8   information about a single step
-;      16   debug message
+; o e4rat tem uma estrutura de logging simples. Cada evento recebe uma prioridade.
+; Prioridades existentes:
+;       1   erros
+;       2   avisos
+;       4   estatísticas da tarefa
+;       8   informações sobre um único passo
+;      16   debug
 
-; Specify default verbosity level (DEFAULT: 7)
+; Nivel de verbosidade (Padrão: 7)
 ; verbose  7
 
-; Specify bit mask of log events written to disk (DEFAULT: 3)
+; Eventos de log gravados no disco (Padrão: 3)
 ; loglevel  3
 
-; collect only files which device type is ext4 (DEFAULT: true)
+; Coletar apenas os arquivos de dispositivos ext4 (Padrão: true)
 ; ext4_only  true
 
-; ignore already open files (DEFAULT: true)
+; Ignorar arquivos já abertos (Padrão: true)
 ; exclude_open_files  true
 
-; timeout after collector will stop when started as init process (DEFAULT: 120)
+; Tempo para o coletor aguardar antes de terminar o processo (Padrão: 120)
 ; timeout  120
 
-; path to init process binary (DEFAULT: /sbin/init)
+; Caminho para o init original (Padrão: /sbin/init)
 ; init /sbin/init
 
-; Set target path log events should written to.
-; If log_target is set so 'syslog' messages are send to syslogd.
-; Default value is /dev/kmsg. It sends the messages to kernel's log ring buffer. (See also dmesg(1))
+; Configuração dos eventos de log
+; Se log_target for setado para 'syslog' as mensagens serão enviadas para o syslogd.
+; O valor padão é /dev/kmsg. Isso envia a mensagem para o log do kernel.(leia dmesg(1))
 ; log_target /dev/kmsg
 
-; default rearrangement mode for e4rat-realloc (DEFAULT: auto)
+; Modo padrão de desfragmentação para o realocador (Padrão: auto)
 ; defrag_mode auto
 
-; default path to startup log file (DEFAULT: /var/lib/e4rat/startup.log)
+; Local padrão do log de inicialização do coletor (Padrão: /var/lib/e4rat/startup.log)
 ; startup_log_file /var/lib/e4rat/startup.log
