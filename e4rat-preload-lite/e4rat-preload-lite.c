@@ -1,5 +1,8 @@
 /* e4rat-preload-lite, written by John Lindgren, 2011. */
 /* Replacement for e4rat-preload, which was written by Andreas Rid, 2011. */
+/* non-standard strdup function from Inkane (http://goo.gl/byuDt)  */
+/* Git maintainer: Lara Maia <lara@craft.net.br> - (http://goo.gl/htS99) */
+
 
 #include <errno.h>
 #include <fcntl.h>
@@ -15,6 +18,17 @@
 #define EARLY 200
 #define BLOCK 300
 #define BUF (1024*1024)
+
+char *strdup(const char *str)
+{
+int n = strlen(str) + 1;
+char *dup = malloc(n);
+if(dup)
+{
+strcpy(dup, str);
+}
+return dup;
+}
 
 typedef struct {
    int n, dev;
