@@ -27,6 +27,7 @@
 #include <limits.h>
 #include <string.h>
 #include <stdlib.h>
+#include <unistd.h>
 
 /*
  * Call fiemap ioctl on file descriptor fd.

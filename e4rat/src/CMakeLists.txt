@@ -6,10 +6,29 @@ IF( NOT CMAKE_BUILD_TYPE )
 ENDIF()
 
 if(CMAKE_SIZEOF_VOID_P MATCHES 4)
-    SET(HAVE_64_BIT 0)
+    SET(BUILD_CORE_LIBRARY_STATIC 0)
 else(CMAKE_SIZEOF_VOID_P MATCHES 4)
-    SET(HAVE_64_BIT 1)
+    SET(BUILD_CORE_LIBRARY_STATIC 1)
 endif(CMAKE_SIZEOF_VOID_P MATCHES 4)
+
+#TODO permit link dependencies not static
+#set(LINK_DEPENDENIES "static")
+
+if(CMAKE_COMPILER_IS_GNUCXX)
+    execute_process(COMMAND ${CMAKE_C_COMPILER} -dumpversion
+                OUTPUT_VARIABLE GCC_VERSION)
+
+    if(GCC_VERSION VERSION_LESS 4.5)
+        message(WARNING "GCC <4.5 does not support -static-libstdc++")
+	execute_process(COMMAND stat -c %d /
+                        OUTPUT_VARIABLE DEV_ROOT_DIR)
+        execute_process(COMMAND stat -c %d /usr
+                        OUTPUT_VARIABLE DEV_USR_DIR)
+        if(NOT ${DEV_ROOT_DIR} STREQUAL ${DEV_USR_DIR})
+	    message(FATAL_ERROR "Your /usr directory is not part of the root device. Upgrade to gcc >=4.5.")
+	endif(NOT ${DEV_ROOT_DIR} STREQUAL ${DEV_USR_DIR})
+    endif(GCC_VERSION VERSION_LESS 4.5)
+endif(CMAKE_COMPILER_IS_GNUCXX)
 
 add_definitions(-Wall)
 add_definitions(-DPROGRAM_NAME=\"${PROJECT_NAME}\")
@@ -21,6 +40,9 @@ IF(CMAKE_BUILD_TYPE STREQUAL "release")
 else(CMAKE_BUILD_TYPE STREQUAL "release")
     add_definitions(-ggdb -DDEBUG_ENABLED)
 endif(CMAKE_BUILD_TYPE STREQUAL "release")
+if(MOVE_EXT_RDONLY_FLAG)
+    add_definitions(-DMOVE_EXT_RDONLY_FLAG)
+endif(MOVE_EXT_RDONLY_FLAG)
 
 SET(CMAKE_MODULE_PATH ${CMAKE_CURRENT_SOURCE_DIR}/cmake)
 SET(LIBRARY_OUTPUT_PATH ${CMAKE_CURRENT_SOURCE_DIR}/..)
@@ -40,9 +62,6 @@ SET(CMAKE_BUILD_WITH_INSTALL_RPATH FALSE)
 # which point to directories outside the build tree to the install RPATH
 SET(CMAKE_INSTALL_RPATH_USE_LINK_PATH TRUE)
 
-# Lib Boost Location Fix
-SET(Boost_USE_STATIC_LIBS OFF)
-
 # the RPATH to be used when installing, but only if it's not a system directory
 LIST(FIND CMAKE_PLATFORM_IMPLICIT_LINK_DIRECTORIES "${CMAKE_INSTALL_PREFIX}/lib" isSystemDir)
 IF("${isSystemDir}" STREQUAL "-1")
@@ -60,10 +79,6 @@ ENDIF("${isSystemDir}" STREQUAL "-1")
 FIND_PACKAGE(ext2fs REQUIRED)
 set(${PROJECT_NAME}_LIBRARIES   ${${PROJECT_NAME}_LIBRARIES}
     ${EXT2FS_LIBRARY})
-
-find_package(blkid REQUIRED)
-set(${PROJECT_NAME}_LIBRARIES   ${${PROJECT_NAME}_LIBRARIES}
-    ${BLKID_LIBRARY})
 
 find_package(audit REQUIRED)
 set(${PROJECT_NAME}_LIBRARIES   ${${PROJECT_NAME}_LIBRARIES}
@@ -118,11 +133,11 @@ ENDIF(CMAKE_BUILD_TYPE STREQUAL "debug")
 
 # On 64 bit architecture you cannot link a static to a shared library
 # Therefore -static-libstdc++ will fail.
-if(HAVE_64_BIT)
+if(BUILD_CORE_LIBRARY_STATIC)
     add_library(${PROJECT_NAME}-core STATIC
         ${${PROJECT_NAME}-core_SRC}
     )
-else(HAVE_64_BIT)
+else(BUILD_CORE_LIBRARY_STATIC)
     add_library(${PROJECT_NAME}-core SHARED
         ${${PROJECT_NAME}-core_SRC}
     )
@@ -130,7 +145,7 @@ else(HAVE_64_BIT)
         SOVERSION   0
         LINK_FLAGS  "-static-libgcc -static-libstdc++"
     )
-endif(HAVE_64_BIT)
+endif(BUILD_CORE_LIBRARY_STATIC)
 
 target_link_libraries(${PROJECT_NAME}-core
         ${${PROJECT_NAME}_LIBRARIES}
@@ -157,12 +172,12 @@ set(${PROJECT_NAME}_TARGETS
     ${PROJECT_NAME}-realloc
 )
 
-if(NOT HAVE_64_BIT)
+if(NOT BUILD_CORE_LIBRARY_STATIC)
     set(${PROJECT_NAME}_TARGETS 
         ${${PROJECT_NAME}_TARGETS}
         ${PROJECT_NAME}-core
     )
-endif(NOT HAVE_64_BIT)
+endif(NOT BUILD_CORE_LIBRARY_STATIC)
 
 INSTALL(TARGETS ${${PROJECT_NAME}_TARGETS}
         RUNTIME DESTINATION "sbin"

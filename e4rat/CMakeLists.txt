@@ -4,7 +4,7 @@ set(CMAKE_VERBOSE_MAKEFILE              off)
 
 PROJECT(e4rat)
 
-set(E4RAT_VERSION   "0.2.1")
+set(E4RAT_VERSION   "0.2.2")
 
 IF( NOT CMAKE_BUILD_TYPE )
     SET( CMAKE_BUILD_TYPE "debug" )
@@ -14,7 +14,7 @@ IF(CMAKE_INSTALL_PREFIX_INITIALIZED_TO_DEFAULT)
     set(CMAKE_INSTALL_PREFIX "/" CACHE PATH "e4rat install prefix" FORCE)
 ENDIF(CMAKE_INSTALL_PREFIX_INITIALIZED_TO_DEFAULT)
 
-set(Boost_USE_STATIC_LIBS   OFF)
+set(Boost_USE_STATIC_LIBS   ON)
 set(Boost_USE_MULTITHREADED OFF)
 add_definitions(-DBOOST_FILESYSTEM_VERSION=2)
 find_package(Boost 1.41 COMPONENTS system filesystem regex REQUIRED)
@@ -55,13 +55,12 @@ SET(CPACK_PACKAGE_FILE_NAME
     	${CPACK_PACKAGE_FILE_NAME}_invalid-prefix)
 endif(NOT CPACK_INSTALL_PREFIX STREQUAL CMAKE_INSTALL_PREFIX)
 
-SET (CPACK_PACKAGE_CONTACT "Andreas Rid <conso@rz.fh-augsburg.de>")
 SET (CPACK_PACKAGE_DESCRIPTION_SUMMARY
         "Reduce disk access time on ext4 filesystems through relevant file defragmentation.")
-#SET (CPACK_PACKAGE_DESCRIPTION_FILE "${CMAKE_CURRENT_SOURCE_DIR}/ReadMe.txt")
-SET (CPACK_RESOURCE_FILE_LICENSE "${CMAKE_CURRENT_SOURCE_DIR}/LICENSE")
-SET (CPACK_DEBIAN_PACKAGE_SECTION "extra")
-SET (CPACK_DEBIAN_PACKAGE_MAINTAINER "Andreas Rid")
+SET (CPACK_PACKAGE_CONTACT              "Andreas Rid <conso@users.sf.net>")
+SET (CPACK_RESOURCE_FILE_LICENSE        "${CMAKE_CURRENT_SOURCE_DIR}/LICENSE")
+SET (CPACK_DEBIAN_PACKAGE_SECTION       "extra")
+SET (CPACK_DEBIAN_PACKAGE_MAINTAINER    "Andreas Rid")
 set (CPACK_SET_DESTDIR                  "ON") # Necessary because of the absolute install paths
 
 # extra install and uninstall create subfolders
@@ -71,10 +70,7 @@ set( CPACK_DEBIAN_PACKAGE_CONTROL_EXTRA
         "${CMAKE_CURRENT_SOURCE_DIR}/debian/postrm")
 
 SET (CPACK_DEBIAN_PACKAGE_DEPENDS
-        "libblkid1")
-
-SET (CPACK_DEBIAN_PACKAGE_DEPENDS
-        "${CPACK_DEBIAN_PACKAGE_DEPENDS}, e2fslibs (>=1.41)")
+        "e2fslibs (>=1.41)")
 
 SET (CPACK_DEBIAN_PACKAGE_CONFLICTS
         "auditd, ureadahead")

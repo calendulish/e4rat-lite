@@ -85,7 +85,7 @@ Written by Andreas Rid and Gundolf Kiefer.
 
 =head1 REPORTING BUGS
 
-Report bugs to Andreas Rid <conso at rz.fh-augsburg.de>.
+Report bugs to Andreas Rid <conso at users.sf.net>.
 
 =head1 SEE ALSO
 

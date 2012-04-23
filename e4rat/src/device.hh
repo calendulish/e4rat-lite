@@ -77,7 +77,6 @@ class Device: private boost::shared_ptr<DevicePrivate>
         //it is not the path to the device themself
         Device(fs::path file);
         Device(dev_t);
-        ~Device();
         bool open();
         std::string getDeviceName();
         std::string getDevicePath();
@@ -105,7 +104,10 @@ class Device: private boost::shared_ptr<DevicePrivate>
                          __u64 len);     //block count to be moved
         bool operator<(const Device&) const;
     private:
+        int getDevNameFromDevfs();
+        int getDevNameFromMajorMinor();
         void parseMtab();
+        void parseMtabFile(const char* path);
         void openSysFsExt4File(
                         std::filebuf* fb,
                         std::string filename,

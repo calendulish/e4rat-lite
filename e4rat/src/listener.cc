@@ -226,12 +226,17 @@ void AuditListener::insertAuditRules()
 
     struct utsname uts;
     if(-1 == uname(&uts))
-        throw std::logic_error(std::string("Cannot receive machine hardware name") + strerror(errno));
+        throw std::logic_error(std::string("Cannot receive machine hardware name: ") + strerror(errno));
 
     if(0 == strcmp(uts.machine, "x86_64"))
     {
         activateRules(MACH_86_64);
         activateRules(MACH_X86);
+    }
+    else if(0 == strcmp(uts.machine, "ppc64"))
+    {
+        activateRules(MACH_PPC64);
+        activateRules(MACH_PPC);
     }
     else
     {
@@ -367,34 +372,25 @@ void AuditListener::waitForEvent(struct audit_reply* reply)
     fd_set read_mask;
     struct timeval tv;
     int    retval;
-    int err_counter = 0;
 
-    
 repeat:
     do {
-        // TODO: very slow due quitting. Need another
-        //       opportunity to awake while sleeping
-
         interruptionPoint();
 
-        tv.tv_sec = 2;
+        tv.tv_sec = 60;
         tv.tv_usec = 0;
         FD_ZERO(&read_mask);
         FD_SET(audit_fd, &read_mask);
 
         retval = select(audit_fd+1, &read_mask, NULL, NULL, &tv);
 
-        /*
-         * Check occasionally the state of the netlink socket.
-         * If no valid date is received over a long time, some
-         * other process may have captured the session.
-         */
         if(retval == 0)
-            if(++err_counter > 5)
-            {
-                audit_request_status(audit_fd);
-                err_counter = 0;
-            }
+            /*
+             * Timeout received.
+             * This occurs when another process captured the audit socket session.
+             * Request status to find out the audit session owner.
+             */
+            audit_request_status(audit_fd);
         
     } while (retval == -1 && errno == EINTR);
 
@@ -633,16 +629,24 @@ bool AuditListener::ignoreDevice(dev_t dev)
 
     if(ext4_only)
     {
-        Device device(dev);
-        if(device.getFileSystem() == "ext4")
-            watch_devices.insert(dev);
-        else
+        try {
+            Device device(dev);
+            if(device.getFileSystem() == "ext4")
+                watch_devices.insert(dev);
+            else
+            {
+                std::string dev_name = device.getDevicePath();
+                if(dev_name.at(0) != '/') //it's virtual fs: display mount point instead of cunfusing device name.
+                    dev_name = device.getMountPoint().string();
+                info("%s is not an ext4 filesystem", dev_name.c_str());
+                info("Filesystem of %s is %s", dev_name.c_str(), device.getFileSystem().c_str());
+                exclude_devices.insert(dev);
+                return true;
+            }
+        }
+        catch(std::exception& e)
         {
-            std::string dev_name = device.getDevicePath();
-            if(dev_name.at(0) != '/') //it's virtual fs: display mount point instead of cunfusing device name.
-                dev_name = device.getMountPoint().string();
-            info("%s is not an ext4 filesystem", dev_name.c_str());
-            info("Filesystem of %s is %s", dev_name.c_str(), device.getFileSystem().c_str());
+            error("%s", e.what());
             exclude_devices.insert(dev);
             return true;
         }
@@ -776,7 +780,8 @@ void AuditListener::exec()
                     }
                 }
                 break;
-            case AUDIT_GET: // get status
+            // get netlink status
+            case AUDIT_GET:
                 checkSocketCaptured(reply.status->pid);
                 break;
             default:

@@ -57,7 +57,7 @@ void parseInputStream(FILE* in, std::vector<T>& filelist)
         else
             ret = fscanf(in, "%[^\n]s", path);
 
-        if(ret == EOF)
+        if(ret == EOF || ret == 0)
             break;
 
         if((detailed && ret != 3)

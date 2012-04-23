@@ -113,21 +113,15 @@ Device::Device(dev_t dev)
     get()->devno = dev;
 }
 
-Device::~Device()
-{}
-
-void Device::parseMtab()
+void Device::parseMtabFile(const char* path)
 {
     FILE* fmtab;
     struct mntent   *mnt = NULL;
     struct stat st;
-
-    fmtab = setmntent(MOUNTED, "r");
+   
+    fmtab = setmntent(path, "r");
     if(fmtab == NULL)
-    {
-        error("Cannot access %s: %s", MOUNTED, strerror(errno));
-        return;
-    }
+        throw std::runtime_error(std::string("Cannot access ") + path + ": " + strerror(errno));
 
     while((mnt = getmntent(fmtab)) != NULL)
     {
@@ -146,10 +140,26 @@ void Device::parseMtab()
     endmntent(fmtab);
 }
 
+void Device::parseMtab()
+{
+    if(0 ==access("/proc/mounts", R_OK))
+    {
+        parseMtabFile("/proc/mounts");
+        if( get()->fs_name == "ext2")
+            // maybe /proc/mounts is not up to date cause user forget to setup 
+            // rootfstype=ext4 to kernel parameters.
+            parseMtabFile(MOUNTED);
+    }
+    else if(0 == access(MOUNTED, R_OK))
+        parseMtabFile(MOUNTED);
+    else
+        throw std::runtime_error("Neither /proc/mounts nor /etc/mtab is readable.");
+}
 fs::path Device::getMountPoint()
 {
     if(get()->mount_point.empty())
         parseMtab();
+    
     return get()->mount_point;
 }
 
@@ -176,74 +186,102 @@ std::string Device::getFileSystem()
 /*
  * convert dev_t to device string
  * Iterate over /dev directory
+ * return 0 on success otherwise -1
+ */
+int Device::getDevNameFromDevfs()
+{
+    struct stat st;
+    fs::directory_iterator end_itr; // default construction yields past-the-end
+    for ( fs::directory_iterator it("/dev");
+        it != end_itr;
+        ++it )
+    {
+        if(it->filename() == "root")
+            continue;
+        if(lstat(it->string().c_str(), &st))
+            continue;
+        if(st.st_rdev == get()->devno)
+        {
+            get()->deviceName = it->filename();
+            get()->devicePath = "/dev/" + get()->deviceName;
+            return 0;
+        }
+    }
+    return -1;
+}
+
+/*
+ * return 0 success otherwise -1
+ */
+int Device::getDevNameFromMajorMinor()
+{
+    char letter, num;
+    int major = major(get()->devno);
+    int minor = minor(get()->devno);
+
+    switch(major)
+    {
+        case 0:
+            // the minor number of virtual filesystems are allocated dynamically in function set_anon_super() in fs/super.c
+            // for convenience set deviceName and devicePath to a common name
+            get()->deviceName = "virtual file system";
+            get()->devicePath = get()->mount_point.filename();
+            return 0;
+        case 2:
+            get()->deviceName = "fd"; 
+            goto number_only;            
+        case 3:
+            get()->deviceName = "hd"; break;
+        case 8:
+            get()->deviceName = "sd"; break;
+        case 254:
+            get()->deviceName = "dm-"; 
+            goto number_only;
+        default:
+            return -1;
+    }
+    
+    letter = 0x61 + (minor >>4);
+    num    = 0x30 + (minor & 1111);
+    get()->deviceName = get()->deviceName + letter + num;
+    goto out;
+
+number_only:
+    num    = 0x30 + minor;
+    get()->deviceName += num;
+out:
+    get()->devicePath = "/dev/" + get()->deviceName;
+    return 0;
+}
+
+
+bool isMountPoint(fs::path p)
+{
+    struct stat st1, st2;
+    if(-1 == stat(p.string().c_str(), &st1)
+        || -1 == stat(p.parent_path().string().c_str(), &st2))
+        return false;
+
+    if(st1.st_dev == st2.st_dev)
+        return false;
+    else
+        return true;
+}
+
+/*
+ * Throw runtime_error on error
  */
 std::string Device::getDeviceName()
 {
-    if(get()->deviceName.empty())
+    if(-1 == getDevNameFromMajorMinor())
     {
-        struct stat st;
-        fs::directory_iterator end_itr; // default construction yields past-the-end
-        for ( fs::directory_iterator it("/dev");
-              it != end_itr;
-              ++it )
-        {
-            if(it->filename() == "root")
-                continue;
-            if(lstat(it->string().c_str(), &st))
-                continue;
-            if(st.st_rdev == get()->devno)
-            {
-                get()->deviceName = it->filename();
-                get()->devicePath = "/dev/" + get()->deviceName;
-                break;
-            }
-        }
-
-        if(get()->deviceName.empty())
-        {
-            if(10 == get()->devno)
-            {
-                get()->deviceName = get()->devicePath = "/dev/pts";
-                goto out;
-            }
-            if(15 == get()->devno)
-            {
-                get()->deviceName = get()->devicePath = "/dev/shm";
-                goto out;
-            }
-            if(16 == get()->devno)
-            {
-                get()->deviceName = get()->devicePath = "nfs";
-                goto out;
-            }
-            
-            if(!stat("/proc", &st))
-                if(st.st_dev == get()->devno)
-                {
-                    get()->deviceName = get()->devicePath = "procfs";
-                    goto out;
-                }
-            if(!stat("/sys", &st))
-                if(st.st_dev == get()->devno)
-                {
-                    get()->deviceName = get()->devicePath = "sysfs";
-                    goto out;
-                }
-
-            if(!stat("/dev", &st))
-                if(st.st_dev == get()->devno)
-                {
-                    get()->deviceName = get()->devicePath = "devfs";
-                    goto out;
-                }
-            {
-                std::stringstream ss;
-                ss <<  "unknown devno " << get()->devno;
-                get()->deviceName = get()->devicePath = ss.str();
-            }
-        }
+        if(!isMountPoint("/dev"))
+            throw std::runtime_error("Unknown block device: devfs is not mounted");
+        
+        if(-1 == getDevNameFromDevfs())
+            throw std::runtime_error("Unknown block device: no such device found in /dev");
     }
-out:
+    
     return get()->deviceName;
 }
 
@@ -307,10 +345,10 @@ bool Device::hasExtentFeature()
  * without a limitation in block len
  */ 
 void Device::preallocate(int   fd,
-             __u64 physical,
-             __u32 logical,
-             __u32 len,
-             __u16 flags)
+                         __u64 physical,
+                         __u32 logical,
+                         __u32 len,
+                         __u16 flags)
 {
     for(__u64 done = 0; done < len && !(flags & EXT4_MB_DISCARD_PA);)
     {

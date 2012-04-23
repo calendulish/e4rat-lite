@@ -385,7 +385,7 @@ void Defrag::checkFilesAttributes(Device device, std::vector<OrigDonorPair>& fil
 
         if(0 > ioctl(fd, FS_IOC_GETFLAGS, &flags))
         {
-            info("Cannot receive inode flags: ", path, strerror(errno));
+            info("Cannot receive inode flags: %s: %s", path, strerror(errno));
             invalid_file_type++;
             goto cont;
         }
