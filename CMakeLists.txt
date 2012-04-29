@@ -85,5 +85,5 @@ add_custom_target(src
 
 INSTALL(FILES e4rat.conf.sample
         DESTINATION "/etc"
-        RENAME e4rat.conf
+        RENAME e4rat-lite.conf
         )
