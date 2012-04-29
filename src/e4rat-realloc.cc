@@ -2,7 +2,7 @@
  * e4rat-realloc.cc - Relevant file defragmentation tool
  *
  * Copyright (C) 2011 by Andreas Rid
- * 
+ *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
  * the Free Software Foundation, either version 3 of the License, or
@@ -34,7 +34,7 @@
 
 #include <boost/foreach.hpp>
 
-#define PID_FILE "/var/run/e4rat-realloc.pid"
+#define PID_FILE "/var/run/e4rat-lite-realloc.pid"
 
 /*
  * FileInfo is a wrapper class of fs::path
@@ -77,7 +77,7 @@ int main(int argc, char* argv[])
     Optimizer optimizer;
 
     Config::instance()->load();
-    
+
     int loglevel = Config::get<int>("loglevel");
     int verbose  = Config::get<int>("verbose");
 
@@ -97,7 +97,7 @@ int main(int argc, char* argv[])
             {0, 0, 0, 0}
         };
 
-    
+
     char c;
     int option_index = 0;
     while ((c = getopt_long (argc, argv, "Vvhql:fpgt", long_options, &option_index)) != EOF)
@@ -148,7 +148,7 @@ int main(int argc, char* argv[])
 
     if(!createPidFile(PID_FILE))
     {
-        std::cerr << "It seems that e4rat-realloc is already running.\n";
+        std::cerr << "It seems that e4rat-lite-realloc is already running.\n";
         std::cerr << "Remove pid file " << PID_FILE << " to unlock.\n";
         exit(1);
     }
@@ -188,17 +188,17 @@ int main(int argc, char* argv[])
              notice("Parsing from stdin");
              parseInputStream(stdin, filelist);
         }
-        
+
         if(filelist.empty() && optind == argc)
         {
-            file = fopen("./e4rat-collect.log", "r");
+            file = fopen("./e4rat-lite-collect.log", "r");
             if(NULL != file)
             {
-                notice("Parsing file ./e4rat-collect.log");
+                notice("Parsing file ./e4rat-lite-collect.log");
                 parseInputStream(file, filelist);
                 fclose(file);
             }
-            else 
+            else
 	        goto out;
         }
         //type casting necessary not to break strict-aliasing rules

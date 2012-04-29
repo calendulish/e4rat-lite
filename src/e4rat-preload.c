@@ -13,7 +13,7 @@
 #include <sys/stat.h>
 #include <unistd.h>
 
-#define LIST "/var/lib/e4rat/startup.log"
+#define LIST "/var/lib/e4rat-lite/startup.log"
 #define INIT "/sbin/init"
 #define EARLY 200
 #define BLOCK 300

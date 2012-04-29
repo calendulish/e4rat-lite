@@ -2,7 +2,7 @@
  * device.cc - get/set paramters for a block device
  *
  * Copyright (C) 2011 by Andreas Rid
- * 
+ *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
  * the Free Software Foundation, either version 3 of the License, or
@@ -55,18 +55,18 @@ fs::path __getMountPoint(fs::path path)
     //test weather path is root directory '/'
     if(cur_dir.string().empty())
         return path;
-    
+
     if(0 > stat(cur_dir.string().c_str(), &st))
         goto err;
     dev = st.st_dev;
-    
+
     while(1)
     {
         if(0 > stat(cur_dir.string().c_str(), &st))
             goto err;
         if(st.st_dev != dev)
             return path;
-    
+
         cur_dir = cur_dir.parent_path();
 
         if(cur_dir == "/" || cur_dir.empty())
@@ -75,7 +75,7 @@ fs::path __getMountPoint(fs::path path)
 
 err:
     throw std::runtime_error(std::string("Cannot get MountPoint of path: ")
-                             +path.string());        
+                             +path.string());
 }
 
 
@@ -118,7 +118,7 @@ void Device::parseMtabFile(const char* path)
     FILE* fmtab;
     struct mntent   *mnt = NULL;
     struct stat st;
-   
+
     fmtab = setmntent(path, "r");
     if(fmtab == NULL)
         throw std::runtime_error(std::string("Cannot access ") + path + ": " + strerror(errno));
@@ -146,7 +146,7 @@ void Device::parseMtab()
     {
         parseMtabFile("/proc/mounts");
         if( get()->fs_name == "ext2")
-            // maybe /proc/mounts is not up to date cause user forget to setup 
+            // maybe /proc/mounts is not up to date cause user forget to setup
             // rootfstype=ext4 to kernel parameters.
             parseMtabFile(MOUNTED);
     }
@@ -159,7 +159,7 @@ fs::path Device::getMountPoint()
 {
     if(get()->mount_point.empty())
         parseMtab();
-    
+
     return get()->mount_point;
 }
 
@@ -215,7 +215,7 @@ int Device::getDevNameFromDevfs()
  */
 int Device::getDevNameFromMajorMinor()
 {
-    char letter, num;
+    std::stringstream ss;
     int major = major(get()->devno);
     int minor = minor(get()->devno);
 
@@ -228,28 +228,25 @@ int Device::getDevNameFromMajorMinor()
             get()->devicePath = get()->mount_point.filename();
             return 0;
         case 2:
-            get()->deviceName = "fd"; 
-            goto number_only;            
+            ss << "fd";
+            goto devicename_has_no_letter;
         case 3:
-            get()->deviceName = "hd"; break;
+            ss << "hd"; break;
         case 8:
-            get()->deviceName = "sd"; break;
+            ss << "sd"; break;
         case 254:
-            get()->deviceName = "dm-"; 
-            goto number_only;
+            ss << "dm-";
+            goto devicename_has_no_letter;
         default:
             return -1;
     }
-    
-    letter = 0x61 + (minor >>4);
-    num    = 0x30 + (minor & 1111);
-    get()->deviceName = get()->deviceName + letter + num;
-    goto out;
 
-number_only:
-    num    = 0x30 + minor;
-    get()->deviceName += num;
-out:
+    ss << (char)(0x61 + (minor >>4));
+
+devicename_has_no_letter:
+    ss << (minor & 0b1111);
+
+    get()->deviceName = ss.str();
     get()->devicePath = "/dev/" + get()->deviceName;
     return 0;
 }
@@ -277,11 +274,11 @@ std::string Device::getDeviceName()
     {
         if(!isMountPoint("/dev"))
             throw std::runtime_error("Unknown block device: devfs is not mounted");
-        
+
         if(-1 == getDevNameFromDevfs())
             throw std::runtime_error("Unknown block device: no such device found in /dev");
     }
-    
+
     return get()->deviceName;
 }
 
@@ -301,10 +298,10 @@ std::string Device::getDevicePath()
  */
 void Device::openSysFsExt4File(std::filebuf* fb, std::string filename, std::ios_base::openmode mode)
 {
-    std::string fullPath = std::string("/sys/fs/ext4/") 
-                           + getDeviceName() 
+    std::string fullPath = std::string("/sys/fs/ext4/")
+                           + getDeviceName()
                            + "/" + filename;
-    
+
     if(NULL == fb->open(fullPath.c_str(), mode))
         throw std::runtime_error(std::string("Cannot open file: ") + fullPath);
 }
@@ -329,7 +326,7 @@ unsigned int Device::getTuningParameter(std::string option)
     unsigned int ret;
     std::ifstream is;
     openSysFsExt4File(is.rdbuf(), option, std::ios_base::in);
-    
+
     is >> ret;
     is.close();
     return ret;
@@ -343,7 +340,7 @@ bool Device::hasExtentFeature()
 /*
  * Call preallocate ioctl
  * without a limitation in block len
- */ 
+ */
 void Device::preallocate(int   fd,
                          __u64 physical,
                          __u32 logical,
@@ -358,7 +355,7 @@ void Device::preallocate(int   fd,
         pi.pi_pstart = physical + done;
         pi.pi_lstart = logical  + done;
         pi.pi_len    = std::min( len - done,
-                                 (__u64)getBlocksPerGroup() - 10);        
+                                 (__u64)getBlocksPerGroup() - 10);
         pi.pi_flags  = flags;
 
         if(0 > ioctl(fd, EXT4_IOC_CONTROL_PA, &pi))
@@ -383,7 +380,7 @@ void Device::preallocate(int   fd,
                    << "\tpstart:  " << pi.pi_pstart << "\n"
                    << "\tlstart:  " << pi.pi_lstart << "\n"
                    << "\tlen:     " << pi.pi_len    << "\n";
-            
+
                 throw std::invalid_argument(ss.str());
             }
         }
@@ -402,7 +399,7 @@ void Device::moveExtent( int orig_fd,
     {
         struct move_extent  move_data;
         memset(&move_data, 0, sizeof(struct move_extent));
-    
+
         move_data.donor_fd    = donor_fd;
         move_data.orig_start  = (logical + moved_blocks)
                              * getBlockSize();
@@ -410,22 +407,22 @@ void Device::moveExtent( int orig_fd,
         move_data.donor_start = move_data.orig_start;
         move_data.len         = (len - moved_blocks)
                              * getBlockSize();
-    
+
         if(0 >  ioctl(orig_fd, EXT4_IOC_MOVE_EXT, &move_data))
         {
             std::stringstream ss;
             ss << "Cannot move extent: "
                << strerror(errno) << "\n"
-               << "orig:    " << orig_fd << " " 
-               << getPathFromFd(orig_fd)  << "\n"  
-               << "donor:   " << donor_fd << " " 
-               << getPathFromFd(donor_fd)<< "\n"  
+               << "orig:    " << orig_fd << " "
+               << getPathFromFd(orig_fd)  << "\n"
+               << "donor:   " << donor_fd << " "
+               << getPathFromFd(donor_fd)<< "\n"
                << "logical: " << logical << "\n"
                << "len:     " << len     << "\n";
 
             throw std::runtime_error(ss.str());
         }
-        
+
         moved_blocks += move_data.moved_len<<12;
     }
 }

@@ -36,5 +36,5 @@
 ; Modo padrão de desfragmentação para o realocador (Padrão: auto)
 ; defrag_mode auto
 
-; Local padrão do log de inicialização do coletor (Padrão: /var/lib/e4rat/startup.log)
-; startup_log_file /var/lib/e4rat/startup.log
+; Local padrão do log de inicialização do coletor (Padrão: /var/lib/e4rat-lite/startup.log)
+; startup_log_file /var/lib/e4rat-lite/startup.log

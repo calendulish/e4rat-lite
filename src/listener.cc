@@ -2,7 +2,7 @@
  * listener.cc - Listen to the Linux audit socket
  *
  * Copyright (C) 2011 by Andreas Rid
- * 
+ *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
  * the Free Software Foundation, either version 3 of the License, or
@@ -54,7 +54,7 @@ std::string getProcessName(pid_t pid)
         filestr >> comm;
     else
         comm = "unknown";
-    
+
     return comm;
 }
 
@@ -67,7 +67,7 @@ void checkSocketCaptured(pid_t audit_pid)
     {
         std::string comm = getProcessName(audit_pid);
         error("Process %s [%d] has captured the audit socket.", comm.c_str(), audit_pid);
-        error("e4rat-collect is in conflict with %s. Abort", comm.c_str());
+        error("e4rat-lite-collect is in conflict with %s. Abort", comm.c_str());
         throw DetectAuditDaemon();
     }
 }
@@ -101,7 +101,7 @@ void AuditListener::watchPath(std::string path)
     if(path == "/")
         // does not make sense and can leads to unwanted behaviour
         return;
-    
+
     watch_paths.push_back(
     path2regex(realpath(path).string()));
 }
@@ -113,7 +113,7 @@ void AuditListener::excludeDevice(std::string wildcard)
 
     if(matches.empty())
         error("%s: no such file or directory", wildcard.c_str());
-    
+
     BOOST_FOREACH(std::string d, matches)
     {
         if( 0 > stat(d.c_str(), &st))
@@ -130,7 +130,7 @@ void AuditListener::watchDevice(std::string wildcard)
 
     if(matches.empty())
         error("%s: no such file or directory", wildcard.c_str());
-    
+
     BOOST_FOREACH(std::string d, matches)
     {
         if( 0 > stat(d.c_str(), &st))
@@ -181,7 +181,7 @@ void AuditListener::activateRules(int machine)
      * TODO: filetype=file works in most cases except for a stupid pid file.
      *       Its creation does not get logged when filetype=file is enabled.
      *       Don't know why.
-     */ 
+     */
     strcpy(field, "filetype=file");
     audit_rule_fieldpair_data(&rule, field, AUDIT_FILTER_EXIT);
 #endif
@@ -207,13 +207,13 @@ void AuditListener::activateRules(int machine)
     if ( 0 >= audit_add_rule_data(audit_fd, rule, AUDIT_FILTER_EXIT, AUDIT_ALWAYS))
         if(errno != EEXIST)
             error("Cannot insert rules: %s", strerror(errno));
-    
+
     rule_vec.push_back(rule);
 }
 
 /*
  * Apply audit rules to AUDIT_FILTER_EXIT filter.
- * Monitor all syscalls initialize or perfrom file accesses.  
+ * Monitor all syscalls initialize or perfrom file accesses.
  */
 void AuditListener::insertAuditRules()
 {
@@ -281,7 +281,7 @@ void AuditListener::activateAuditSocket()
 }
 
 void AuditListener::closeAuditSocket()
-{   
+{
     if(0 > audit_set_enabled(audit_fd, 0))
         error("Cannot disable audit socket");
 
@@ -299,7 +299,7 @@ inline std::string AuditListener::parseField(auparse_state_t* au, const char* na
 {
     if(0 == auparse_find_field(au, name))
         return std::string();
-    
+
     return std::string(auparse_get_field_str(au));
 }
 
@@ -311,7 +311,7 @@ char convertHexToChar(char c)
         return c - 'A' + 10;
     else if(c >= 'a' && c <= 'f')
         return c - 'a' + 10;
-    
+
     throw c;
 }
 
@@ -330,7 +330,7 @@ std::string hexString2Ascii(std::string& hex)
  */
 inline std::string AuditListener::parsePathField(auparse_state_t* au, const char* name)
 {
-    
+
     std::string buf(parseField(au, name));
     if(buf.empty())
         return buf;
@@ -350,7 +350,7 @@ inline std::string AuditListener::parsePathField(auparse_state_t* au, const char
 
         if(buf == "(null)")
             return std::string();
-        
+
         try {
             buf = hexString2Ascii(buf);
         }
@@ -364,7 +364,7 @@ inline std::string AuditListener::parsePathField(auparse_state_t* au, const char
 }
 
 /*
- * Listen to the audit socket. 
+ * Listen to the audit socket.
  * The Function hangs on until it received an event or user interrupt.
  */
 void AuditListener::waitForEvent(struct audit_reply* reply)
@@ -391,7 +391,7 @@ repeat:
              * Request status to find out the audit session owner.
              */
             audit_request_status(audit_fd);
-        
+
     } while (retval == -1 && errno == EINTR);
 
     retval = audit_get_reply(audit_fd, reply,
@@ -425,7 +425,7 @@ auparse_state_t* AuditListener::initAuParse(struct audit_reply* reply)
     au = auparse_init(AUSOURCE_BUFFER, parse_str.c_str());
     if(au == NULL)
         error("cannot init auparse");
-    
+
     if (-1 == auparse_next_event(au))
         error("auparse_next_event: %s", strerror(errno));
     return au;
@@ -440,10 +440,10 @@ void AuditListener::parseCwdEvent(auparse_state_t* au, boost::shared_ptr<AuditEv
 }
 
 /*
- * Parse path="filename" field. 
+ * Parse path="filename" field.
  * It is filename the syscall event refers to.
  */
-void AuditListener::parsePathEvent(auparse_state_t* au, boost::shared_ptr<AuditEvent> auditEvent)   
+void AuditListener::parsePathEvent(auparse_state_t* au, boost::shared_ptr<AuditEvent> auditEvent)
 {
     struct stat st;
 
@@ -462,7 +462,7 @@ void AuditListener::parsePathEvent(auparse_state_t* au, boost::shared_ptr<AuditE
     else
         auditEvent->dev = makedev(strtol(dev_buf.substr(0, found).c_str(), NULL, 16),
                                   strtol(dev_buf.substr(found+1).c_str(),NULL, 16));
-    
+
     if(0 > stat(auditEvent->path.string().c_str(), &st)
        || !S_ISREG(st.st_mode))
     {
@@ -490,7 +490,7 @@ void AuditListener::parsePathEvent(auparse_state_t* au, boost::shared_ptr<AuditE
  */
 void AuditListener::parseSyscallEvent(auparse_state_t* au, boost::shared_ptr<AuditEvent> auditEvent)
 {
-    __u64 arch; 
+    __u64 arch;
     int machine;
     int syscall;
 
@@ -506,7 +506,7 @@ void AuditListener::parseSyscallEvent(auparse_state_t* au, boost::shared_ptr<Aud
         auditEvent->type = Unknown;
         return;
     }
-    
+
     const char* sc_name = audit_syscall_to_name(syscall, machine);
 
     if(NULL == sc_name)
@@ -515,7 +515,7 @@ void AuditListener::parseSyscallEvent(auparse_state_t* au, boost::shared_ptr<Aud
         auditEvent->type = Unknown;
         return;
     }
-    
+
     if(0 == strcmp(sc_name, "open"))
         auditEvent->type = Open;
     else if(0 == strcmp(sc_name, "clone"))
@@ -542,23 +542,23 @@ void AuditListener::parseSyscallEvent(auparse_state_t* au, boost::shared_ptr<Aud
         auditEvent->type = Unknown;
         return;
     }
-    
+
     if("yes" == parseField(au, "success"))
         auditEvent->successful = true;
-    
+
     if(auditEvent->type == Fork)
         auditEvent->exit = strtoll(parseField(au, "exit").c_str(), NULL, 10);
-    
+
     if(auditEvent->type == Open || auditEvent->type == OpenAt)
     {
         int flags = strtol(parseField(au, "a1").c_str(), NULL, 16);
-        
+
         if(!(  flags & O_WRONLY
             || flags & O_RDWR
             || flags & O_CREAT))
             auditEvent->readOnly = true;
     }
-    
+
     auditEvent->ppid = strtoll(parseField(au, "ppid").c_str(), NULL, 10);
     auditEvent->pid  = strtoll(parseField(au, "pid" ).c_str(), NULL, 10);
     auditEvent->comm = parsePathField(au, "comm");
@@ -574,19 +574,19 @@ void AuditListener::parseSyscallEvent(auparse_state_t* au, boost::shared_ptr<Aud
 bool doesRegexMatchPath(fs::path& p, boost::regex& filter)
 {
     boost::match_results<std::string::const_iterator> what;
-    if( boost::regex_search(p.string(), what, filter, 
+    if( boost::regex_search(p.string(), what, filter,
                             boost::match_default | boost::match_continuous  ))
     {
         //partial match beginning at first character found
         size_t match_end =  distance(what[0].first, what[0].second);
-        
+
         //test for exact match
         if(match_end >= p.string().size())
             return true;
         //test whether partial path match points to a directory
         if('/' == p.string().at(match_end))
             return true;
-        
+
     }
     return false;
 }
@@ -610,7 +610,7 @@ path_valid:
     BOOST_FOREACH(boost::regex filter, exclude_paths)
         if(doesRegexMatchPath(p, filter))
             return true;
-    
+
     return false;
 }
 
@@ -646,9 +646,9 @@ bool AuditListener::ignoreDevice(dev_t dev)
         }
         catch(std::exception& e)
         {
-            error("%s", e.what());
-            exclude_devices.insert(dev);
-            return true;
+            // Damn! Keep going. We can drop this file later.
+            info("%s", e.what());
+            return false;
         }
     }
     return false;
@@ -692,7 +692,7 @@ void AuditListener::exec()
         au = initAuParse(&reply);
 
         debug("%d: %*s", reply.type, reply.len, reply.msg.data);
-        
+
         msgid = auparse_get_serial(au);
         msgdb_it = msgdb.find(msgid);
         if(msgdb_it != msgdb.end())
@@ -743,14 +743,14 @@ void AuditListener::exec()
                     debug("Parsed Event: %d %s", auditEvent->type, auditEvent->path.string().c_str());
                     eventParsed(auditEvent);
                 }
-                
+
                 msgdb.erase(msgdb_it);
                 break;
             case AUDIT_CONFIG_CHANGE:
                 auparse_first_field(au);
                 if(0 == auparse_next_field(au))
                     break;
-                
+
                 if(0 == strcmp("audit_pid", auparse_get_field_name(au)))
                 {
                     /*
@@ -761,7 +761,7 @@ void AuditListener::exec()
                     pid_t audit_pid = strtol(auparse_get_field_str(au), NULL, 10);
                     checkSocketCaptured(audit_pid);
                 }
-                else 
+                else
                 {
                     while(auparse_next_field(au))
                     {

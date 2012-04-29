@@ -2,7 +2,7 @@
  * e4rat-collect.cc - Generate file list of relevant files by monitoring programs
  *
  * Copyright (C) 2011 by Andreas Rid
- * 
+ *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
  * the Free Software Foundation, either version 3 of the License, or
@@ -45,7 +45,7 @@
 
 #include <boost/foreach.hpp>
 
-#define PID_FILE "/dev/.e4rat-collect.pid"
+#define PID_FILE "/dev/.e4rat-lite-collect.pid"
 
 bool isAuditDaemonRunning()
 {
@@ -63,7 +63,7 @@ int system_u(const char* user, const char* command)
 {
     int retval = -1;
     struct passwd* pw;
-    
+
     pid_t pid = fork();
     switch(pid)
     {
@@ -87,7 +87,7 @@ int system_u(const char* user, const char* command)
                 setuid(pw->pw_uid);
                 setgid(pw->pw_gid);
             }
-            
+
             execl("/bin/sh", "/bin/sh", "-c", command, NULL);
         default:
             waitpid(pid, &retval, 0);
@@ -105,13 +105,13 @@ void scanOpenFiles(std::vector<FilePtr>& list)
 
     size_t size_early = list.size();
     debug("Scan open files by calling lsof");
-    
+
     FILE* pFile = popen("lsof -w /", "r");
     if(NULL == pFile)
         return;
     //skip first line
     if(NULL == fgets (buffer , PATH_MAX+64, pFile))
-        return; 
+        return;
 
     while(NULL != fgets (buffer , PATH_MAX+64, pFile))
     {
@@ -182,7 +182,7 @@ void printUsage()
 int main(int argc, char* argv[])
 {
     bool create_pid_late = false;
-    
+
     Config::instance()->load();
 
     int loglevel = Config::get<int>("loglevel");
@@ -204,7 +204,7 @@ int main(int argc, char* argv[])
     // excluding file list only affect only if process id is not 1
     if(0 == access(Config::get<std::string>("startup_log_file").c_str(), F_OK))
         exclude_filenames.push_back(Config::get<std::string>("startup_log_file").c_str());
-    
+
     static struct option long_options[] =
         {
             {"verbose",        no_argument,       0, 'v'},
@@ -238,7 +238,7 @@ int main(int argc, char* argv[])
             c = '?';
             --optind;
         }
-            
+
 
         switch(c)
         {
@@ -326,7 +326,7 @@ int main(int argc, char* argv[])
                             exit(1);
                         }
                     fprintf(stderr, "Unrecognised option --  '%c'\n", optopt);
-                    
+
                     return -1;
                 }
                 break;
@@ -379,18 +379,18 @@ int main(int argc, char* argv[])
             }
             info("Total number of excluded files: %d", excludeList.size());
         }
-        
+
         if(!createPidFile(PID_FILE))
         {
-            std::cerr << "It seems that e4rat-collect is already running.\n";
+            std::cerr << "It seems that e4rat-lite-collect is already running.\n";
             std::cerr << "Remove pid file " << PID_FILE << " to unlock.\n";
             exit(1);
         }
-    
+
         if(outStream == stdout)
             logger.redirectStdout2Stderr(true);
         else if(!outPath)
-            outPath = "./e4rat-collect.log";
+            outPath = "./e4rat-lite-collect.log";
 
 	/*
          * Parse application list given as arguments
@@ -486,13 +486,13 @@ int main(int argc, char* argv[])
     }
     else
         notice("Press 'Ctrl-C' to stop collecting files");
-    
+
     info("Starting event processing ...");
     if(false == listener.start())
         goto err2;
-    
+
     filelist = project.getFileList();
-    
+
     notice("\t%d file(s) collected", filelist.size());
 
     if(filelist.empty())
@@ -509,7 +509,7 @@ int main(int argc, char* argv[])
             goto err2;
         }
     }
-    
+
     if(outStream != stdout)
         notice("Save file list to %s", outPath);
 

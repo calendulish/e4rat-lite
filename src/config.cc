@@ -2,7 +2,7 @@
  * config.cc - global settings and config file parser
  *
  * Copyright (C) 2011 by Andreas Rid
- * 
+ *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
  * the Free Software Foundation, either version 3 of the License, or
@@ -55,7 +55,7 @@ Config::Config()
     defaultProperty.put("log_target", "/dev/kmsg");
     defaultProperty.put("init", "/sbin/init");
     defaultProperty.put("force", false);
-    defaultProperty.put("startup_log_file", "/var/lib/e4rat/startup.log");
+    defaultProperty.put("startup_log_file", "/var/lib/e4rat-lite/startup.log");
 
     /*
      * Set tool name by searching for argv[0]
@@ -70,7 +70,7 @@ Config::Config()
         fprintf(stderr, "Cannot get argv arguments\n");
         return;
     }
-    
+
     tool_name = fs::path(argv[0]).filename();
     found = tool_name.find_last_of("-");
     if(found)
@@ -81,7 +81,7 @@ Config::Config()
     tool_name = PROGRAM_NAME;
 #endif
 
-    defaultProperty.put("tool_name", tool_name);    
+    defaultProperty.put("tool_name", tool_name);
 }
 
 Config::~Config()
