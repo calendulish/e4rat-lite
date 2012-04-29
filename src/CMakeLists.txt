@@ -1,5 +1,7 @@
 cmake_minimum_required(VERSION 2.6)
 
+SET (CMAKE_C_FLAGS_RELEASE "-std=c99" )
+
 # test weather variables from top level directories are missing
 IF( NOT CMAKE_BUILD_TYPE )
   MESSAGE(FATAL_ERROR "Do not run cmake on subdirectories")
@@ -56,7 +58,7 @@ SET(CMAKE_SKIP_BUILD_RPATH  FALSE)
 
 # when building, don't use the install RPATH already
 # (but later on when installing)
-SET(CMAKE_BUILD_WITH_INSTALL_RPATH FALSE) 
+SET(CMAKE_BUILD_WITH_INSTALL_RPATH FALSE)
 
 # add the automatically determined parts of the RPATH
 # which point to directories outside the build tree to the install RPATH
@@ -112,7 +114,7 @@ ADD_EXECUTABLE(${PROJECT_NAME}-collect
 )
 
 ADD_EXECUTABLE(${PROJECT_NAME}-preload
-        e4rat-preload.cc
+        e4rat-preload.c
 )
 
 ADD_EXECUTABLE(${PROJECT_NAME}-realloc
@@ -153,7 +155,7 @@ target_link_libraries(${PROJECT_NAME}-core
 )
 
 foreach( EXE     ${PROJECT_NAME}-collect
-                 ${PROJECT_NAME}-realloc 
+                 ${PROJECT_NAME}-realloc
                  ${PROJECT_NAME}-preload)
     TARGET_LINK_LIBRARIES(${EXE}
         ${PROJECT_NAME}-core
@@ -166,14 +168,14 @@ endforeach( EXE )
 ###
 # install project targets
 ###
-set(${PROJECT_NAME}_TARGETS 
+set(${PROJECT_NAME}_TARGETS
     ${PROJECT_NAME}-collect
     ${PROJECT_NAME}-preload
     ${PROJECT_NAME}-realloc
 )
 
 if(NOT BUILD_CORE_LIBRARY_STATIC)
-    set(${PROJECT_NAME}_TARGETS 
+    set(${PROJECT_NAME}_TARGETS
         ${${PROJECT_NAME}_TARGETS}
         ${PROJECT_NAME}-core
     )
