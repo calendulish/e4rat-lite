@@ -74,10 +74,10 @@ static FileDesc * parse_line (int n, const char * line) {
 }
 
 static void load_list (void) {
-   printf ("Loading %s.\n", LIST);
+   printf ("Carregando %s.\n", LIST);
    FILE * stream = fopen (LIST, "r");
    if (! stream) {
-      printf ("Error: %s.\n", strerror (errno));
+      printf ("Erro: %s.\n", strerror (errno));
       exit (EXIT_FAILURE);
    }
    int listsize = 0;
@@ -112,16 +112,16 @@ static void load_inodes (int a, int b) {
 }
 
 static void exec_init (char * * argv) {
-   printf ("Executing %s.\n", INIT);
+   printf ("Executando %s.\n", INIT);
    switch (fork ()) {
    case -1:
-      printf ("Error: %s.\n", strerror (errno));
+      printf ("Erro: %s.\n", strerror (errno));
       exit (EXIT_FAILURE);
    case 0:
       return;
    default:
       execv (INIT, argv);
-      printf ("Error: %s.\n", strerror (errno));
+      printf ("Erro: %s.\n", strerror (errno));
       exit (EXIT_FAILURE);
    }
 }
@@ -141,7 +141,7 @@ static void load_files (int a, int b) {
 
 int main (int argc, char * * argv) {
    load_list ();
-   printf ("Preloading %d files.\n", listlen);
+   printf ("Pré carregando %d arquivos...\n", listlen);
    load_inodes (0, EARLY);
    load_files (0, EARLY);
    exec_init (argv);
