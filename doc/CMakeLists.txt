@@ -21,8 +21,8 @@ foreach( _man  e4rat-collect e4rat-realloc e4rat-preload )
 endforeach( _man )
 
 ADD_CUSTOM_COMMAND(
-    TARGET ManPages 
-    SOURCE ${CMAKE_CURRENT_SOURCE_DIR}/e4rat.conf.pod 
+    TARGET ManPages
+    SOURCE ${CMAKE_CURRENT_SOURCE_DIR}/e4rat.conf.pod
     COMMAND pod2man ARGS ${CMAKE_CURRENT_SOURCE_DIR}/e4rat.conf.pod
                          ${CMAKE_CURRENT_BINARY_DIR}/e4rat.conf.5
                          --section 5
@@ -44,11 +44,11 @@ ADD_CUSTOM_COMMAND(
 if(CMAKE_INSTALL_PREFIX STREQUAL "/")
     SET(MAN_INSTALL_PREFIX "/usr")
 else(CMAKE_INSTALL_PREFIX STREQUAL "/")
-    SET(MAN_INSTALL_PREFIX "${CMAKE_INSTALL_PREFIX}")
+    SET(MAN_INSTALL_PREFIX "${CMAKE_INSTALL_PREFIX}/usr")
 endif(CMAKE_INSTALL_PREFIX STREQUAL "/")
 
 INSTALL(FILES
-                ${CMAKE_CURRENT_BINARY_DIR}/e4rat-collect.8 
+                ${CMAKE_CURRENT_BINARY_DIR}/e4rat-collect.8
                 ${CMAKE_CURRENT_BINARY_DIR}/e4rat-realloc.8
                 ${CMAKE_CURRENT_BINARY_DIR}/e4rat-preload.8
     DESTINATION ${MAN_INSTALL_PREFIX}/share/man/man8)
