@@ -1,0 +1,117 @@
+---------- e4rat ----------
+
+e4rat reduz o tempo de acesso ao disco por meio da realocação de arquivos físicos.
+Baseia-se na desfragmentação ioctl EXT4_IOC_MOVE_EXT do sistema de arquivos ext4,
+que foi introduzido no Kernel Linux 2.6.31. Portanto, outros tipos de sistemas de
+arquivos ou versões anteriores do sistema de arquivos estendidos não são suportados.
+
+Este repositório existe, com algumas atualizações importantes, como a correção de
+paths incorretos, compilação e a aceleração de execução do e4rat-preload, que faz
+com que seu sistema inicie ainda mais rápido do que o padrão do preload original.
+
+---------- Informações ----------
+
+e4rat-lite consiste de três binários:
+
+e4rat-lite-collect: Reune arquivos relevantes através de um monitoramento dos acessos a
+arquivos durante a inicialização do aplicativo. A lista de arquivos gerada é o
+fundamento da segunda etapa.
+
+e4rat-lite-realloc: Coloca os arquivos fisicamente enfileirados no disco. A realocação
+dos arquivos produz uma taxa elevada de transferência de dados no disco, o que
+acelera o processo de inicialização dos programas.
+
+e4rat-lite-preload: Transfere arquivos para a memória em paralelo a inicialização do
+programa. Porque um arquivo consiste de conteúdo de arquivo e suas informações de
+I-Node do processo de pré-carga é dividia em duas etapas. Primeiro, ele lê as
+informações dos I-Nodes que se encontram ainda repartidos ao longo de todo o
+sistema de arquivos, depois o conteúdo dos arquivos é lido sem causar qualquer
+busca no disco.
+
+---------- Exemplo de Uso ----------
+
+Execute o e4rat-lite-collect em substituição ao seu init padrão. Para isso adicione
+a seguinte linha aos parâmetros do kernel:
+
+init=/sbin/e4rat-lite-collect
+
+Reinicie o computador. Após o processo e4rat-collect terminar ele vai gerar uma
+lista de arquivos, que está gravada em:
+
+/var/lib/e4rat-lite/startup.log
+
+Antes de começar o processo de realocação, é recomendado que você mude para o
+runlevel 1, assim você garante acesso de gravação a todos os processos binários:
+
+init 1
+
+Faça então a realocação:
+
+e4rat-lite-realloc /var/lib/e4rat-lite/startup.log
+
+Altere agora os paramêtros do kernel para carregar o preload do e4rat:
+
+init=/sbin/e4rat-lite-preload
+
+
+---------- Dependências ----------
+
+O e4rat possuí algumas dependências externas, são elas:
+ - Kernel Linux (>= 2.6.31)
+ - CMake (>= 2.6)
+ - Boost Library (>=1.41)
+      [Necessita dos componentes: system, filesystem, regex, signals2]
+ - Linux Audit Library (libaudit >=0.1.7)
+ - Ext2 File System Utilities (e2fsprogs)
+
+---------- Compilando ----------
+
+O sistema de compilação do e4rat é baseado no CMake, que irá gerar o Makefile.
+Para compilar um release cria a pasta de build:
+
+mkdir build
+cd build
+
+E execute o comando:
+
+cmake ../ -DCMAKE_BUILD_TYPE=release
+
+Isso vai gerar um Makefile apropriado. Compile com o comando:
+
+make
+
+E para instalar:
+
+sudo make install
+
+Se você está rodando uma distribuição Linux baseada no Debian, você
+também pode gerar um pacote debian para a instalação:
+
+make package
+dpkg -i e4rat-lite_<version>_<arch>.deb
+
+---------- Autores ----------
+
+e4rat foi desenvolvido por Andreas Rid <conso@hs-augsburg.de> sob a orientação
+de Gundolf Kiefer <gundolf.kiefer@hs-augsburg.de> na Universidade de Ciências
+aplicadas, Augsburg.
+
+Este repositório está sendo mantido por Lara Maia <lara@craft.net.br>
+podem existir autores externos em algumas atualizações, nesta situação, sendo
+indicado no cabeçário do arquivo.
+
+e4rat-lite é um software livre; você pode redistribui-lo e/ou
+modifica-lo dentro dos termos de Licença Pública Geral GNU como
+publicada pela Fundação do Sofware Livre (FSF); na versão 3 da
+Licença, ou (na sua opnião) qualquer versão.
+
+Este projeto é distribuido na esperança que possa ser útil, mas
+SEM NENHUMA GARANTIA; sem garantia implicita de ADEQUAÇÃO a qualquer
+MERCADO ou APLICAÇÃO EM PARTICULAR. Veja a Licença Pública Geral GNU
+para maiores detalhes.
+
+Você deve ter recebido uma cópia da Licença Pública Geral GNU junto
+com este programa, se não, escreva para a Fundação do Software Livre
+(FSF) Inc., 51 Franklin St, Fifth Floor, Boston, MA 02110-1301 USA
+
+Lara Maia - Lara Maia <lara@craft.net.br>
