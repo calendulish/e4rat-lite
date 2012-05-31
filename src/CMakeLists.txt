@@ -99,7 +99,7 @@ set(${PROJECT_NAME}_LIBRARIES   ${${PROJECT_NAME}_LIBRARIES}
 # Building source code
 ###
 set(${PROJECT_NAME}-core_SRC
-        config.cc
+        config.c
         logging.cc
         common.cc
         fiemap.cc

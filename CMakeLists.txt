@@ -83,7 +83,7 @@ add_custom_target(src
         COMMAND tar pczf ${PROJECT_NAME}_${E4RAT_VERSION}_src.tar.gz ${PROJECT_NAME}-${E4RAT_VERSION}
         )
 
-INSTALL(FILES e4rat.conf.sample
-        DESTINATION "/etc"
-        RENAME e4rat-lite.conf
+INSTALL(FILES e4rat-lite.conf_pt_BR
+              e4rat-lite.conf_en_US
+        DESTINATION "/usr/share/e4rat-lite/conf"
         )
