@@ -2,6 +2,7 @@
  * e4rat-realloc.cc - Relevant file defragmentation tool
  *
  * Copyright (C) 2011 by Andreas Rid
+ * Copyright (C) 2012 by Lara Maia
  *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -20,7 +21,6 @@
 #include "defrag.hh"
 #include "logging.hh"
 #include "common.hh"
-#include "config.hh"
 #include "parsefilelist.hh"
 
 #include <iostream>
@@ -75,32 +75,24 @@ void printUsage()
 int main(int argc, char* argv[])
 {
     Optimizer optimizer;
-
-    Config::instance()->load();
-
-    int loglevel = Config::get<int>("loglevel");
-    int verbose  = Config::get<int>("verbose");
-
     std::vector<FileInfo> filelist;
+    
+    int loglevel = 3; //FIXME
+    int verbose  = 7; //FIXME
 
     static struct option long_options[] =
         {
-            {"verbose",            no_argument,       0, 'v'},
-            {"version",            no_argument,       0, 'V'},
-            {"quiet",              no_argument,       0, 'q'},
-            {"help",               no_argument,       0, 'h'},
-            {"loglevel",           required_argument, 0, 'l'},
-            {"force",              no_argument,       0, 'f'},
-            {"use-prealloc",       no_argument,       0, 'p'},
-            {"use-locality-group", no_argument,       0, 'g'},
-            {"use-tld",            no_argument,       0, 't'},
+            {"verbose", no_argument, 0, 'v'},
+            {"version", no_argument, 0, 'V'},
+            {"quiet", no_argument, 0, 'q'},
+            {"help", no_argument, 0, 'h'},
+            {"loglevel", required_argument, 0, 'l'},
             {0, 0, 0, 0}
         };
 
-
     char c;
     int option_index = 0;
-    while ((c = getopt_long (argc, argv, "Vvhql:fpgt", long_options, &option_index)) != EOF)
+    while ((c = getopt_long (argc, argv, "Vvhql", long_options, &option_index)) != EOF)
     {
         switch(c)
         {
@@ -119,18 +111,6 @@ int main(int argc, char* argv[])
             case 'l':
                 loglevel = atoi(optarg);
                 break;
-            case 'f':
-                Config::set("force", true);
-                break;
-            case 'p':
-                Config::set("defrag_mode", "pa");
-                break;
-            case 'g':
-                Config::set("defrag_mode", "locality_group");
-                break;
-            case 't':
-                Config::set("defrag_mode", "tld");
-                break;
             default:
                 std::cerr << "Unrecognised option: " << optopt << std::endl;
                 goto out;
@@ -139,7 +119,7 @@ int main(int argc, char* argv[])
 
     logger.setVerboseLevel(verbose);
     logger.setLogLevel(loglevel);
-
+    
     if(getuid() != 0)
     {
         std::cerr << "You need root privileges to run this program.\n";
