@@ -2,6 +2,7 @@
  * logging.cc - Display screen and or send event to klog or syslog
  *
  * Copyright (C) 2011 by Andreas Rid
+ * Copyright (C) 2012 by Lara Maia <lara@craft.net.br>
  * 
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -18,8 +19,6 @@
  */
 
 #include "logging.hh"
-#include "config.hh"
-
 #include <syslog.h>
 #include <stdarg.h>
 #include <stdio.h>
@@ -28,6 +27,7 @@
 #include <fcntl.h>
 #include <string.h>
 #include <errno.h>
+#include "common.hh"
 
 Logging logger;
 
@@ -49,7 +49,7 @@ void Logging::log2target(LogLevel level, const char* msg)
         if(!file)
             throw std::runtime_error(strerror(errno));
         
-        fprintf(file, "[%s] %s\n", Config::get<std::string>("tool_name").c_str(), msg);
+        fprintf(file, "[Logging] %s\n", msg);
         fclose(file);
     }
 }
@@ -66,7 +66,7 @@ Logging::Logging()
     else
         displayToolName = false;
 
-    target = Config::get<std::string>("log_target");
+    target = "/dev/kmsg";
 }
 
 Logging::~Logging()
@@ -122,7 +122,7 @@ void Logging::write(LogLevel level, const char* format, ...)
             out = stdout;
         
         if(displayToolName)
-            fprintf(out, "[%s] %s\n", Config::get<std::string>("tool_name").c_str(), msg);
+            fprintf(out, "[Logging] %s\n", msg);
         else
             fprintf(out, "%s\n", msg);
     }
@@ -131,7 +131,7 @@ void Logging::write(LogLevel level, const char* format, ...)
         goto out;
 
     try {
-        target = Config::get<std::string>("log_target");
+        target = "/dev/kmsg";
         dumpQueue();
         log2target(level, msg);
     }
