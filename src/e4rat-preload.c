@@ -1,7 +1,13 @@
-/* e4rat-preload-lite, written by John Lindgren, 2011. */
-/* Replacement for e4rat-preload, which was written by Andreas Rid, 2011. */
-/* non-standard strdup function from Inkane (http://goo.gl/byuDt)  */
-/* Git maintainer: Lara Maia <lara@craft.net.br> - (http://goo.gl/htS99) */
+/* e4rat-lite: (2012) (http://goo.gl/IXP3n)
+ * written by Lara Maia <lara@craft.net.br> 
+ * 
+ * e4rat-preload-lite: (2011)
+ * written by John Lindgren
+ *  
+ * e4rat-preload: (2011)
+ * written by Andreas Rid.
+ * 
+ */
 
 
 #include <errno.h>
@@ -13,22 +19,20 @@
 #include <sys/stat.h>
 #include <unistd.h>
 
-#define LIST "/var/lib/e4rat-lite/startup.log"
-#define INIT "/sbin/init"
+#include "config.h"
+
 #define EARLY 200
 #define BLOCK 300
 #define BUF (1024*1024)
 
-char *strdup(const char *str)
-{
-int n = strlen(str) + 1;
-char *dup = malloc(n);
-if(dup)
-{
-strcpy(dup, str);
+#ifdef __STRICT_ANSI__
+char *strdup(const char *str) {
+	unsigned int n = strlen(str) + 1;
+	char *dup = malloc(n);
+	if(dup) strcpy(dup, str);
+	return dup;
 }
-return dup;
-}
+#endif
 
 typedef struct {
    int n, dev;
@@ -73,13 +77,14 @@ static FileDesc * parse_line (int n, const char * line) {
    return f;
 }
 
-static void load_list (void) {
+static void load_list (const char* LIST) {
    printf ("Carregando %s.\n", LIST);
    FILE * stream = fopen (LIST, "r");
-   if (! stream) {
-      printf ("Erro: %s.\n", strerror (errno));
-      exit (EXIT_FAILURE);
+   if (!stream) {
+      printf ("Erro: %s.\n", strerror(errno));
+      exit(EXIT_FAILURE);
    }
+
    int listsize = 0;
    while (1) {
       char buf[512];
@@ -111,7 +116,7 @@ static void load_inodes (int a, int b) {
    }
 }
 
-static void exec_init (char * * argv) {
+static void exec_init (char * * argv, const char* INIT) {
    printf ("Executando %s.\n", INIT);
    switch (fork ()) {
    case -1:
@@ -139,12 +144,40 @@ static void load_files (int a, int b) {
    free (buf);
 }
 
+typedef struct
+{
+    const char* init_file;
+    const char* startup_log_file;
+} configuration;
+
+static int config_handler(void* user, const char* section, const char* name,
+                   const char* value)
+{
+    configuration* pconfig = (configuration*)user;
+
+    #define MATCH(s, n) strcmp(section, s) == 0 && strcmp(name, n) == 0
+      if (MATCH("Global", "startup_log_file")) {
+        pconfig->startup_log_file = strdup(value);
+    } else if (MATCH("Global", "init_file")) {
+        pconfig->init_file = strdup(value);
+    } else {
+        return 0;  /* unknown section/name, error */
+    }
+    return 1;
+}
+
 int main (int argc, char * * argv) {
-   load_list ();
+   configuration config;
+   if (ini_parse("/etc/e4rat-lite.conf", config_handler, &config) < 0) {
+	   printf("Não foi possível carregar o arquivo de configuração.\n");
+	   return 1;
+   }
+   
+   load_list (config.startup_log_file);
    printf ("Pré carregando %d arquivos...\n", listlen);
    load_inodes (0, EARLY);
    load_files (0, EARLY);
-   exec_init (argv);
+   exec_init (argv, config.init_file);
    for (int i = EARLY; i < listlen; i += BLOCK) {
       load_inodes (i, i + BLOCK);
       load_files (i, i + BLOCK);
