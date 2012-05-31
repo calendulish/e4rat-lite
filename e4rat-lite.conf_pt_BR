@@ -1,0 +1,31 @@
+; Arquivo de configuração do e4rat-lite
+
+[global]
+
+; Caminho para o processo de inicialização principal
+init_file=/sbin/init
+
+; Local padrão para o log de inicialização
+startup_log_file=/var/lib/e4rat-lite/startup.log
+
+; ------------------
+
+[Collect]
+
+; Coletar apenas arquivos de dispositivos ext4 [true/false]
+ext4_only=true
+
+; Ignorar arquivos abertos (processos em execução) [true/false]
+exclude_open_files=true
+
+; Tempo (em segundos) para aguardar antes de finalizar a coleta
+timeout=120
+
+; ------------------
+
+[Realloc]
+
+; Método de desfragmentação [auto/pa/tld/locality_group]
+defrag_mode=auto
+
+
