@@ -2,6 +2,7 @@
  * defrag.cc - Operations on relevant file defragmentation
  *
  * Copyright (C) 2011 by Andreas Rid
+ * Copyright (C) 2012 by Lara Maia
  * 
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -21,10 +22,13 @@
 #include "balloc.h"
 #include "fiemap.hh"
 #include "logging.hh"
-#include "config.hh"
 #include "buddycache.hh"
+extern "C" {
+	#include "config.h"
+}
 
 #include <errno.h>
+#include <cstring>
 #include <sys/stat.h>
 #include <fcntl.h>
 #include <linux/fs.h>
@@ -43,6 +47,36 @@
 #include <sys/resource.h>
 
 #define gettid() syscall(__NR_gettid)
+
+std::string defrag_mode;
+
+#ifdef __STRICT_ANSI__
+char *strdup(const char *str) {
+	unsigned int n = strlen(str) + 1;
+	char *dup = malloc(n);
+	if(dup) strcpy(dup, str);
+	return dup;
+}
+#endif
+
+typedef struct
+{
+    const char* defrag_mode;
+} configuration;
+
+static int config_handler(void* user, const char* section, const char* name,
+                   const char* value)
+{
+    configuration* pconfig = (configuration*)user;
+
+    #define MATCH(s, n) strcmp(section, s) == 0 && strcmp(name, n) == 0
+      if (MATCH("Realloc", "defrag_mode")) {
+        pconfig->defrag_mode = strdup(value);
+    } else {
+        return 0;  /* unknown section/name, error */
+    }
+    return 1;
+}
 
 /*
  * Create a temporary file in directory dir with size in bytes.
@@ -106,7 +140,6 @@ std::string renameTempFile(fs::path orig, fs::path dir)
     while(0 != link(orig.string().c_str(), path.c_str()));
     
     unlink(orig.string().c_str());
-
     return path;
 }
 
@@ -275,42 +308,45 @@ void Optimizer::relatedFiles(std::vector<fs::path>& files)
         /*
          * Apply defrag mode
          */
-        std::string mode = Config::get<std::string>("defrag_mode");
-        if("auto" == mode
-            || "pa" == mode)
+		configuration config;
+		if (ini_parse("/etc/e4rat-lite.conf", config_handler, &config) < 0) {
+			throw std::logic_error(std::string("Cannot open file: ")+"/etc/e4rat-lite.conf: " + strerror(errno));
+		} else {
+			defrag_mode = config.defrag_mode;
+		}
+        if("auto" == defrag_mode || "pa" == defrag_mode)
         {
-            bool ret;
-            const char* file = NULL;
-            BOOST_FOREACH(OrigDonorPair& odp, filemap.begin()->second)
-                if(odp.blocks)
-                {
-                    file = odp.origPath.string().c_str();
-                    break;
-                }
-            ret = doesKernelSupportPA(file);
-            if("auto" == mode && ret)
-                Config::set<std::string>("defrag_mode", "pa");
-            else if("pa" == mode && !ret)
-                throw std::logic_error("Kernel does not support pre-allocation");
-            else
-                Config::set<std::string>("defrag_mode", "locality_group");
-        }
+			bool ret;
+			const char* file = NULL;
+			BOOST_FOREACH(OrigDonorPair& odp, filemap.begin()->second)
+				if(odp.blocks)
+				{
+					file = odp.origPath.string().c_str();
+					break;
+				}
+			ret = doesKernelSupportPA(file);
+			if("auto" == defrag_mode && ret)
+				defrag_mode = "pa";
+			else if("pa" == defrag_mode && !ret)
+				throw std::logic_error("Kernel does not support pre-allocation");
+			else
+				defrag_mode = "locality_group";
+		}
 
-        mode = Config::get<std::string>("defrag_mode");
-        if(mode != "pa" && sparse_files)
+        if(defrag_mode != "pa" && sparse_files)
             notice("%*d/%d file(s) are sparse-files which will retain gaps of unallocated blocks.",
                    (int)(log10(files.size())+1), sparse_files , files.size());
         
-        if(mode == "pa")
-            mode = "pre-allocation";
-        else if(mode == "locality_group")
-            mode = "locality group";
-        else if(mode == "tld")
-            mode = "top level directory";
+        if(defrag_mode == "pa")
+            defrag_mode = "pre-allocation";
+        else if(defrag_mode == "locality_group")
+            defrag_mode = "locality_group";
+        else if(defrag_mode == "tld")
+            defrag_mode = "top level directory";
         else
-            throw std::runtime_error(std::string("Unknown defrag mode: ") + mode);
+            throw std::runtime_error(std::string("Unknown defrag mode: ") + defrag_mode);
         
-        notice("Defrag mode: %s", mode.c_str());
+        notice("Defrag mode: %s", defrag_mode.c_str());
         
         /*
          * Let's rock!
@@ -893,16 +929,14 @@ void Defrag::createDonorFiles(Device& device, std::vector<OrigDonorPair>& defrag
     /*
      * choose mode
      */
-    std::string mode = Config::get<std::string>("defrag_mode");
-
-    if(mode == "pa")
+    if(defrag_mode == "pa")
         createDonorFiles_PA(device, defragPair);
-    else if(mode == "tld")
+    else if(defrag_mode == "tld")
         createDonorFiles_TLD(device, defragPair);
-    else if(mode == "locality_group")
+    else if(defrag_mode == "locality_group")
         createDonorFiles_LocalityGroup(device, defragPair);
     else
-        throw std::logic_error(std::string("Unknown defrag mode: ") + mode);
+        throw std::logic_error(std::string("Unknown defrag mode: ") + defrag_mode);
     /*
      * reset priority
      */
@@ -1002,7 +1036,6 @@ void checkImprovement(Device& device, std::vector<OrigDonorPair>& files)
 
     notice("Total fragment count before/afterwards/best-case:  %d/%d/%d", frag_cnt_orig, frag_cnt_donor, best_case);
     if(frag_cnt_donor >= frag_cnt_orig)
-        if(Config::get<bool>("force") == false)
             throw std::runtime_error("There is no improvement possible.");
 }
 /*
