@@ -214,11 +214,7 @@ void printUsage()
 "    -D --exclude-device <dev>       exclude device\n"
 "    -p --path <path>                restrict watch on path [example: '*/bin/*']\n"
 "    -P --exclude-path <path>        exclude filesystem path\n"
-"    -L --exclude-list <file>        exclude paths listed in file\n"
-"    -e --watch-ext4 [true|false]    watch devices matches ext4 filesystem\n"
-"                                    [Default: true]\n"
-"    -O --exclude-of [true|false]    exclude open files [Default: true]\n"
-"\n"
+"    -L --exclude-list <file>        exclude paths listed in file\n\n"
         ;
 }
 

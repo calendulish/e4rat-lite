@@ -59,16 +59,7 @@ void printUsage()
 "    -h --help                       print help and exit\n"
 "    -v --verbose                    increment verbosity level\n"
 "    -q --quiet                      set verbose level to 0\n"
-"    -l --loglevel <number>          set log level\n"
-"    -f --force                      force reallocating files\n"
-"\n"
-"  DEFRAGMENTATION MODES:\n"
-"    -p --use-prealloc               Use pre-allocation kernel patch\n"
-"    -g --use-locality-group         Create donor files in locality group.\n"
-"                                    Please avoid other filesystem activities.\n"
-"    -t --use-tld                    Take advantage of orlov's top-level direc-\n"
-"                                    tory spreading algorithm. This typically\n"
-"                                    leads to small holes between the files.\n\n"
+"    -l --loglevel <number>          set log level\n\n"
         ;
 }
 
