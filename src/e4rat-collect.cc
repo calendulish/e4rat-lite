@@ -2,6 +2,7 @@
  * e4rat-collect.cc - Generate file list of relevant files by monitoring programs
  *
  * Copyright (C) 2011 by Andreas Rid
+ * Copyright (C) 2012 by Lara Maia <lara@craft.net.br>
  *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -19,7 +20,9 @@
 
 #include "listener.hh"
 #include "common.hh"
-#include "config.hh"
+extern "C" {
+	#include "config.h"
+}
 #include "eventcatcher.hh"
 #include "logging.hh"
 #include "parsefilelist.hh"
@@ -46,6 +49,46 @@
 #include <boost/foreach.hpp>
 
 #define PID_FILE "/dev/.e4rat-lite-collect.pid"
+
+#ifdef __STRICT_ANSI__
+char *strdup(const char *str) {
+	unsigned int n = strlen(str) + 1;
+	char *dup = malloc(n);
+	if(dup) strcpy(dup, str);
+	return dup;
+}
+#endif
+
+typedef struct
+{
+    const char* startup_log_file;
+    const char* init_file;
+    bool exclude_open_files;
+    bool ext4_only;
+    unsigned int timeout;
+} configuration;
+
+static int config_handler(void* user, const char* section, const char* name,
+                   const char* value)
+{
+    configuration* pconfig = (configuration*)user;
+
+    #define MATCH(s, n) strcmp(section, s) == 0 && strcmp(name, n) == 0
+      if (MATCH("Global", "startup_log_file")) {
+        pconfig->startup_log_file = strdup(value);
+    } else if (MATCH("Collect", "exclude_open_files")) {
+        pconfig->exclude_open_files = strdup(value);
+    } else if (MATCH("Collect", "ext4_only")) {
+        pconfig->ext4_only = strdup(value);
+    } else if (MATCH("Collect", "timeout")) {
+        pconfig->timeout = atoi(value);
+    } else if (MATCH("Global", "init_file")) {
+        pconfig->init_file = strdup(value);
+    } else {
+        return 0; /* unknown section/name, error */
+    }
+    return 1;
+}
 
 bool isAuditDaemonRunning()
 {
@@ -183,10 +226,14 @@ int main(int argc, char* argv[])
 {
     bool create_pid_late = false;
 
-    Config::instance()->load();
+    configuration config;
+	if (ini_parse("/etc/e4rat-lite.conf", config_handler, &config) < 0) {
+		error("Não foi possível carregar o arquivo de configuração: %s\n", strerror(errno));
+		return 1;
+	}
 
-    int loglevel = Config::get<int>("loglevel");
-    int verbose  = Config::get<int>("verbose");
+    int loglevel = 3; //FIXME
+    int verbose  = 7; //FIXME
 
     const char* execute  = NULL;
     const char* username = NULL;
@@ -202,8 +249,8 @@ int main(int argc, char* argv[])
     Listener listener;
 
     // excluding file list only affect only if process id is not 1
-    if(0 == access(Config::get<std::string>("startup_log_file").c_str(), F_OK))
-        exclude_filenames.push_back(Config::get<std::string>("startup_log_file").c_str());
+    if(0 == access(config.startup_log_file, F_OK))
+        exclude_filenames.push_back(config.startup_log_file);
 
     static struct option long_options[] =
         {
@@ -217,8 +264,6 @@ int main(int argc, char* argv[])
             {"exclude-path",   required_argument, 0, 'P'},
             {"path",           required_argument, 0, 'p'},
             {"exclude-list",   optional_argument, 0, 'L'},
-            {"watch-ext4",     required_argument, 0, 'e'},
-            {"exclude-of",     required_argument, 0, 'O'},
             {"execute",        required_argument, 0, 'x'},
             {"user",           required_argument, 0, 'u'},
             {"output",         required_argument, 0, 'o'},
@@ -229,7 +274,7 @@ int main(int argc, char* argv[])
     int c;
     int option_index = 0;
     opterr = 0;
-    while ((c = getopt_long (argc, argv, "hVvql:o:D:d:P:p:L:e:O:x:ku:", long_options, &option_index)) != EOF)
+    while ((c = getopt_long (argc, argv, "hVvql:o:D:d:P:p:L:x:ku:", long_options, &option_index)) != EOF)
     {
         // parse optional arguments
         if(optarg != NULL && optarg[0] == '-')
@@ -275,22 +320,6 @@ int main(int argc, char* argv[])
             case 'p':
                 listener.watchPath(optarg);
                 break;
-            case 'e':
-            {
-                bool value;
-                std::stringstream ss(optarg);
-                ss >> std::boolalpha >> value;
-                Config::set<bool>("ext4_only", value);
-            }
-                break;
-            case 'O':
-            {
-                bool value;
-                std::stringstream ss(optarg);
-                ss >> std::boolalpha >> value;
-                Config::set<bool>("exclude_open_files", value);
-            }
-                break;
             case 'x':
                 execute = optarg;
                 break;
@@ -311,10 +340,6 @@ int main(int argc, char* argv[])
             case '?':
                 if (optopt == 'o') // optional parameter for output is missing
                     outStream = stdout;
-                else if(optopt == 'e')
-                    Config::set<bool>("ext4_only", true);
-                else if(optopt == 'O')
-                    Config::set<bool>("exclude_open_files", true);
                 else if(optopt == 'L')
                     exclude_filenames.clear();
                 else
@@ -359,16 +384,16 @@ int main(int argc, char* argv[])
     {
         create_pid_late = true;
 
-        outPath = Config::get<std::string>("startup_log_file").c_str();
+        outPath = config.startup_log_file;
         verbose = 0;
     }
     else
     {
-        if(true == Config::get<bool>("exclude_open_files") || exclude_filenames.size())
+        if(true == config.exclude_open_files || exclude_filenames.size())
         {
             info("Generating exclude file list ...");
             try {
-                if(true == Config::get<bool>("exclude_open_files"))
+                if(true == config.exclude_open_files)
                     scanOpenFiles(excludeList);
                 excludeFileLists(exclude_filenames, excludeList);
             }
@@ -415,7 +440,7 @@ int main(int argc, char* argv[])
         {}
     }
 
-    if( Config::get<bool>("ext4_only"))
+    if(config.ext4_only)
         listener.watchExt4Only();
 
     CONNECT(&listener, eventParsed, boost::bind(&EventCatcher::handleAuditEvent, &project, _1));
@@ -456,8 +481,8 @@ int main(int argc, char* argv[])
                 }
                 else
                 {
-                    notice("Execute `%s' ...", Config::get<std::string>("init").c_str());
-                    execv(Config::get<std::string>("init").c_str(), argv);
+                    notice("Execute `%s' ...", config.init_file);
+                    execv(config.init_file, argv);
                 }
                 sleep(1);
                 exit(0);
@@ -469,11 +494,11 @@ int main(int argc, char* argv[])
     if(create_pid_late)
     {
         bool pc = createPidFile(PID_FILE);
-        unsigned int timeout = Config::get<unsigned int>("timeout");
+        unsigned int timeout = config.timeout;
         if(timeout)
         {
             sigaction(SIGALRM, &sa, NULL);
-            alarm(Config::get<unsigned int>("timeout"));
+            alarm(config.timeout);
             notice("Stop collecting files automatically after %d seconds", timeout);
         }
         else
@@ -481,7 +506,7 @@ int main(int argc, char* argv[])
             if(pc == false)
                 notice("Signal collector to stop by calling `killall %s'");
             else
-                notice("Signal collector to stop by calling `%s -k'", Config::get<std::string>("tool_name").c_str());
+                notice("Signal collector to stop by calling `collect -k'");
         }
     }
     else
@@ -524,7 +549,7 @@ err1:
     exit(1);
 err2:
     if(getpid() == 1)
-         execv(Config::get<std::string>("init").c_str(), argv);
+         execv(config.init_file, argv);
     unlink(PID_FILE);
     exit(1);
 }
