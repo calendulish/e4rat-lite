@@ -1,6 +1,6 @@
 ; e4rat-lite configuration file
 
-[global]
+[Global]
 
 ; Path to the main initialization process
 init_file=/sbin/init
