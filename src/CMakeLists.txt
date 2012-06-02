@@ -34,7 +34,7 @@ endif(CMAKE_COMPILER_IS_GNUCXX)
 
 add_definitions(-Wall)
 add_definitions(-DPROGRAM_NAME=\"${PROJECT_NAME}\")
-add_definitions(-DVERSION=\"${E4RAT_VERSION}\")
+add_definitions(-DVERSION=\"${E4RAT-LITE_VERSION}\")
 IF(CMAKE_BUILD_TYPE STREQUAL "release")
     add_definitions(-O2)
     add_definitions(-D_FORTIFY_SOURCE=2)

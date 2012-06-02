@@ -1,7 +1,7 @@
 cmake_minimum_required(VERSION 2.6)
 
 # test weather variables from top level directories are missing
-IF( NOT E4RAT_VERSION )
+IF( NOT E4RAT-LITE_VERSION )
     MESSAGE(FATAL_ERROR "Do not run cmake on subdirectories")
 ENDIF()
 
@@ -15,7 +15,7 @@ foreach( _man  e4rat-lite-collect e4rat-lite-realloc e4rat-lite-preload )
                         ${CMAKE_CURRENT_BINARY_DIR}/${_man}.8
                         --section 8
                         --center "User Manuals"
-                        --release "e4rat-lite ${E4RAT_VERSION}"
+                        --release "e4rat-lite ${E4RAT-LITE_VERSION}"
         OUTPUTS ${CMAKE_CURRENT_BINARY_DIR}/${_man}.8
     )
 endforeach( _man )
@@ -27,7 +27,7 @@ ADD_CUSTOM_COMMAND(
                          ${CMAKE_CURRENT_BINARY_DIR}/e4rat-lite.conf.5
                          --section 5
                          --center "User Manuals"
-                         --release "e4rat-lite ${E4RAT_VERSION}"
+                         --release "e4rat-lite ${E4RAT-LITE_VERSION}"
     OUTPUTS ${CMAKE_CURRENT_BINARY_DIR}/e4rat-lite.conf.5
 )
 
