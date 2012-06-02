@@ -336,17 +336,18 @@ void Optimizer::relatedFiles(std::vector<fs::path>& files)
         if(defrag_mode != "pa" && sparse_files)
             notice("%*d/%d file(s) are sparse-files which will retain gaps of unallocated blocks.",
                    (int)(log10(files.size())+1), sparse_files , files.size());
-        
+
+		const char* defrag_mode_msg;
         if(defrag_mode == "pa")
-            defrag_mode = "pre-allocation";
+            defrag_mode_msg = "pre-allocation";
         else if(defrag_mode == "locality_group")
-            defrag_mode = "locality_group";
+            defrag_mode_msg = "locality group";
         else if(defrag_mode == "tld")
-            defrag_mode = "top level directory";
+            defrag_mode_msg = "top level directory";
         else
             throw std::runtime_error(std::string("Unknown defrag mode: ") + defrag_mode);
         
-        notice("Defrag mode: %s", defrag_mode.c_str());
+        notice("Defrag mode: %s", defrag_mode_msg);
         
         /*
          * Let's rock!
