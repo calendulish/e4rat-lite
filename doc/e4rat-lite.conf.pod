@@ -2,31 +2,31 @@
 
 =head1 NAME
 
-/etc/e4rat.conf - configuration file for the e4rat toolset
+/etc/e4rat-lite.conf - configuration file for the e4rat-lite toolset
 
 =head1 DESCRIPTION
 
-B<e4rat.conf> is the configuration file all e4rat binaries. It allows to replace default parameters of the tools.
+B<e4rat-lite.conf> is the configuration file all e4rat-lite binaries. It allows to replace default parameters of the tools.
 
 =head1 FILE FORMAT
 
-The file is based on INFO format which is similar to C/C++. For more information see I<http://www.boost.org/doc/libs/1_45_0/doc/html/boost_propertytree/parsers.html>. 
+The file is based on Python's ConfigParser style of .INI files, including RFC 822-style multi-line syntax and name: value entries. For more information see I<http://docs.python.org/library/configparser.html>
 
 An option is declared like this:
-option1 value1
+option1=value1
 
-Options can either be declared globally and/or below a section. Derived from its executable suffix name, each binary owns its own section. Values beyond this section applies to the binary only.
+Options can either be declared below a section. Derived from its executable suffix name, each binary owns its own section. Values beyond this section applies to the binary only.
 
+Example:
 
-collect
-{
-    option value
+[Collect]
 
-}
+; comment
+option=value
 
 =head1 OPTIONS
 
-e4rat has a simple logging structure. Each event has a priority bit. The following priorities exist:
+e4rat-lite has a simple logging structure. Each event has a priority bit. The following priorities exist:
     1   errors
     2   warnings
     4   task statistics
@@ -37,35 +37,34 @@ e4rat has a simple logging structure. Each event has a priority bit. The followi
 
 =item B<verbose>
 
+(not yet implemented on config file)
 set verbose bit mask of messages to be displayed. [Default: 7]
 
 =item B<loglevel>
 
+(not yet implemented on config file)
 set bit mask of messages send to L<log_target>. [Default: 3]
 
 =item B<log_target>
 
+(not yet implemented on config file)
 set target path where log messages should be written to. Default value is /dev/kmsg.
 It sends the message to Kernel's log ring buffer. (See also dmesg(1))
 Set <log_target> to 'syslog' to send the message to the syslog daemon.
 
-=item B<init>
+=item B<init_file>
 
 Set an alternative init process instead of /sbin/init
 
 =item B<startup_log_file>
 
-set path to startup log file. [Default: /var/lib/e4rat/startup.log]
+set path to startup log file. [Default: /var/lib/e4ra-litet/startup.log]
 
 =back
 
-=head2 Specific for I<e4rat-collect>
+=head2 Specific for I<e4rat-lite-collect>
 
 =over
-
-=item B<timeout>
-
-After the expiration of this value in seconds e4rat-collect automatically quits collecting. Timeout takes only into account when e4rat-collect was executed as init process. [Default: 120]
 
 =item B<ext4_only>
 
@@ -75,30 +74,35 @@ Restrict file watches to ext4 filesystem types only. [Default: true]
 
 exclude files which are already opened. [Default: true]
 
+=item B<timeout>
+
+After the expiration of this value in seconds e4rat-lite-collect automatically quits collecting. Timeout takes only into account when e4rat-lite-collect was executed as init process. [Default: 120]
+
 =back
 
-=head2 Specific for e4rat-realloc
+=head2 Specific for e4rat-lite-realloc
 
 =over
 
 =item B<defrag_mode>
 
-set default rearrangement mode of e4rat-realloc. [Default: auto]
-    auto            choose mode automatically
-    prealloc        use user-space pre-allocate ioctl
+set default rearrangement mode of e4rat-lite-realloc. [Default: auto]
+    auto               choose mode automatically
+    pa                  use user-space pre-allocate ioctl
     locality-group  create files in locality group
-    tld             create files in top level directory
+    tld                  create files in top level directory
 
 =back
 
 =head1 AUTHOR
 
-Written by Andreas Rid and Gundolf Kiefer.
+e4rat has been written by Andreas Rid and Gundolf Kiefer.
+e4rat-lite writen by Lara Maia.
 
 =head1 REPORTING BUGS
 
-Report bugs to Andreas Rid <conso at users.sf.net>.
+Report bugs to Lara Maia <lara@craft.net.br>
 
 =head1 SEE ALSO
 
-e4rat-collect(8), e4rat-realloc(8), e4rat-preload(8)
+e4rat-lite-collect(8), e4rat-lite-realloc(8), e4rat-lite-preload(8)
