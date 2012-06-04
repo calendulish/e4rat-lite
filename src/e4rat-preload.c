@@ -15,6 +15,7 @@
 #include <inttypes.h>
 #include <stdio.h>
 #include <stdlib.h>
+#include <getopt.h>
 #include <string.h>
 #include <sys/stat.h>
 #include <unistd.h>
@@ -75,6 +76,19 @@ static FileDesc * parse_line (int n, const char * line) {
    f->inode = inode;
    f->path = strdup (line);
    return f;
+}
+
+static void printUsage () {
+	printf("Usage: e4rat-lite-preload [ option(s) ]\n"
+	"\n"
+	"-V --version                           print version and exit\n"
+	"-h --help                              print help and exit\n"
+	"\n"
+	"Kernel Params:\n"
+	"\n"
+	"E4RL_INITFILE=<path to file>           alternate init file\n"
+	"E4RL_STARTUPLOG=<path to file>         alternate startup log file"
+	"\n");
 }
 
 static void load_list (const char* LIST) {
@@ -173,6 +187,26 @@ int main (int argc, char * * argv) {
 	   return 1;
    }
    
+   static struct option long_options[] =
+	{
+		{"help",        no_argument,       0, 'h'},
+		{"version",     no_argument,       0, 'V'},
+		{0, 0, 0, 0}
+	};
+
+    int c;
+    int option_index = 0;
+    while ((c = getopt_long (argc, argv, "hV", long_options, &option_index)) != EOF)
+	{
+        switch(c)
+        {
+            case 'h':
+                goto err1;
+            case 'V':
+				goto err2;
+        }
+    }
+    
    load_list (config.startup_log_file);
    printf ("Pré carregando %d arquivos...\n", listlen);
    load_inodes (0, EARLY);
@@ -183,4 +217,11 @@ int main (int argc, char * * argv) {
       load_files (i, i + BLOCK);
    }
    exit (EXIT_SUCCESS);
+
+err1:
+    printUsage();
+    exit(1);
+err2:
+	printf("%s %s\n", PROGRAM_NAME, VERSION);
+	exit(1);
 }
