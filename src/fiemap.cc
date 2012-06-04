@@ -24,10 +24,13 @@
 #include <errno.h>
 #include <sys/stat.h>
 #include <fcntl.h>
+#include <libintl.h>
 #include <limits.h>
 #include <string.h>
 #include <stdlib.h>
 #include <unistd.h>
+
+#define _(x) gettext(x)
 
 /*
  * Call fiemap ioctl on file descriptor fd.
@@ -58,10 +61,10 @@ struct fiemap* ioctl_fiemap(int fd, unsigned int extent_count)
         if((len = readlink(__path2fd, __filename, PATH_MAX)) != -1)
         {
             __filename[len] = '\0';    
-            error("ioctl_fiemap: %s: %s", __filename, strerror(errno));
+            error(_("ioctl_fiemap: %s: %s"), __filename, strerror(errno));
         }
         else
-            error("ioctl_fiemap and readlink failed: %s", strerror(errno));
+            error(_("ioctl_fiemap and readlink failed: %s"), strerror(errno));
         
         free(fmap);
         return NULL;
@@ -89,7 +92,7 @@ struct fiemap* get_fiemap(const char* file)
     fd = open64(file, O_RDONLY);
     if (fd < 0)
     {
-        error("open: %s: %s", file, strerror(errno));
+        error(_("open: %s: %s"), file, strerror(errno));
         return NULL;
     }
     struct fiemap* fmap = ioctl_fiemap(fd, 0);

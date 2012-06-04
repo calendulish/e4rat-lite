@@ -31,6 +31,7 @@ extern "C" {
 #include <cstring>
 #include <sys/stat.h>
 #include <fcntl.h>
+#include <libintl.h>
 #include <linux/fs.h>
 #include <sys/ioctl.h>
 #include <mntent.h>
@@ -47,6 +48,7 @@ extern "C" {
 #include <sys/resource.h>
 
 #define gettid() syscall(__NR_gettid)
+#define _(x) gettext(x)
 
 std::string defrag_mode;
 
@@ -94,14 +96,14 @@ std::string createTempFile(fs::path dir, __u64 size = 0)
 
     fd = mkostemp(cpath, O_RDWR |O_CREAT);
     if(-1 == fd)
-        throw std::runtime_error(std::string("Cannot create donor file:")
+        throw std::runtime_error(std::string(_("Cannot create donor file:"))
                                  + path + strerror(errno));
 
     if(size)
         if (fallocate(fd, 0, 0, size) < 0)
         {
             close(fd);
-            throw std::runtime_error(std::string("fallocated failed: ")
+            throw std::runtime_error(std::string(_("fallocated failed: "))
                                      + cpath + strerror(errno));
         }
     
@@ -177,7 +179,7 @@ bool Defrag::doesKernelSupportPA(const char* file)
     fd = open(file, O_RDONLY);
     if(0 > fd)
     {
-        error("Cannot pre-allocation support: Cannot open file on device: %s: %s", 
+        error(_("Cannot pre-allocation support: Cannot open file on device: %s: %s"), 
               file, strerror(errno));
         return false;
     }
@@ -188,7 +190,7 @@ bool Defrag::doesKernelSupportPA(const char* file)
     
     if(0 > ioctl(fd, EXT4_IOC_GET_PA, pa_list))
     {
-        debug("Does kernel support pre-alloc: %s: %d %s",file, errno, strerror(errno));
+        debug(_("Does kernel support pre-alloc: %s: %d %s"),file, errno, strerror(errno));
 
         // ext4 32bit compat mode returns EINVAl on failure as well as ioctl does not exist
         // non combat mode is more clear which returns ENOTTY if ioctl is not supported
@@ -208,20 +210,20 @@ bool checkFileSystem(Device device)
         std::string dev_name = device.getDevicePath();
         if(dev_name.at(0) != '/')
             dev_name = device.getMountPoint().string();
-        info("%s is not an ext4 filesystem.", dev_name.c_str());
+        info(_("%s is not an ext4 filesystem."), dev_name.c_str());
         return false;
     }
 
     if(!device.open())
     {
-        info("Couldn't find valid filesystem superblock on %s.",
+        info(_("Couldn't find valid filesystem superblock on %s."),
              device.getDevicePath().c_str());
         return false;
     }
 
     if(!device.hasExtentFeature())
     {
-        info("Ext4 filesystem on %s has not extent feature enabled.",
+        info(_("Ext4 filesystem on %s has not extent feature enabled."),
              device.getDevicePath().c_str());
         return false;
     }
@@ -250,7 +252,7 @@ void Optimizer::relatedFiles(std::vector<fs::path>& files)
             struct stat st;
             if(-1 == stat(file.string().c_str(), &st))
             {
-                info("Cannot open file: %s: %s", file.string().c_str(), strerror(errno));
+                info(_("Cannot open file: %s: %s"), file.string().c_str(), strerror(errno));
                 files_unavailable++;
             }
             else
@@ -284,22 +286,22 @@ void Optimizer::relatedFiles(std::vector<fs::path>& files)
          * Display file statistics 
          */
         if(files_unavailable)
-            notice("%*d/%d file(s) are not available",
+            notice(_("%*d/%d file(s) are not available"),
                    (int)(log10(files.size())+1), files_unavailable, files.size());
         if(wrong_filesystem_type)
-            notice("%*d/%d file(s) not on an valid ext4 filesystem",
+            notice(_("%*d/%d file(s) not on an valid ext4 filesystem"),
                    (int)(log10(files.size())+1), wrong_filesystem_type, files.size());
         if(invalid_file_type)
-            notice("%*d/%d file(s) have invalid file type.",
+            notice(_("%*d/%d file(s) have invalid file type."),
                    (int)(log10(files.size())+1), invalid_file_type , files.size());
         if(not_writable)
-            notice("%*d/%d file(s) are presently not writable.",
+            notice(_("%*d/%d file(s) are presently not writable."),
                    (int)(log10(files.size())+1), not_writable , files.size());
         if(not_extent_based)
-            notice("%*d/%d file(s) cannot set inode extent flag.",
+            notice(_("%*d/%d file(s) cannot set inode extent flag."),
                    (int)(log10(files.size())+1), not_extent_based , files.size());
         if(empty_files)
-            notice("%*d/%d file(s) have no blocks.",
+            notice(_("%*d/%d file(s) have no blocks."),
                    (int)(log10(files.size())+1), empty_files , files.size());
         
         if(filemap.empty())
@@ -310,7 +312,7 @@ void Optimizer::relatedFiles(std::vector<fs::path>& files)
          */
 		configuration config;
 		if (ini_parse("/etc/e4rat-lite.conf", config_handler, &config) < 0) {
-			throw std::logic_error(std::string("Cannot open file: ")+"/etc/e4rat-lite.conf: " + strerror(errno));
+			throw std::logic_error(std::string(_("Cannot open file: "))+"/etc/e4rat-lite.conf: " + strerror(errno));
 		} else {
 			defrag_mode = config.defrag_mode;
 		}
@@ -328,13 +330,13 @@ void Optimizer::relatedFiles(std::vector<fs::path>& files)
 			if("auto" == defrag_mode && ret)
 				defrag_mode = "pa";
 			else if("pa" == defrag_mode && !ret)
-				throw std::logic_error("Kernel does not support pre-allocation");
+				throw std::logic_error(_("Kernel does not support pre-allocation"));
 			else
 				defrag_mode = "locality_group";
 		}
 
         if(defrag_mode != "pa" && sparse_files)
-            notice("%*d/%d file(s) are sparse-files which will retain gaps of unallocated blocks.",
+            notice(_("%*d/%d file(s) are sparse-files which will retain gaps of unallocated blocks."),
                    (int)(log10(files.size())+1), sparse_files , files.size());
 
 		const char* defrag_mode_msg;
@@ -345,9 +347,9 @@ void Optimizer::relatedFiles(std::vector<fs::path>& files)
         else if(defrag_mode == "tld")
             defrag_mode_msg = "top level directory";
         else
-            throw std::runtime_error(std::string("Unknown defrag mode: ") + defrag_mode);
+            throw std::runtime_error(std::string(_("Unknown defrag mode: ")) + defrag_mode);
         
-        notice("Defrag mode: %s", defrag_mode_msg);
+        notice(_("Defrag mode: %s"), defrag_mode_msg);
         
         /*
          * Let's rock!
@@ -393,7 +395,7 @@ void Defrag::checkFilesAttributes(Device device, std::vector<OrigDonorPair>& fil
             {
                 case ELOOP:
                     invalid_file_type++;
-                    info("Cannot open file: %s: is a symbolic link", path);
+                    info(_("Cannot open file: %s: is a symbolic link"), path);
                     continue;
                 case EISDIR:
                     invalid_file_type++; break;
@@ -401,28 +403,28 @@ void Defrag::checkFilesAttributes(Device device, std::vector<OrigDonorPair>& fil
                     not_writable++;
             }
 
-            info("Cannot open file: %s: %s", path, strerror(errno));
+            info(_("Cannot open file: %s: %s"), path, strerror(errno));
             continue;
         }
 
         if(fstat(fd, &st) < 0)
         {
             close(fd);
-            info("Cannot get file statistics: %s: %s",path,strerror(errno));
+            info(_("Cannot get file statistics: %s: %s"),path,strerror(errno));
             invalid_file_type++;
             goto cont;
         }
 
         if(!S_ISREG(st.st_mode))
         {
-            info("%s is not a regular file.", path);
+            info(_("%s is not a regular file."), path);
             invalid_file_type++;
             goto cont;
         }
 
         if(0 > ioctl(fd, FS_IOC_GETFLAGS, &flags))
         {
-            info("Cannot receive inode flags: %s: %s", path, strerror(errno));
+            info(_("Cannot receive inode flags: %s: %s"), path, strerror(errno));
             invalid_file_type++;
             goto cont;
         }
@@ -432,7 +434,7 @@ void Defrag::checkFilesAttributes(Device device, std::vector<OrigDonorPair>& fil
             flags |= EXT4_EXTENTS_FL;
             if(0> ioctl(fd, FS_IOC_SETFLAGS, &flags))
             {
-                info("Cannot convert file %s to be extent based: %s",
+                info(_("Cannot convert file %s to be extent based: %s"),
                      path, strerror(errno));
                 not_extent_based++;
                 goto cont;
@@ -441,7 +443,7 @@ void Defrag::checkFilesAttributes(Device device, std::vector<OrigDonorPair>& fil
 
         if(flags & FS_IMMUTABLE_FL)
         {
-            info("%s is immutable.", path);
+            info(_("%s is immutable."), path);
             not_writable++;
             goto cont;
         }
@@ -451,7 +453,7 @@ void Defrag::checkFilesAttributes(Device device, std::vector<OrigDonorPair>& fil
         
         if(0 == odp.blocks)
         {
-            info("File %s has no blocks.", path);
+            info(_("File %s has no blocks."), path);
             empty_files++;
             goto cont;
         }
@@ -459,7 +461,7 @@ void Defrag::checkFilesAttributes(Device device, std::vector<OrigDonorPair>& fil
         odp.isSparseFile = is_sparse_file(fmap);
         if(odp.isSparseFile)
         {
-            info("%s is a sparse-file", path);
+            info(_("%s is a sparse-file"), path);
             sparse_files++;
         }
 cont:        
@@ -490,7 +492,7 @@ Extent findExtent(Device device, __u64 phint, __u32 len)
     strncpy(cfiletemplate, file_template.c_str(), PATH_MAX);
     int fd = mkostemp(cfiletemplate, O_RDWR |O_CREAT);
     if(fd < 0)
-        throw std::runtime_error("Cannot create a temporary file");
+        throw std::runtime_error(_("Cannot create a temporary file"));
 
     unlink(cfiletemplate);
 
@@ -511,9 +513,9 @@ Extent findExtent(Device device, __u64 phint, __u32 len)
     {
         if(errno == ENOTTY)
             throw std::runtime_error(
-                    "ioctl EXT4_IOC_CONTROL_PA not supported");
+                    _("ioctl EXT4_IOC_CONTROL_PA not supported"));
         else
-            throw std::runtime_error("Out of disk space");
+            throw std::runtime_error(_("Out of disk space"));
     }
 
     /*
@@ -528,7 +530,7 @@ Extent findExtent(Device device, __u64 phint, __u32 len)
     
     if(0 > ioctl(fd, EXT4_IOC_GET_PA, pa_list))
         throw std::runtime_error(
-                    std::string("EXT4_IOC_GET_PA failed") + strerror(errno));
+                    std::string(_("EXT4_IOC_GET_PA failed")) + strerror(errno));
 
     for(__u32 i = 0; i < pa_list->pl_entries; i++)
     {
@@ -537,7 +539,7 @@ Extent findExtent(Device device, __u64 phint, __u32 len)
             extent.start = pa_list->pl_space[i].pi_pstart;
             extent.len   = pa_list->pl_space[i].pi_len;
         }
-        debug("Found extent: %llu:%u",
+        debug(_("Found extent: %llu:%u"),
                 pa_list->pl_space[i].pi_pstart, pa_list->pl_space[i].pi_len);
     }
 
@@ -546,7 +548,7 @@ Extent findExtent(Device device, __u64 phint, __u32 len)
      */
     pi.pi_flags = EXT4_MB_DISCARD_PA;
     if( ioctl(fd, EXT4_IOC_CONTROL_PA, &pi) < 0)
-        throw std::runtime_error("Cannot discard pre-allocation");
+        throw std::runtime_error(_("Cannot discard pre-allocation"));
 
     close(fd);
     
@@ -624,14 +626,14 @@ void Defrag::createDonorFiles_PA(Device& device,
         odp.donorPath = createTempFile(device.getMountPoint(), 0);
         fd = open(odp.donorPath.string().c_str(), O_WRONLY, 0700);
         if(0 > fd)
-            throw std::runtime_error(std::string("Cannot open donor file: ")
+            throw std::runtime_error(std::string(_("Cannot open donor file: "))
                                  + odp.donorPath.string() + strerror(errno));
 
         if(odp.isSparseFile)
         {
             int orig_fd = open(odp.origPath.string().c_str(), O_RDONLY);
             if(orig_fd < 0)
-                throw std::runtime_error(std::string("Cannot open orig file: ")
+                throw std::runtime_error(std::string(_("Cannot open orig file: "))
                                          + odp.origPath.string() + strerror(errno));
             struct fiemap* fmap = ioctl_fiemap(orig_fd);
             close(orig_fd);
@@ -642,7 +644,7 @@ void Defrag::createDonorFiles_PA(Device& device,
                 {
                     if(free_space.len == 0)
                     {
-                        debug("Out of continued space: %s: will might fragmented", odp.origPath.string().c_str());
+                        debug(_("Out of continued space: %s: will might fragmented"), odp.origPath.string().c_str());
                         free_space = findFreeSpace(device, free_space.start, blk_count);
                     }
                     __u64 pa_blocks = std::min( fmap->fm_extents[i].fe_length / device.getBlockSize() - offset,
@@ -662,14 +664,14 @@ void Defrag::createDonorFiles_PA(Device& device,
                     }
                     catch(Extent& e)
                     {
-                        debug("pre-allocate failed: %s: blocks are already in use", odp.origPath.string().c_str());
+                        debug(_("pre-allocate failed: %s: blocks are already in use"), odp.origPath.string().c_str());
                         free_space = e;
                     }
                 }
                 if(fallocate(fd, 0,
                          fmap->fm_extents[i].fe_logical,
                          fmap->fm_extents[i].fe_length))
-                    throw std::runtime_error(std::string("Cannot allocate blocks for donor: ")
+                    throw std::runtime_error(std::string(_("Cannot allocate blocks for donor: "))
                                      + odp.donorPath.string() + strerror(errno));
             }
         }
@@ -680,7 +682,7 @@ void Defrag::createDonorFiles_PA(Device& device,
             {
                 if(free_space.len == 0)
                 {
-                    debug("Out of continued space: %s: will might fragmented", odp.origPath.string().c_str());
+                    debug(_("Out of continued space: %s: will might fragmented"), odp.origPath.string().c_str());
                     free_space = findFreeSpace(device, free_space.start, blk_count);
                 }
                 __u64 pa_blocks = std::min( odp.blocks - file_offset,
@@ -700,14 +702,14 @@ void Defrag::createDonorFiles_PA(Device& device,
                 }
                 catch(Extent& e)
                 {
-                    debug("pre-allocate failed: %s: blocks are already in use", odp.origPath.string().c_str());
+                    debug(_("pre-allocate failed: %s: blocks are already in use"), odp.origPath.string().c_str());
                     free_space = e;
                 }
                 
             } while(file_offset < odp.blocks);
 
             if (fallocate(fd, 0, 0, odp.blocks * device.getBlockSize()) < 0)
-                throw std::runtime_error(std::string("Cannot allocate blocks for donor: ")
+                throw std::runtime_error(std::string(_("Cannot allocate blocks for donor: "))
                                          + odp.donorPath.string() + strerror(errno));
         }
         close(fd);
@@ -777,9 +779,9 @@ void Defrag::createDonorFiles_LocalityGroup(Device& device,
         CPU_SET(0, &new_sched_mask);
         int ret_get_affinity;
         if(0 > (ret_get_affinity = sched_getaffinity(gettid(), sizeof(cpu_set_t), &cur_sched_mask)))
-            warn("Cannot receive process's CPU affinity mask: %s", strerror(errno));
+            warn(_("Cannot receive process's CPU affinity mask: %s"), strerror(errno));
         if(0 > sched_setaffinity(gettid(), sizeof(cpu_set_t), &new_sched_mask))
-            warn("Cannot set process's CPU affinity mask to 1: %s", strerror(errno));
+            warn(_("Cannot set process's CPU affinity mask to 1: %s"), strerror(errno));
         
                  
         /*
@@ -799,7 +801,7 @@ void Defrag::createDonorFiles_LocalityGroup(Device& device,
          */
         if(ret_get_affinity == 0)
             if(0 > sched_setaffinity(gettid(), sizeof(new_sched_mask), &new_sched_mask))
-                warn("Cannot restore process's CPU affinity: %s", strerror(errno));
+                warn(_("Cannot restore process's CPU affinity: %s"), strerror(errno));
         
         /*
          * Reset tuning parameters
@@ -821,7 +823,7 @@ void Defrag::createDonorFiles_LocalityGroup(Device& device,
     catch(...)
     {
         throw std::logic_error(
-                "Do not throw an object not derived from std::exception");
+                _("Do not throw an object not derived from std::exception"));
     }
 }
 
@@ -881,7 +883,7 @@ void Defrag::createDonorFiles_TLD(Device& device,
         // Delete top level directory
         // The directory should be empty
         if(-1 == rmdir(tld.string().c_str()))
-            error("cannot unlink base directory: %s: %s", 
+            error(_("cannot unlink base directory: %s: %s"), 
                             tld.string().c_str(), strerror(errno));
 
         /*
@@ -898,7 +900,7 @@ void Defrag::createDonorFiles_TLD(Device& device,
         if(!tld.empty())
             if(-1 == rmdir(tld.string().c_str()))
                 if(errno != ENOENT)
-                    error("cannot unlink base directory: %s: %s", 
+                    error(_("cannot unlink base directory: %s: %s"), 
                                         tld.string().c_str(), strerror(errno));
         if(old_mb_stream_req != -1)
             device.setTuningParameter("mb_stream_req", old_mb_stream_req);
@@ -907,7 +909,7 @@ void Defrag::createDonorFiles_TLD(Device& device,
     }
     catch(...)
     {
-        throw std::logic_error("Do not throw an object not derived from std::exception");
+        throw std::logic_error(_("Do not throw an object not derived from std::exception"));
     }
 }
 
@@ -925,7 +927,7 @@ void Defrag::createDonorFiles(Device& device, std::vector<OrigDonorPair>& defrag
     int old_priority = getpriority(PRIO_PROCESS, tid);
     
     if(-1 == setpriority(PRIO_PROCESS, tid, -20))
-        warn("Cannot set thread priority to -20: %s", strerror(errno));
+        warn(_("Cannot set thread priority to -20: %s"), strerror(errno));
 
     /*
      * choose mode
@@ -937,7 +939,7 @@ void Defrag::createDonorFiles(Device& device, std::vector<OrigDonorPair>& defrag
     else if(defrag_mode == "locality_group")
         createDonorFiles_LocalityGroup(device, defragPair);
     else
-        throw std::logic_error(std::string("Unknown defrag mode: ") + defrag_mode);
+        throw std::logic_error(std::string(_("Unknown defrag mode: ")) + defrag_mode);
     /*
      * reset priority
      */
@@ -958,7 +960,7 @@ __u32 fragmentCount(std::map<__u64, const char*> list)
     {
         fd = open(iter.second, O_RDONLY);
         if(fd < 0)
-            throw std::logic_error(std::string("Cannot open file: ")+iter.second + ": " + strerror(errno));
+            throw std::logic_error(std::string(_("Cannot open file: "))+iter.second + ": " + strerror(errno));
         fmap = ioctl_fiemap(fd);
 
  
@@ -1035,9 +1037,9 @@ void checkImprovement(Device& device, std::vector<OrigDonorPair>& files)
 
     best_case = total_block_cnt / device.freeBlocksPerFlex() + (bool)(total_block_cnt % device.freeBlocksPerFlex());
 
-    notice("Total fragment count before/afterwards/best-case:  %d/%d/%d", frag_cnt_orig, frag_cnt_donor, best_case);
+    notice(_("Total fragment count before/afterwards/best-case:  %d/%d/%d"), frag_cnt_orig, frag_cnt_donor, best_case);
     if(frag_cnt_donor >= frag_cnt_orig)
-            throw std::runtime_error("There is no improvement possible.");
+            throw std::runtime_error(_("There is no improvement possible."));
 }
 /*
  * Main algorithm of related file defragmentation.
@@ -1066,7 +1068,7 @@ void Defrag::defragRelatedFiles(Device device, std::vector<OrigDonorPair>& files
     if(!valid_files)
         return;
     
-    notice("Processing %d file(s) on device %s (mount-point: %s)",
+    notice(_("Processing %d file(s) on device %s (mount-point: %s)"),
            valid_files,
            device.getDevicePath().c_str(),
            device.getMountPoint().string().c_str());
@@ -1084,7 +1086,7 @@ void Defrag::defragRelatedFiles(Device device, std::vector<OrigDonorPair>& files
             if(odp.blocks == 0)
                 continue;
             interruptionPoint();
-            info("[ %*d/%d ] %*llu block(s)    %s", (int)(log10(files.size())+1), ++fcnt, 
+            info(_("[ %*d/%d ] %*llu block(s)    %s"), (int)(log10(files.size())+1), ++fcnt, 
                  valid_files, 
                  6, odp.blocks,
                  odp.origPath.string().c_str());
@@ -1100,7 +1102,7 @@ void Defrag::defragRelatedFiles(Device device, std::vector<OrigDonorPair>& files
 
             if(orig_fd < 0)
             {
-                error("Cannot open orig file %s: %s", 
+                error(_("Cannot open orig file %s: %s"), 
                       odp.origPath.string().c_str(), strerror(errno));
                 continue;
             }
@@ -1109,7 +1111,7 @@ void Defrag::defragRelatedFiles(Device device, std::vector<OrigDonorPair>& files
                             O_WRONLY | O_CREAT, 0700);
             if(donor_fd < 0)
             {
-                error("Cannot open donor file %s: %s", 
+                error(_("Cannot open donor file %s: %s"), 
                       odp.donorPath.string().c_str(), strerror(errno));
                 continue;
             }
@@ -1124,9 +1126,9 @@ void Defrag::defragRelatedFiles(Device device, std::vector<OrigDonorPair>& files
                 if(after_frag_cnt != prev_frag_cnt)
                 {
                     if(odp.blocks != get_file_size(orig_fd) / device.getBlockSize())
-                        warn("%s: File size has changed in the meantime.", odp.origPath.string().c_str());
+                        warn(_("%s: File size has changed in the meantime."), odp.origPath.string().c_str());
                     else
-                        warn("Bug detected in ioctl EXT4_IOC_MOVE_EXT: %s: file fragment count does not match", odp.origPath.string().c_str());
+                        warn(_("Bug detected in ioctl EXT4_IOC_MOVE_EXT: %s: file fragment count does not match"), odp.origPath.string().c_str());
                 }
             }
             catch(std::exception& e)
@@ -1137,11 +1139,11 @@ void Defrag::defragRelatedFiles(Device device, std::vector<OrigDonorPair>& files
             if(posix_fadvise(orig_fd, 0, odp.blocks*device.getBlockSize(),
                             POSIX_FADV_DONTNEED))
             {
-                warn("fadvice failed: %s", strerror(errno));
+                warn(_("fadvice failed: %s"), strerror(errno));
             }
         
             if (unlink(odp.donorPath.string().c_str()) < 0)
-                error("Cannot unlink donor fd: %s", strerror(errno));
+                error(_("Cannot unlink donor fd: %s"), strerror(errno));
             odp.donorPath.clear();
         
             close(orig_fd);
@@ -1154,7 +1156,7 @@ void Defrag::defragRelatedFiles(Device device, std::vector<OrigDonorPair>& files
         BOOST_FOREACH(OrigDonorPair& odp, files)
             if(-1 == remove(odp.donorPath.string().c_str()))
                 if(errno != ENOENT)
-                    error("Cannot remove donor file: %s: %s",
+                    error(_("Cannot remove donor file: %s: %s"),
                              odp.donorPath.string().c_str(), strerror(errno));
         error("%s", e.what());
     }

@@ -18,8 +18,11 @@
 #include <string.h>
 #include <sys/stat.h>
 #include <unistd.h>
+#include <libintl.h>
 
 #include "config.h"
+
+#define _(x) gettext(x)
 
 #define EARLY 200
 #define BLOCK 300
@@ -78,10 +81,10 @@ static FileDesc * parse_line (int n, const char * line) {
 }
 
 static void load_list (const char* LIST) {
-   printf ("Carregando %s.\n", LIST);
+   printf (_("Loading %s.\n"), LIST);
    FILE * stream = fopen (LIST, "r");
    if (!stream) {
-      printf ("Erro: %s.\n", strerror(errno));
+      printf (_("Error: %s.\n"), strerror(errno));
       exit(EXIT_FAILURE);
    }
 
@@ -117,16 +120,16 @@ static void load_inodes (int a, int b) {
 }
 
 static void exec_init (char * * argv, const char* INIT) {
-   printf ("Executando %s.\n", INIT);
+   printf (_("Running %s.\n"), INIT);
    switch (fork ()) {
    case -1:
-      printf ("Erro: %s.\n", strerror (errno));
+      printf (_("Error: %s.\n"), strerror (errno));
       exit (EXIT_FAILURE);
    case 0:
       return;
    default:
       execv (INIT, argv);
-      printf ("Erro: %s.\n", strerror (errno));
+      printf (_("Error: %s.\n"), strerror (errno));
       exit (EXIT_FAILURE);
    }
 }
@@ -168,13 +171,17 @@ static int config_handler(void* user, const char* section, const char* name,
 
 int main (int argc, char * * argv) {
    configuration config;
+   setlocale(LC_ALL, "");
+   bindtextdomain("e4rat-lite", "/usr/share/locale");
+   textdomain("e4rat-lite");
+   
    if (ini_parse("/etc/e4rat-lite.conf", config_handler, &config) < 0) {
-	   printf("Não foi possível carregar o arquivo de configuração.\n");
-	   return 1;
+	   printf(_("Unable to load the configuration file:: %s\n"), strerror (errno));
+	   exit (EXIT_FAILURE);
    }
    
    load_list (config.startup_log_file);
-   printf ("Pré carregando %d arquivos...\n", listlen);
+   printf (_("Preloading %d files...\n"), listlen);
    load_inodes (0, EARLY);
    load_files (0, EARLY);
    exec_init (argv, config.init_file);

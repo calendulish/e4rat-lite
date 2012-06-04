@@ -20,8 +20,11 @@
 #include "eventcatcher.hh"
 #include "listener.hh"
 #include "logging.hh"
+#include <libintl.h>
 
 #include <boost/foreach.hpp>
+
+#define _(x) gettext(x)
 
 void ScanFsAccess::insert(FilePtr& f)
 {
@@ -92,11 +95,11 @@ void ScanFsAccess::handleAuditEvent(boost::shared_ptr<AuditEvent> event)
             if(observe_apps.find(event->comm) == observe_apps.end())
 	        return;
 
-	    debug("Valid process name %. insert pid %d", event->comm.c_str(), event->pid);
+	    debug(_("Valid process name %. insert pid %d"), event->comm.c_str(), event->pid);
             observe_pids.insert(event->pid);
 	}
     }
-    debug("syscall: %d RO: %d", event->type, event->readOnly);
+    debug(_("syscall: %d RO: %d"), event->type, event->readOnly);
     
     switch(event->type)
     {
@@ -109,7 +112,7 @@ void ScanFsAccess::handleAuditEvent(boost::shared_ptr<AuditEvent> event)
             FilePtr file = FilePtr(event->dev, event->ino, event->path);
             if(file.isValid())
             {
-                info("File was modified: \t%s", event->path.string().c_str());
+                info(_("File was modified: \t%s"), event->path.string().c_str());
                 file.setInvalid();
             }
             if(file.unique())
@@ -124,7 +127,7 @@ void ScanFsAccess::handleAuditEvent(boost::shared_ptr<AuditEvent> event)
                 FilePtr file = FilePtr(event->dev, event->ino, event->path);
                 if(file.isValid())
                 {
-                    info("Opened writable: \t%s", 
+                    info(_("Opened writable: \t%s"), 
                                     event->path.string().c_str());
                     file.setInvalid();
                 }
@@ -140,7 +143,7 @@ void ScanFsAccess::handleAuditEvent(boost::shared_ptr<AuditEvent> event)
                 FilePtr file = FilePtr(event->exe);
                 if(file.unique())
                 {
-                    info("Insert executable: \t%s", event->exe.string().c_str());
+                    info(_("Insert executable: \t%s"), event->exe.string().c_str());
                     insert(file);
                 }
             }
@@ -151,7 +154,7 @@ void ScanFsAccess::handleAuditEvent(boost::shared_ptr<AuditEvent> event)
             file = FilePtr(event->dev, event->ino, getPath2RegularFile(event->path));
             if(file.unique())
             {
-                info("Insert regular file: \t%s", file.getPath().string().c_str());
+                info(_("Insert regular file: \t%s"), file.getPath().string().c_str());
                 insert(file);
             }
         }

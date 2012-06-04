@@ -25,9 +25,12 @@
 #include <sys/types.h>
 #include <sys/stat.h>
 #include <fcntl.h>
+#include <libintl.h>
 #include <string.h>
 #include <errno.h>
 #include "common.hh"
+
+#define _(x) gettext(x)
 
 Logging logger;
 
@@ -36,7 +39,7 @@ void Logging::log2target(LogLevel level, const char* msg)
     if(target == "syslog")
     {
         if(access(_PATH_LOG, F_OK))
-            throw std::runtime_error("syslog daemon is not running");
+            throw std::runtime_error(_("syslog daemon is not running"));
         syslog((level/2)+2, msg, NULL);
     }
     else
@@ -49,7 +52,7 @@ void Logging::log2target(LogLevel level, const char* msg)
         if(!file)
             throw std::runtime_error(strerror(errno));
         
-        fprintf(file, "[Logging] %s\n", msg);
+        fprintf(file, _("[Logging] %s\n"), msg);
         fclose(file);
     }
 }
@@ -76,13 +79,13 @@ Logging::~Logging()
     }
     catch(std::exception& e)
     {
-        fprintf(stderr, "Cannot dump log messages: %s: %s\n",
+        fprintf(stderr, _("Cannot dump log messages: %s: %s\n"),
                 target.c_str(),
                 e.what());
     }
 
     if(queue.size())
-        fprintf(stderr, "Discard %zu unwritten log message(s).\n", queue.size());
+        fprintf(stderr, _("Discard %zu unwritten log message(s).\n"), queue.size());
 }
 
 void Logging::setLogLevel(int l)
@@ -122,9 +125,9 @@ void Logging::write(LogLevel level, const char* format, ...)
             out = stdout;
         
         if(displayToolName)
-            fprintf(out, "[Logging] %s\n", msg);
+            fprintf(out, _("[Logging] %s\n"), msg);
         else
-            fprintf(out, "%s\n", msg);
+            fprintf(out, _("%s\n"), msg);
     }
 
     if(!(level & loglevel))
