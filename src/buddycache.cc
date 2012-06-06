@@ -22,6 +22,9 @@
 #include <fstream>
 #include <sys/stat.h>
 #include <fcntl.h>
+#include <libintl.h>
+
+#define _(x) gettext(x)
 
 BuddyCache::BuddyCache(Device _device)
     : device(_device)
@@ -40,7 +43,7 @@ void BuddyCache::refresh()
                            + "/mb_groups").c_str(), std::ios::in))
 
         throw std::runtime_error(std::string(
-                 "cannot open buddy cache on device "
+                 _("cannot open buddy cache on device ")
                  + device.getDeviceName()));
 
     
@@ -113,7 +116,7 @@ bool BuddyCache::isGroupEmpty(__u32 group)
     if(data.at(group).free == free_blocks)
         return true;
     if(data.at(group).free > free_blocks)
-        throw std::logic_error("more blocks marked free than expected");
+        throw std::logic_error(_("more blocks marked free than expected"));
 
     return false;
 }

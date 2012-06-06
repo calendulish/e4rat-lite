@@ -24,6 +24,7 @@
 #include "parsefilelist.hh"
 
 #include <iostream>
+#include <libintl.h>
 #include <sys/types.h>
 #include <sys/stat.h>
 #include <getopt.h>
@@ -33,6 +34,8 @@
 #include <linux/limits.h>
 
 #include <boost/foreach.hpp>
+
+#define _(x) gettext(x)
 
 #define PID_FILE "/var/run/e4rat-lite-realloc.pid"
 
@@ -52,14 +55,14 @@ class FileInfo : public boost::filesystem::path
 void printUsage()
 {
     std::cout <<
-"Usage: " PROGRAM_NAME "-realloc [ option(s) ] [ mode ] files(s)\n"
+_("Usage: e4rat-lite-realloc [ option(s) ] [ mode ] files(s)\n"
 "\n"
 "  OPTIONS:\n"
 "    -V --version                    print version and exit\n"
 "    -h --help                       print help and exit\n"
 "    -v --verbose                    increment verbosity level\n"
 "    -q --quiet                      set verbose level to 0\n"
-"    -l --loglevel <number>          set log level\n\n"
+"    -l --loglevel <number>          set log level\n\n")
         ;
 }
 
@@ -67,6 +70,10 @@ int main(int argc, char* argv[])
 {
     Optimizer optimizer;
     std::vector<FileInfo> filelist;
+    
+    setlocale(LC_ALL, "");
+    bindtextdomain("e4rat-lite", "/usr/share/locale");
+    textdomain("e4rat-lite");
     
     int loglevel = 3; //FIXME
     int verbose  = 7; //FIXME
@@ -103,7 +110,7 @@ int main(int argc, char* argv[])
                 loglevel = atoi(optarg);
                 break;
             default:
-                std::cerr << "Unrecognised option: " << optopt << std::endl;
+                std::cerr << _("Unrecognised option: ") << optopt << std::endl;
                 goto out;
         }
     }
@@ -113,14 +120,14 @@ int main(int argc, char* argv[])
     
     if(getuid() != 0)
     {
-        std::cerr << "You need root privileges to run this program.\n";
+        std::cerr << _("You need root privileges to run this program.\n");
         exit(1);
     }
 
     if(!createPidFile(PID_FILE))
     {
-        std::cerr << "It seems that e4rat-lite-realloc is already running.\n";
-        std::cerr << "Remove pid file " << PID_FILE << " to unlock.\n";
+        std::cerr << _("It seems that e4rat-lite-realloc is already running.\n");
+        std::cerr << _("Remove pid file ") << PID_FILE << _(" to unlock.\n");
         exit(1);
     }
     /*
@@ -141,10 +148,10 @@ int main(int argc, char* argv[])
         {
             file = fopen(argv[i], "r");
             if(NULL == file)
-                warn("File %s does not exist.", argv[i]);
+                warn(_("File %s does not exist."), argv[i]);
             else
             {
-                notice("Parsing file %s", argv[i]);
+                notice(_("Parsing file %s"), argv[i]);
                 parseInputStream(file, filelist);
                 fclose(file);
             }
@@ -156,7 +163,7 @@ int main(int argc, char* argv[])
         setStdIn2NonBlocking();
         if(EOF != peek(stdin))
         {
-             notice("Parsing from stdin");
+             notice(_("Parsing from stdin"));
              parseInputStream(stdin, filelist);
         }
 
@@ -165,7 +172,7 @@ int main(int argc, char* argv[])
             file = fopen("./e4rat-lite-collect.log", "r");
             if(NULL != file)
             {
-                notice("Parsing file ./e4rat-lite-collect.log");
+                notice(_("Parsing file ./e4rat-lite-collect.log"));
                 parseInputStream(file, filelist);
                 fclose(file);
             }

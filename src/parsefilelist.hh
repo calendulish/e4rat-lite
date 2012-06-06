@@ -23,6 +23,10 @@
 
 #include "logging.hh"
 #include <sstream>
+#include <libintl.h>
+
+#define _(x) gettext(x)
+
 int peek(FILE* in)
 {
     int c = fgetc(in);
@@ -64,8 +68,8 @@ void parseInputStream(FILE* in, std::vector<T>& filelist)
            || (!detailed && ret != 1))
         {
             std::stringstream ss;
-            ss << "Error while parsing " << getPathFromFd(fileno(in)) << ".\n"
-               << "Syntax error at line " << lineno << " argument " << ret+1;
+            ss << _("Error while parsing ") << getPathFromFd(fileno(in)) << ".\n"
+               << _("Syntax error at line ") << lineno << _(" argument ") << ret+1;
             throw std::runtime_error(ss.str());
         }
         if(!detailed)

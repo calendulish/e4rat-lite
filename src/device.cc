@@ -24,6 +24,7 @@
 #include <fstream>
 #include <stdexcept>
 #include <errno.h>
+#include <libintl.h>
 
 #include <sys/stat.h>
 #include <fcntl.h>
@@ -40,6 +41,8 @@
                               )
 
 #define FREE_BLOCKS_PER_FLEX(fs)  (FREE_BLOCKS_PER_GROUP(fs) << fs->super->s_log_groups_per_flex)
+
+#define _(x) gettext(x)
 
 /*
  * get mount-point from arbitrary path
@@ -74,7 +77,7 @@ fs::path __getMountPoint(fs::path path)
     }
 
 err:
-    throw std::runtime_error(std::string("Cannot get MountPoint of path: ")
+    throw std::runtime_error(std::string(_("Cannot get MountPoint of path: "))
                              +path.string());
 }
 
@@ -98,7 +101,7 @@ Device::Device(fs::path file)
     if(lstat(file.string().c_str(), &st))
     {
         std::stringstream ss;
-        ss << "Cannot get devno from file " << file.string() << " to create Device object";
+        ss << _("Cannot get devno from file ") << file.string() << _(" to create Device object");
         throw std::runtime_error(ss.str());
     }
     if(S_ISBLK(st.st_mode))
@@ -121,7 +124,7 @@ void Device::parseMtabFile(const char* path)
 
     fmtab = setmntent(path, "r");
     if(fmtab == NULL)
-        throw std::runtime_error(std::string("Cannot access ") + path + ": " + strerror(errno));
+        throw std::runtime_error(std::string(_("Cannot access ")) + path + ": " + strerror(errno));
 
     while((mnt = getmntent(fmtab)) != NULL)
     {
@@ -153,7 +156,7 @@ void Device::parseMtab()
     else if(0 == access(MOUNTED, R_OK))
         parseMtabFile(MOUNTED);
     else
-        throw std::runtime_error("Neither /proc/mounts nor /etc/mtab is readable.");
+        throw std::runtime_error(_("Neither /proc/mounts nor /etc/mtab is readable."));
 }
 fs::path Device::getMountPoint()
 {
@@ -273,10 +276,10 @@ std::string Device::getDeviceName()
     if(-1 == getDevNameFromMajorMinor())
     {
         if(!isMountPoint("/dev"))
-            throw std::runtime_error("Unknown block device: devfs is not mounted");
+            throw std::runtime_error(_("Unknown block device: devfs is not mounted"));
 
         if(-1 == getDevNameFromDevfs())
-            throw std::runtime_error("Unknown block device: no such device found in /dev");
+            throw std::runtime_error(_("Unknown block device: no such device found in /dev"));
     }
 
     return get()->deviceName;
@@ -303,7 +306,7 @@ void Device::openSysFsExt4File(std::filebuf* fb, std::string filename, std::ios_
                            + "/" + filename;
 
     if(NULL == fb->open(fullPath.c_str(), mode))
-        throw std::runtime_error(std::string("Cannot open file: ") + fullPath);
+        throw std::runtime_error(std::string(_("Cannot open file: ")) + fullPath);
 }
 
 /*
@@ -361,25 +364,25 @@ void Device::preallocate(int   fd,
         if(0 > ioctl(fd, EXT4_IOC_CONTROL_PA, &pi))
         {
             if(errno == ENOTTY)
-                throw std::logic_error("Your actual Kernel does not support prefered block allocation.");
+                throw std::logic_error(_("Your actual Kernel does not support prefered block allocation."));
             else if(errno == ENOSPC && pi.pi_len)
                 throw Extent(pi.pi_pstart, pi.pi_len);
             else
             {
                 std::stringstream ss;
-                ss << "Cannot preallocate blocks: "
+                ss << _("Cannot preallocate blocks: ")
                    << getPathFromFd(fd)             << "\n"
                    << strerror(errno)               << "\n"
-                   << "parameter:"                  << "\n"
-                   << "\tfd:      " << fd           << "\n"
-                   << "\tphysical:" << physical     << "\n"
-                   << "\tlogical: " << logical      << "\n"
-                   << "\tlen:     " << len          << "\n"
-                   << "\tflags:   " << flags        << "\n"
-                   << "return values:"              << "\n"
-                   << "\tpstart:  " << pi.pi_pstart << "\n"
-                   << "\tlstart:  " << pi.pi_lstart << "\n"
-                   << "\tlen:     " << pi.pi_len    << "\n";
+                   << _("parameter:")                  << "\n"
+                   << _("\tfd:      ") << fd           << "\n"
+                   << _("\tphysical:") << physical     << "\n"
+                   << _("\tlogical: ") << logical      << "\n"
+                   << _("\tlen:     ") << len          << "\n"
+                   << _("\tflags:   ") << flags        << "\n"
+                   << _("return values:" )             << "\n"
+                   << _("\tpstart:  ") << pi.pi_pstart << "\n"
+                   << _("\tlstart:  ") << pi.pi_lstart << "\n"
+                   << _("\tlen:     ") << pi.pi_len    << "\n";
 
                 throw std::invalid_argument(ss.str());
             }
@@ -411,14 +414,14 @@ void Device::moveExtent( int orig_fd,
         if(0 >  ioctl(orig_fd, EXT4_IOC_MOVE_EXT, &move_data))
         {
             std::stringstream ss;
-            ss << "Cannot move extent: "
+            ss << _("Cannot move extent: ")
                << strerror(errno) << "\n"
-               << "orig:    " << orig_fd << " "
+               << _("orig:    ") << orig_fd << " "
                << getPathFromFd(orig_fd)  << "\n"
-               << "donor:   " << donor_fd << " "
+               << _("donor:   ") << donor_fd << " "
                << getPathFromFd(donor_fd)<< "\n"
-               << "logical: " << logical << "\n"
-               << "len:     " << len     << "\n";
+               << _("logical: ") << logical << "\n"
+               << _("len:     ") << len     << "\n";
 
             throw std::runtime_error(ss.str());
         }

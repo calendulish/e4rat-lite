@@ -33,6 +33,7 @@ extern "C" {
 #include <getopt.h>
 #include <unistd.h>
 #include <fcntl.h>
+#include <libintl.h>
 #include <fstream>
 #include <signal.h>
 
@@ -47,6 +48,8 @@ extern "C" {
 #include <pwd.h>
 
 #include <boost/foreach.hpp>
+
+#define _(x) gettext(x)
 
 #define PID_FILE "/dev/.e4rat-lite-collect.pid"
 
@@ -111,7 +114,7 @@ int system_u(const char* user, const char* command)
     switch(pid)
     {
         case -1:
-            error("Fork failed: %s", strerror(errno)); break;
+            error(_("Fork failed: %s"), strerror(errno)); break;
         case 0: //child
             if(user)
             {
@@ -121,9 +124,9 @@ int system_u(const char* user, const char* command)
                 if(pw == NULL)
                 {
                     if(errno)
-                        error("Cannot receive user id: %s", strerror(errno));
+                        error(_("Cannot receive user id: %s"), strerror(errno));
                     else
-                        error("Unknown username %s", user);
+                        error(_("Unknown username %s"), user);
                     exit(1);
                 }
                 setenv("HOME", pw->pw_dir, 1);
@@ -147,7 +150,7 @@ void scanOpenFiles(std::vector<FilePtr>& list)
     int minor;
 
     size_t size_early = list.size();
-    debug("Scan open files by calling lsof");
+    debug(_("Scan open files by calling lsof"));
 
     FILE* pFile = popen("lsof -w /", "r");
     if(NULL == pFile)
@@ -160,13 +163,13 @@ void scanOpenFiles(std::vector<FilePtr>& list)
     {
         if(EOF == sscanf(buffer, "%*s%*s%*s%*s%*s %x%*c%x %*s %llu %[^\n]s", &major, &minor, (long long unsigned int*)&ino, path))
         {
-            error("scan lsof: %s", strerror(errno));
+            error(_("scan lsof: %s"), strerror(errno));
         }
         FilePtr file = FilePtr(makedev(major, minor), ino, path);
         if(file.unique())
             list.push_back(file);
     }
-    info("%*d open files", 8, list.size() - size_early);
+    info(_("%*d open files"), 8, list.size() - size_early);
     pclose(pFile);
 }
 
@@ -183,11 +186,11 @@ void excludeFileLists(std::vector<const char*>& files, std::vector<FilePtr>& lis
             {
                 size_t size_early = list.size();
                 parseInputStream(file, list);
-                info("%*d parsed from %s", 8, list.size() - size_early, filename.c_str());
+                info(_("%*d parsed from %s"), 8, list.size() - size_early, filename.c_str());
                 fclose(file);
             }
             else
-                std::cerr << "Cannot open file list: "
+                std::cerr << _("Cannot open file list: ")
                           << filename << ": " << strerror(errno) << std::endl;
         }
     }
@@ -197,7 +200,7 @@ void excludeFileLists(std::vector<const char*>& files, std::vector<FilePtr>& lis
 void printUsage()
 {
     std::cout <<
-"Usage: " PROGRAM_NAME "-collect [ option(s) ] [ application name(s) ]\n"
+_("Usage: e4rat-lite-collect [ option(s) ] [ application name(s) ]\n"
 "\n"
 "    -V --version                    print version and exit\n"
 "    -h --help                       print help and exit\n"
@@ -214,7 +217,7 @@ void printUsage()
 "    -D --exclude-device <dev>       exclude device\n"
 "    -p --path <path>                restrict watch on path [example: '*/bin/*']\n"
 "    -P --exclude-path <path>        exclude filesystem path\n"
-"    -L --exclude-list <file>        exclude paths listed in file\n\n"
+"    -L --exclude-list <file>        exclude paths listed in file\n\n")
         ;
 }
 
@@ -223,9 +226,13 @@ int main(int argc, char* argv[])
     bool create_pid_late = false;
 
     configuration config;
+    setlocale(LC_ALL, "");
+    bindtextdomain("e4rat-lite", "/usr/share/locale");
+    textdomain("e4rat-lite");
+
 	if (ini_parse("/etc/e4rat-lite.conf", config_handler, &config) < 0) {
-		error("Não foi possível carregar o arquivo de configuração: %s\n", strerror(errno));
-		return 1;
+	   printf(_("Unable to load the configuration file: %s\n"), strerror (errno));
+	   exit (EXIT_FAILURE);
 	}
 
     int loglevel = 3; //FIXME
@@ -327,7 +334,7 @@ int main(int argc, char* argv[])
                 pid_t pid = readPidFile(PID_FILE);
                 if(0 == pid)
                 {
-                    error("Cannot read pid from file %s: %s", PID_FILE, strerror(errno));
+                    error(_("Cannot read pid from file %s: %s"), PID_FILE, strerror(errno));
                     return 1;
                 }
                 kill(pid, SIGINT);
@@ -343,10 +350,10 @@ int main(int argc, char* argv[])
                     for(int i=0; long_options[i].val; i++)
                         if(long_options[i].val == optopt)
                         {
-                            fprintf(stderr, "Option requires an argument -- '%c'\n", optopt);
+                            fprintf(stderr, _("Option requires an argument -- '%c'\n"), optopt);
                             exit(1);
                         }
-                    fprintf(stderr, "Unrecognised option --  '%c'\n", optopt);
+                    fprintf(stderr, _("Unrecognised option -- '%c'\n"), optopt);
 
                     return -1;
                 }
@@ -359,12 +366,12 @@ int main(int argc, char* argv[])
 
     if(getuid() != 0)
     {
-        std::cerr << "You need root privileges to run this program.\n";
+        std::cerr << _("You need root privileges to run this program.\n");
         return 1;
     }
     if(isAuditDaemonRunning())
     {
-        std::cerr << "In order to use this program you first have to stop the audit daemon auditd.\n";
+        std::cerr << _("In order to use this program you first have to stop the audit daemon auditd.\n");
         return 1;
     }
     /*
@@ -387,7 +394,7 @@ int main(int argc, char* argv[])
     {
         if(true == config.exclude_open_files || exclude_filenames.size())
         {
-            info("Generating exclude file list ...");
+            info(_("Generating exclude file list ..."));
             try {
                 if(true == config.exclude_open_files)
                     scanOpenFiles(excludeList);
@@ -398,13 +405,13 @@ int main(int argc, char* argv[])
                 std::cout << e.what() << std::endl;
                 goto err2;
             }
-            info("Total number of excluded files: %d", excludeList.size());
+            info(_("Total number of excluded files: %d"), excludeList.size());
         }
 
         if(!createPidFile(PID_FILE))
         {
-            std::cerr << "It seems that e4rat-lite-collect is already running.\n";
-            std::cerr << "Remove pid file " << PID_FILE << " to unlock.\n";
+            std::cerr << _("It seems that e4rat-lite-collect is already running.\n");
+            std::cerr << _("Remove pid file ") << PID_FILE << _(" to unlock.\n");
             exit(1);
         }
 
@@ -448,36 +455,36 @@ int main(int argc, char* argv[])
                                    PROT_READ | PROT_WRITE, MAP_SHARED | MAP_ANONYMOUS, -1, 0);
         if (sem_init(sem, 1, 0) == -1)
         {
-            error("sem_init: %s", strerror(errno));
+            error(_("sem_init: %s"), strerror(errno));
             goto err2;
         }
 
         switch(fork())
         {
             case -1:
-                error("Fork failed: %s", strerror(errno));
+                error(_("Fork failed: %s"), strerror(errno));
                 break;
             case 0: //child process
                 if(0 != prctl(PR_SET_PDEATHSIG, SIGINT))
-                    error("Set parent death signal: %s", strerror(errno));
-                info("Connecting to the audit socket ...");
+                    error(_("Set parent death signal: %s"), strerror(errno));
+                info(_("Connecting to the audit socket ..."));
                 listener.connect();
                 if(0 != sem_post(sem))
-                    error("sem_post: %s", strerror(errno));
+                    error(_("sem_post: %s"), strerror(errno));
                 break;
             default:
                 if(0 != sem_wait(sem))
-                    error("sem_wait: %s", strerror(errno));
+                    error(_("sem_wait: %s"), strerror(errno));
                 sem_destroy(sem);
                 munmap(sem, sizeof(sem_t));
                 if(execute)
                 {
-                    notice("Execute `%s' ...", execute);
+                    notice(_("Execute `%s' ..."), execute);
                     system_u(username, execute);
                 }
                 else
                 {
-                    notice("Execute `%s' ...", config.init_file);
+                    notice(_("Execute `%s' ..."), config.init_file);
                     execv(config.init_file, argv);
                 }
                 sleep(1);
@@ -495,26 +502,26 @@ int main(int argc, char* argv[])
         {
             sigaction(SIGALRM, &sa, NULL);
             alarm(config.timeout);
-            notice("Stop collecting files automatically after %d seconds", timeout);
+            notice(_("Stop collecting files automatically after %d seconds"), timeout);
         }
         else
         {
             if(pc == false)
-                notice("Signal collector to stop by calling `killall %s'");
+                notice(_("Signal collector to stop by calling `killall %s'"));
             else
-                notice("Signal collector to stop by calling `collect -k'");
+                notice(_("Signal collector to stop by calling `collect -k'"));
         }
     }
     else
-        notice("Press 'Ctrl-C' to stop collecting files");
+        notice(_("Press 'Ctrl-C' to stop collecting files"));
 
-    info("Starting event processing ...");
+    info(_("Starting event processing ..."));
     if(false == listener.start())
         goto err2;
 
     filelist = project.getFileList();
 
-    notice("\t%d file(s) collected", filelist.size());
+    notice(_("\t%d file(s) collected"), filelist.size());
 
     if(filelist.empty())
         goto out;
@@ -526,13 +533,13 @@ int main(int argc, char* argv[])
         outStream = fopen(outPath, "w");
         if(NULL == outStream)
         {
-            error("Cannot open output file: %s: %s", outPath, strerror(errno));
+            error(_("Cannot open output file: %s: %s"), outPath, strerror(errno));
             goto err2;
         }
     }
 
     if(outStream != stdout)
-        notice("Save file list to %s", outPath);
+        notice(_("Save file list to %s"), outPath);
 
     BOOST_FOREACH(FilePtr f, filelist)
         fprintf(outStream, "%u %u %s\n", (__u32)f.getDevice(), (__u32)f.getInode(), f.getPath().string().c_str());

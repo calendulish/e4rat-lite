@@ -27,11 +27,14 @@
 #include <ext2fs/ext2fs.h>
 #include <ext2fs/ext2_fs.h>
 #include <errno.h>
+#include <libintl.h>
 #include <sys/stat.h>
 #include <fcntl.h>
 #include <mntent.h>
 #include <execinfo.h>
 #include <signal.h>
+
+#define _(x) gettext(x)
 
 /*
  * Setup SIGABRT and SIGSEGV signal handler for backtracing
@@ -60,7 +63,7 @@ void printBacktrace()
     char **strings;
 
     nptrs = backtrace(buffer, SIZE);
-    std::cerr << "backtrace() returned " << nptrs << " addresses\n";
+    std::cerr << _("backtrace() returned ") << nptrs << _(" addresses\n");
 
    /* The call backtrace_symbols_fd(buffer, nptrs, STDOUT_FILENO)
        would produce similar output to the following: */
@@ -112,12 +115,12 @@ void setStdIn2NonBlocking()
 
     if (fcflags<0)
     {
-        std::cerr << "cannot read stdin flags\n";
+        std::cerr << _("cannot read stdin flags\n");
     }
 
     if (fcntl(cinfd,F_SETFL,fcflags | O_NONBLOCK) <0)
     {
-        std::cerr << "cannot set stdin to non-blocking\n";
+        std::cerr << _("cannot set stdin to non-blocking\n");
     }
 
     std::cin.exceptions ( std::ifstream::eofbit
@@ -236,7 +239,7 @@ std::string getPathFromFd(int fd)
     if(-1 == readlink(__path2fd, __filename, PATH_MAX))
     {
         std::stringstream ss;
-        ss << "Cannot readlink: "
+        ss << _("Cannot readlink: ")
            << fd
            << ": " << strerror(errno);
         throw std::runtime_error(ss.str());
@@ -277,12 +280,12 @@ bool createPidFile(const char* path)
             return false;
         else if(errno == EROFS)
         {
-            error("Cannot create pid file %s on read-only filesystem", path);
+            error(_("Cannot create pid file %s on read-only filesystem"), path);
             return true;
         }
         else
         {
-            error("Cannot open pid file: %s", strerror(errno));
+            error(_("Cannot open pid file: %s"), strerror(errno));
             return false;
         }
     }
@@ -290,7 +293,7 @@ bool createPidFile(const char* path)
     FILE* file = fdopen(fd, "w");
     if(NULL == file)
     {
-        error("Cannot open pid file %s: %s", path, strerror(errno));
+        error(_("Cannot open pid file %s: %s"), path, strerror(errno));
         return false;
     }
 

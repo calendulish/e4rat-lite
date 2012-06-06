@@ -26,6 +26,7 @@
 #include <auparse.h>
 #include <auparse-defs.h>
 #include <errno.h>
+#include <libintl.h>
 #include <unistd.h>
 #include <sys/stat.h>
 #include <cstring>
@@ -42,6 +43,8 @@
 #include <sys/utsname.h>
 
 #include <fstream>
+
+#define _(x) gettext(x)
 
 std::string getProcessName(pid_t pid)
 {
@@ -66,8 +69,8 @@ void checkSocketCaptured(pid_t audit_pid)
     if(getpid() != audit_pid)
     {
         std::string comm = getProcessName(audit_pid);
-        error("Process %s [%d] has captured the audit socket.", comm.c_str(), audit_pid);
-        error("e4rat-lite-collect is in conflict with %s. Abort", comm.c_str());
+        error(_("Process %s [%d] has captured the audit socket."), comm.c_str(), audit_pid);
+        error(_("e4rat-lite-collect is in conflict with %s. Abort"), comm.c_str());
         throw DetectAuditDaemon();
     }
 }
@@ -112,7 +115,7 @@ void AuditListener::excludeDevice(std::string wildcard)
     std::vector<std::string> matches = matchPath(wildcard);
 
     if(matches.empty())
-        error("%s: no such file or directory", wildcard.c_str());
+        error(_("%s: no such file or directory"), wildcard.c_str());
 
     BOOST_FOREACH(std::string d, matches)
     {
@@ -129,7 +132,7 @@ void AuditListener::watchDevice(std::string wildcard)
     std::vector<std::string> matches = matchPath(wildcard);
 
     if(matches.empty())
-        error("%s: no such file or directory", wildcard.c_str());
+        error(_("%s: no such file or directory"), wildcard.c_str());
 
     BOOST_FOREACH(std::string d, matches)
     {
@@ -154,7 +157,7 @@ void addSyscall(struct audit_rule_data* rule, const char* sc, int machine)
     int syscall_nr;
     syscall_nr = audit_name_to_syscall(sc, machine);
     if(syscall_nr == -1)
-        throw std::logic_error("Cannot convert syscall to number");
+        throw std::logic_error(_("Cannot convert syscall to number"));
 
     audit_rule_syscall_data(rule, syscall_nr);
 }
@@ -191,7 +194,7 @@ void AuditListener::activateRules(int machine)
      */
     strcpy(field, "success=1");
     if(0 > audit_rule_fieldpair_data(&rule, field, AUDIT_FILTER_EXIT))
-        error("audit_rule_fieldpair_data failed: %s", field);
+        error(_("audit_rule_fieldpair_data failed: %s"), field);
 
     /*
      * Specify arch
@@ -199,14 +202,14 @@ void AuditListener::activateRules(int machine)
     strcpy(field, "arch=");
     strcat(field, audit_machine_to_name(machine));
     if(0 > audit_rule_fieldpair_data(&rule, field, AUDIT_FILTER_EXIT))
-        error("audit_rule_fieldpair_data failed: %s", field);
+        error(_("audit_rule_fieldpair_data failed: %s"), field);
 
     /*
      * Insert rule
      */
     if ( 0 >= audit_add_rule_data(audit_fd, rule, AUDIT_FILTER_EXIT, AUDIT_ALWAYS))
         if(errno != EEXIST)
-            error("Cannot insert rules: %s", strerror(errno));
+            error(_("Cannot insert rules: %s"), strerror(errno));
 
     rule_vec.push_back(rule);
 }
@@ -221,12 +224,12 @@ void AuditListener::insertAuditRules()
     {
         audit_fd = audit_open();
         if (-1 == audit_fd)
-            throw std::logic_error("Cannot open audit socket");
+            throw std::logic_error(_("Cannot open audit socket"));
     }
 
     struct utsname uts;
     if(-1 == uname(&uts))
-        throw std::logic_error(std::string("Cannot receive machine hardware name: ") + strerror(errno));
+        throw std::logic_error(std::string(_("Cannot receive machine hardware name: ")) + strerror(errno));
 
     if(0 == strcmp(uts.machine, "x86_64"))
     {
@@ -242,7 +245,7 @@ void AuditListener::insertAuditRules()
     {
         int machine = audit_name_to_machine(uts.machine);
         if(-1 == machine)
-            throw std::logic_error(std::string("Unknown machine hardware name ")+ uts.machine);
+            throw std::logic_error(std::string(_("Unknown machine hardware name "))+ uts.machine);
         activateRules(machine);
     }
 }
@@ -259,7 +262,7 @@ void AuditListener::removeAuditRules()
                                         AUDIT_FILTER_EXIT,
                                         AUDIT_ALWAYS))
         {
-            debug("Cannot remove rules: %s", strerror(errno));
+            debug(_("Cannot remove rules: %s"), strerror(errno));
         }
         free(rule);
     }
@@ -269,12 +272,12 @@ void AuditListener::removeAuditRules()
 void AuditListener::activateAuditSocket()
 {
     if(0 > audit_set_pid(audit_fd, getpid(), WAIT_YES))
-        error("Cannot set pid to audit");
+        error(_("Cannot set pid to audit"));
 
     //set 1 to enable auditing
     //set 2 to enable auditing and lock the configuration
     if(0 > audit_set_enabled(audit_fd, 1))
-        error("Cannot enable audit");
+        error(_("Cannot enable audit"));
 
     if(0 > audit_set_backlog_limit(audit_fd, 256))
         audit_request_status(audit_fd);
@@ -283,10 +286,10 @@ void AuditListener::activateAuditSocket()
 void AuditListener::closeAuditSocket()
 {
     if(0 > audit_set_enabled(audit_fd, 0))
-        error("Cannot disable audit socket");
+        error(_("Cannot disable audit socket"));
 
     if(0 > audit_set_pid(audit_fd, 0, WAIT_NO))
-        error("Cannot disable current pid");
+        error(_("Cannot disable current pid"));
 
     audit_close(audit_fd);
     audit_fd = -1;
@@ -356,7 +359,7 @@ inline std::string AuditListener::parsePathField(auparse_state_t* au, const char
         }
         catch(char c)
         {
-            warn("Cannot convert hex string `%s\' to a valid path. Unrecognised character 0x%x", buf.c_str(), c);
+            warn(_("Cannot convert hex string `%s\' to a valid path. Unrecognised character 0x%x"), buf.c_str(), c);
             buf.clear();
         }
     }
@@ -424,10 +427,10 @@ auparse_state_t* AuditListener::initAuParse(struct audit_reply* reply)
 
     au = auparse_init(AUSOURCE_BUFFER, parse_str.c_str());
     if(au == NULL)
-        error("cannot init auparse");
+        error(_("cannot init auparse"));
 
     if (-1 == auparse_next_event(au))
-        error("auparse_next_event: %s", strerror(errno));
+        error(_("auparse_next_event: %s"), strerror(errno));
     return au;
 }
 
@@ -502,7 +505,7 @@ void AuditListener::parseSyscallEvent(auparse_state_t* au, boost::shared_ptr<Aud
     machine = audit_elf_to_machine(arch);
     if(-1 == machine)
     {
-        error("audit_elf_to_machine failed: arch=%x: %s", arch, strerror(errno));
+        error(_("audit_elf_to_machine failed: arch=%x: %s"), arch, strerror(errno));
         auditEvent->type = Unknown;
         return;
     }
@@ -511,7 +514,7 @@ void AuditListener::parseSyscallEvent(auparse_state_t* au, boost::shared_ptr<Aud
 
     if(NULL == sc_name)
     {
-        error("audit_syscall_to_name failed: machine=%d arch=%x", machine, arch);
+        error(_("audit_syscall_to_name failed: machine=%d arch=%x"), machine, arch);
         auditEvent->type = Unknown;
         return;
     }
@@ -538,7 +541,7 @@ void AuditListener::parseSyscallEvent(auparse_state_t* au, boost::shared_ptr<Aud
         auditEvent->type = Truncate;
     else
     {
-        debug("Unknown syscall: %s = %d", sc_name, syscall);
+        debug(_("Unknown syscall: %s = %d"), sc_name, syscall);
         auditEvent->type = Unknown;
         return;
     }
@@ -638,8 +641,8 @@ bool AuditListener::ignoreDevice(dev_t dev)
                 std::string dev_name = device.getDevicePath();
                 if(dev_name.at(0) != '/') //it's virtual fs: display mount point instead of cunfusing device name.
                     dev_name = device.getMountPoint().string();
-                info("%s is not an ext4 filesystem", dev_name.c_str());
-                info("Filesystem of %s is %s", dev_name.c_str(), device.getFileSystem().c_str());
+                info(_("%s is not an ext4 filesystem."), dev_name.c_str());
+                info(_("Filesystem of %s is %s"), dev_name.c_str(), device.getFileSystem().c_str());
                 exclude_devices.insert(dev);
                 return true;
             }
@@ -740,7 +743,7 @@ void AuditListener::exec()
                             )
                       ))
                 {
-                    debug("Parsed Event: %d %s", auditEvent->type, auditEvent->path.string().c_str());
+                    debug(_("Parsed Event: %d %s"), auditEvent->type, auditEvent->path.string().c_str());
                     eventParsed(auditEvent);
                 }
 
@@ -772,7 +775,7 @@ void AuditListener::exec()
                             // auparse cannot parse fields containing spaces
                             if(parseField(au, "op") == "\"remove")
                             {
-                                warn("Audit configuration has changed. Reinserting audit rules.");
+                                warn(_("Audit configuration has changed. Reinserting audit rules."));
                                 insertAuditRules();
                             }
                             break;
