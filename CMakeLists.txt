@@ -1,10 +1,9 @@
 cmake_minimum_required(VERSION 2.6)
 
-set(CMAKE_VERBOSE_MAKEFILE              off)
-
 PROJECT(e4rat-lite)
-
-set(E4RAT-LITE_VERSION   "2.5.1-git")
+set(E4RAT-LITE_VERSION "2.6-git")
+set(CMAKE_VERBOSE_MAKEFILE off)
+set(LOCALE_INSTALL_DIR "/usr/share/locale")
 
 IF( NOT CMAKE_BUILD_TYPE )
     SET( CMAKE_BUILD_TYPE "debug" )
@@ -24,7 +23,7 @@ set(Boost_VERSION_STR  "${Boost_MAJOR_VERSION}.${Boost_MINOR_VERSION}.${Boost_SU
 
 add_subdirectory(   ${CMAKE_CURRENT_SOURCE_DIR}/src)
 add_subdirectory(   ${CMAKE_CURRENT_SOURCE_DIR}/doc)
-
+add_subdirectory(   ${CMAKE_CURRENT_SOURCE_DIR}/po)
 
 # to generate debian package run: make package
 FIND_PROGRAM(DPKG_CMD dpkg)
@@ -83,7 +82,7 @@ add_custom_target(src
         COMMAND tar pczf ${PROJECT_NAME}_${E4RAT-LITE_VERSION}_src.tar.gz ${PROJECT_NAME}-${E4RAT-LITE_VERSION}
         )
 
-INSTALL(FILES e4rat-lite.conf_pt_BR
-              e4rat-lite.conf_en_US
+INSTALL(FILES conf/e4rat-lite.conf_pt_BR
+              conf/e4rat-lite.conf_en_US
         DESTINATION "/usr/share/e4rat-lite/conf"
         )
