@@ -1,23 +1,24 @@
+=encoding utf8
 =pod
 
 =head1 NAME
 
-e4rat-collect - Generate a list of relevant files by monitoring applications
+e4rat-lite-collect - Generate a list of relevant files by monitoring applications
 
 =head1 SYNOPSIS
 
-B<e4rat-collect>  B<[> option(s) B<]>  B<[> application name(s) B<]>
+B<e4rat-lite-collect>  B<[> option(s) B<]>  B<[> application name(s) B<]>
 
 =head1 DESCRIPTION
 
-e4rat-collect listens to the Linux audit socket to monitor filesystem activities and generates a list of relevant files retaining their access order. 
+e4rat-lite-collect listens to the Linux audit socket to monitor filesystem activities and generates a list of relevant files retaining their access order. 
 Temporary files or files opened with write access, like log-files, are excluded automatically.
 
 You can either monitor applications or the entire operating system. If an I<application name> is supplied, the processes to monitor are selected according to their process name, which is usually the name of the running executable and shown by the ps(1) command. Paths are removed from the process names. The application you specify are just monitored and does not get executed. To execute a command see I<--execute>.
 
 In addition, the collector follows child processes, which allows to monitor shell scripts correctly.
 
-To stop scanning process press STR-C or run `e4rat-collect --stop'. Unless otherwise stated, the generated file list is written to './e4rat-collect.log'.
+To stop scanning process press STR-C or run `e4rat-lite-collect -k'. Unless otherwise stated, the generated file list is written to '/var/lib/e4rat-lite/startup.log' or the file specified in the configuration.
 
 =head1 OPTIONS
 
@@ -47,11 +48,11 @@ set loglevel mask to <number>. All log messages are sent either to the Kernel lo
 
 =item -k --stop
 
-kill already running e4rat-collect process
+kill already running e4rat-lite-collect process
 
 =item -x --execute <command>
 
-collect while executing command. e4rat-collect stops running after <command> terminates. Be aware that <command> gets executed with root privileges if no username is specified. See --user.
+collect while executing command. e4rat-lite-collect stops running after <command> terminates. Be aware that <command> gets executed with root privileges if no username is specified. See --user.
 
 =item -u --user <username>
 
@@ -77,17 +78,7 @@ limit monitoring to a special path.
 
 =item -L --exclude-list <file>
 
-The <file> contains a list of files, which e4rat-collect should exclude.
-
-=item -e --watch-ext4 [true|false]
-
-select whether e4rat-collect is limited to devices formatted with the ext4 filesystem.
-[Default: true]
-
-=item -O --exclude-of [true|false]
-
-select true or false whether e4rat-collect should ignore already opened files before start monitoring.
-[Default: true]
+The <file> contains a list of files, which e4rat-lite-collect should exclude.
 
 =back
 
@@ -97,7 +88,7 @@ select true or false whether e4rat-collect should ignore already opened files be
 
 =head4 Run collector as root:
 
-    ~# sudo e4rat-collect thunderbird imapd
+    ~# sudo e4rat-lite-collect thunderbird imapd
 
 =head4 Once collector is running execute thunderbird as a normal user:
 
@@ -105,26 +96,27 @@ select true or false whether e4rat-collect should ignore already opened files be
 
 =head4 Alternatively combine it to one call
 
-    ~# sudo e4rat-collect thunderbird imapd --execute 'thunderbird' --user `whoami`
+    ~# sudo e4rat-lite-collect thunderbird imapd --execute 'thunderbird' --user `whoami`
 
 =head2 Scan boot process:
 
-Run e4rat-collect as early as possible to scan the whole startup process. It is recommended to run e4rat-collect as init process. To do so, add the following lines to the Kernel parameters in grub(8) or lilo(8).
-  init=/sbin/e4rat-collect
+Run e4rat-lite-collect as early as possible to scan the whole startup process. It is recommended to run e4rat-lite-collect as init process. To do so, add the following lines to the Kernel parameters in grub(8) or lilo(8).
+  init=/sbin/e4rat-lite-collect
 
 =head1 FILES
 
-F</etc/e4rat.conf>
-     E4rat configuration file.
+F</etc/e4rat-lite.conf>
+     E4rat-lite configuration file.
 
 =head1 AUTHOR
 
-Written by Andreas Rid and Gundolf Kiefer.
+e4rat has been written by Andreas Rid and Gundolf Kiefer.
+e4rat-lite writen by Lara Maia.
 
 =head1 REPORTING BUGS
 
-Report bugs to Andreas Rid <conso at users.sf.net>.
+Report bugs to Lara Maia <lara@craft.net.br>
 
 =head1 SEE ALSO
 
-e4rat-realloc(8), e4rat-preload(8), e4rat.conf(8)
+e4rat-lite-realloc(8), e4rat-lite-preload(8), e4rat-lite.conf(8)

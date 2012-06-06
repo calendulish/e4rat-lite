@@ -1,0 +1,112 @@
+=encoding utf8
+=pod
+
+=head1 NOME
+
+/etc/e4rat-lite.conf - Arquivo de configuração para o e4rat-lite
+
+=head1 DESCRIÇÃO
+
+B<e4rat-lite.conf> é o arquivo configurador de todos os binários do e4rat-lite. Ele permite substituir as configurações padrões das ferramentas.
+
+=head1 FORMATO DE ARQUIVO
+
+O arquivo é baseado no estilo Python's ConfigParser de arquivos .INI, incluindo  a sintaxe RFC 822-style multi-linha e entradas de nome:valores. Para mais informações leia I<http://docs.python.org/library/configparser.html>
+
+Uma opção pode ser declarada assim:
+opcao1=valor1
+
+As opções devem ser declaradas a baixo de uma seção. 
+Options can either be declared below a section. Derivado do nome sufixo do executável, cada binário tem sua própria seção. Valores além dessa seção se aplica ao binário somente.
+
+Examplo:
+
+[Collect]
+
+; comentário
+opcao=valor
+
+=head1 OPÇÕES
+
+O e4rat-lite possui uma estrutura de log simples. Cada evento 
+
+e4rat-lite has a simple logging structure. Cada evento possui uma prioridade. As seguintes prioridades existem:
+    1   erros
+    2   avisos
+    4   estatisticas da tarefa
+    8   informação sobre uma única etapa
+   16   mensagens de debug
+
+=over
+
+=item B<verbose>
+
+(ainda não implementado no arquivo de configuração)
+define o nível de verbose das mensagens [Padrão: 7]
+
+=item B<loglevel>
+
+(ainda não implementado no arquivo de configuração)
+Define o nível das mensagens para enviar ao L<log_target>. [Padrão: 3]
+
+=item B<log_target>
+
+(ainda não implementado no arquivo de configuração)
+define o diretório alvo onde as mensagens de log devem ser gravadas. O valor padrão é /dev/kmsg. Isto envia as mensagens para o log buffer do kernel. (veja também dmesg(1))
+Defina o <log_targe> para 'syslog' caso queira enviar as mensagens para o daemon do syslog.
+
+=item B<init_file>
+
+Define um processo de inicialização alternativo, substituindo o /sbin/init
+
+=item B<startup_log_file>
+
+Define o caminho para o arquivo de log de inicialização. [Padrão: /var/lib/e4rat-lite/startup.log]
+
+=back
+
+=head2 Específico para o I<e4rat-lite-collect>
+
+=over
+
+=item B<ext4_only>
+
+Restringe a vigia para sistemas de arquivo ext4 somente. [Padrão: true]
+
+=item B<exclude_open_files>
+
+Ignora arquivo que estão abertos. [Padrão: true]
+
+=item B<timeout>
+
+Depois da expiração desse valor em segundos, o e4rat-lite-collect vai automaticamente terminar a coleta. 
+O Timeout apenas é funcional quando o e4rat-lite-collect é executado como um processo de inicialização (init). [Padrão: 120]
+
+=back
+
+=head2 Específico para o l<e4rat-lite-realloc>
+
+=over
+
+=item B<defrag_mode>
+
+Define o modo padrão de realocação do e4rat-lite-realloc. [Padrão: auto]
+   auto                 seleciona o modo automaticamente
+   pa                    usa a pré alocação ioctl no espaço do usuário
+   locality-group    cria arquivos em grupos de localidades
+   tld                    cria arquivo no diretório de nível superior
+
+=back
+
+=head1 AUTOR
+
+e4rat foi escrito por Andreas Rid e Gunfolf Kiefer.
+e4rat-lite escrito por Lara Maia.
+
+=head1 REPORTANDO BUGS
+
+Reporte bugs para Lara Maia <lara@craft.net.br>
+
+=head1 Leia também
+
+e4rat-lite-collect(8), e4rat-lite-realloc(8), e4rat-lite-preload(8)
