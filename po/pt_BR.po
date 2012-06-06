@@ -1,0 +1,847 @@
+# e4rat-lite é uma versão melhorada do e4rat, um conjunto de ferramentas
+# para acelerar o processo de inicialização.
+#
+# Copyright (C) 2012 - Lara Maia <lara@craft.net.br>
+#
+# Este arquivo é distribuido sob a mesma licença do pacote e4rat-lite.
+# Para mais informações consulte o arquivo LICENSE.
+
+msgid ""
+msgstr ""
+"Project-Id-Version: e4rat-lite 2.6\n"
+"Report-Msgid-Bugs-To: lara@craft.net.br\n"
+"POT-Creation-Date: 2012-06-03 18:15-0300\n"
+"PO-Revision-Date: 2012-06-06 11:30-0300\n"
+"Last-Translator: Lara Maia <lara@craft.net.br>\n"
+"Language-Team: Brazillian Portuguese"
+"Language: pt_BR\n"
+"MIME-Version: 1.0\n"
+"Content-Type: text/plain; charset=UTF-8\n"
+"Content-Transfer-Encoding: 8bit\n"
+
+#: src/e4rat-collect.cc:524
+#, c-format
+msgid "\t%d file(s) collected"
+msgstr "\t%d arquivo(s) coletado(s)"
+
+#: src/device.cc:377
+msgid "\tfd:      "
+msgstr "\tfd:      "
+
+#: src/device.cc:381
+msgid "\tflags:   "
+msgstr "\tflags:   "
+
+#: src/device.cc:380 src/device.cc:385
+msgid "\tlen:     "
+msgstr "\tlen:     "
+
+#: src/device.cc:379
+msgid "\tlogical: "
+msgstr "\tlógicos: "
+
+#: src/device.cc:384
+msgid "\tlstart:  "
+msgstr ""
+
+#: src/device.cc:378
+msgid "\tphysical:"
+msgstr "\tfísico:"
+
+#: src/device.cc:383
+msgid "\tpstart:  "
+msgstr "\tpstart:  "
+
+#: src/common.cc:66
+msgid " addresses\n"
+msgstr " endereços\n"
+
+#: src/device.cc:104
+msgid " to create Device object"
+msgstr " para criar o objeto do dispositivo"
+
+#: src/e4rat-collect.cc:414 src/e4rat-realloc.cc:130
+msgid " to unlock.\n"
+msgstr " para desbloquear.\n"
+
+#: src/e4rat-collect.cc:172
+#, c-format
+msgid "%*d open files"
+msgstr "%*d arquivos abertos"
+
+#: src/e4rat-collect.cc:189
+#, c-format
+msgid "%*d parsed from %s"
+msgstr "%*d analisados de %s"
+
+#: src/defrag.cc:289
+#, c-format
+msgid "%*d/%d file(s) are not available"
+msgstr "%*d/%d arquivo(s) não estão disponíveis"
+
+#: src/defrag.cc:298
+#, c-format
+msgid "%*d/%d file(s) are presently not writable."
+msgstr "%*d/%d arquivo(s) atualmente não graváveis"
+
+#: src/defrag.cc:339
+#, c-format
+msgid ""
+"%*d/%d file(s) are sparse-files which will retain gaps of unallocated blocks."
+msgstr ""
+"%*d/%d arquivo(s) são arquivos esparsos, isso irá reter os intervalos de blocos não alocados."
+
+#: src/defrag.cc:301
+#, c-format
+msgid "%*d/%d file(s) cannot set inode extent flag."
+msgstr "%*d/%d arquivo(s) não podem definir a flag de extensão do inode."
+
+#: src/defrag.cc:295
+#, c-format
+msgid "%*d/%d file(s) have invalid file type."
+msgstr "%*d/%d arquivo(s) tem um tipo inválido de arquivo."
+
+#: src/defrag.cc:304
+#, c-format
+msgid "%*d/%d file(s) have no blocks."
+msgstr "%*d/%d arquivo(s) não tem blocos."
+
+#: src/defrag.cc:292
+#, c-format
+msgid "%*d/%d file(s) not on an valid ext4 filesystem"
+msgstr "%*d/%d arquivo(s) não estão em um sistema de arquivos ext4 válido."
+
+#: src/logging.cc:130
+#, c-format
+msgid "%s\n"
+msgstr "%s\n"
+
+#: src/defrag.cc:464
+#, c-format
+msgid "%s is a sparse-file"
+msgstr "%s é um arquivo esparso"
+
+#: src/defrag.cc:446
+#, c-format
+msgid "%s is immutable."
+msgstr "%s é imutável."
+
+#: src/defrag.cc:420
+#, c-format
+msgid "%s is not a regular file."
+msgstr "%s não é um arquivo regular."
+
+#: src/defrag.cc:213 src/listener.cc:644
+#, c-format
+msgid "%s is not an ext4 filesystem."
+msgstr "%s não é um sistema de arquivos ext4."
+
+#: src/defrag.cc:1129
+#, c-format
+msgid "%s: File size has changed in the meantime."
+msgstr "%s: O tamanho do arquivo foi alterado nesse meio tempo."
+
+#: src/listener.cc:118 src/listener.cc:135
+#, c-format
+msgid "%s: no such file or directory"
+msgstr "%s: arquivo ou diretório não encontrado"
+
+#: src/listener.cc:778
+msgid "Audit configuration has changed. Reinserting audit rules."
+msgstr "A configuração do Audit foi alterada. Reinserindo regras."
+
+#: src/defrag.cc:1131
+#, c-format
+msgid ""
+"Bug detected in ioctl EXT4_IOC_MOVE_EXT: %s: file fragment count does not "
+"match"
+msgstr ""
+"Bug detectado em ioctl EXT4_IOC_MOVE_EXT: %s: contagem de fragmento do arquivo não "
+"corresponde"
+
+#: src/device.cc:127
+msgid "Cannot access "
+msgstr "Não acessível "
+
+#: src/defrag.cc:674 src/defrag.cc:712
+msgid "Cannot allocate blocks for donor: "
+msgstr "não foi possível alocar blocos para o doador: "
+
+#: src/defrag.cc:437
+#, c-format
+msgid "Cannot convert file %s to be extent based: %s"
+msgstr "não foi possível converter arquivo %s para a extensão baseada: %s"
+
+#: src/listener.cc:362
+#, c-format
+msgid ""
+"Cannot convert hex string `%s' to a valid path. Unrecognised character 0x%x"
+msgstr ""
+"não foi possível converter string hexa `%s' para um caminho válido. Caractere não conhecido 0x%x"
+
+#: src/listener.cc:160
+msgid "Cannot convert syscall to number"
+msgstr "não foi possível converter syscall para numero"
+
+#: src/defrag.cc:495
+msgid "Cannot create a temporary file"
+msgstr "não foi possível criar um arquivo temporário"
+
+#: src/defrag.cc:99
+msgid "Cannot create donor file:"
+msgstr "não foi possível criar arquivo doador:"
+
+#: src/common.cc:283
+#, c-format
+msgid "Cannot create pid file %s on read-only filesystem"
+msgstr "não é possível criar arquivo pid %s em sistema de arquivo somente leitura"
+
+#: src/listener.cc:289
+msgid "Cannot disable audit socket"
+msgstr "não foi possível desabilitar socket de auditoria"
+
+#: src/listener.cc:292
+msgid "Cannot disable current pid"
+msgstr "não foi possível desabilitar o pid atual"
+
+#: src/defrag.cc:551
+msgid "Cannot discard pre-allocation"
+msgstr "não foi possível descartar pré alocação"
+
+#: src/logging.cc:82
+#, c-format
+msgid "Cannot dump log messages: %s: %s\n"
+msgstr "não foi possível liberar log de mensagens: %s: %s\n"
+
+#: src/listener.cc:280
+msgid "Cannot enable audit"
+msgstr "não foi possível habilitar audit"
+
+#: src/device.cc:80
+msgid "Cannot get MountPoint of path: "
+msgstr "Não foi possível obter monto de montagem do caminho: "
+
+#: src/device.cc:104
+msgid "Cannot get devno from file "
+msgstr "Não foi possível obter devno do arquivo "
+
+#: src/defrag.cc:413
+#, c-format
+msgid "Cannot get file statistics: %s: %s"
+msgstr "Não foi possível obter estatísticas do arquivo: %s: %s"
+
+#: src/listener.cc:212
+#, c-format
+msgid "Cannot insert rules: %s"
+msgstr "Não foi possível inserir regras: %s"
+
+#: src/device.cc:417
+msgid "Cannot move extent: "
+msgstr "Não foi possível mover extensão: "
+
+#: src/listener.cc:227
+msgid "Cannot open audit socket"
+msgstr "Não foi possível abrir socket do audit"
+
+#: src/defrag.cc:1114
+#, c-format
+msgid "Cannot open donor file %s: %s"
+msgstr "Não foi possível abrir arquivo doador %s: %s"
+
+#: src/defrag.cc:629
+msgid "Cannot open donor file: "
+msgstr "Não foi possível arquivo arquivo doador: "
+
+#: src/e4rat-collect.cc:193
+msgid "Cannot open file list: "
+msgstr "Não foi possível abrir lista de arquivos: "
+
+#: src/defrag.cc:315 src/defrag.cc:963 src/device.cc:309
+msgid "Cannot open file: "
+msgstr "Não foi possível abrir arquivo: "
+
+#: src/defrag.cc:255 src/defrag.cc:406
+#, c-format
+msgid "Cannot open file: %s: %s"
+msgstr "Não foi possível abrir arquivo: %s: %s"
+
+#: src/defrag.cc:398
+#, c-format
+msgid "Cannot open file: %s: is a symbolic link"
+msgstr "Não foi possível abrir arquivo: %s: é um link simbólico"
+
+#: src/defrag.cc:1105
+#, c-format
+msgid "Cannot open orig file %s: %s"
+msgstr "Não foi possível abrir arquivo orig: %s: %s"
+
+#: src/defrag.cc:636
+msgid "Cannot open orig file: "
+msgstr "Não foi possível abrir arquivo orig: "
+
+#: src/e4rat-collect.cc:536
+#, c-format
+msgid "Cannot open output file: %s: %s"
+msgstr "Não foi possível abrir arquivo de saída: %s: %s"
+
+#: src/common.cc:296
+#, c-format
+msgid "Cannot open pid file %s: %s"
+msgstr "Não foi possível abrir arquivo pid %s: %s"
+
+#: src/common.cc:288
+#, c-format
+msgid "Cannot open pid file: %s"
+msgstr "Não foi possível abrir arquivo pid: %s"
+
+#: src/defrag.cc:182
+#, c-format
+msgid "Cannot pre-allocation support: Cannot open file on device: %s: %s"
+msgstr "Sem suporte a pré alocação: Não foi possível abrir o arquivo no dispositivo: %s: %s"
+
+#: src/device.cc:373
+msgid "Cannot preallocate blocks: "
+msgstr "Não foi possível pré alocar blocos: "
+
+#: src/e4rat-collect.cc:337
+#, c-format
+msgid "Cannot read pid from file %s: %s"
+msgstr "Não foi possível ler pid do arquivo %s: %s"
+
+#: src/common.cc:242
+msgid "Cannot readlink: "
+msgstr "Não foi possível ler link: "
+
+#: src/defrag.cc:427
+#, c-format
+msgid "Cannot receive inode flags: %s: %s"
+msgstr "Não foi possível receber flags do inode: %s: %s"
+
+#: src/listener.cc:232
+msgid "Cannot receive machine hardware name: "
+msgstr "Não foi possível receber nome de hardware da máquina: "
+
+#: src/defrag.cc:782
+#, c-format
+msgid "Cannot receive process's CPU affinity mask: %s"
+msgstr "Não foi possível receber máscara de afinidade de processos da CPU: %s"
+
+#: src/e4rat-collect.cc:127
+#, c-format
+msgid "Cannot receive user id: %s"
+msgstr "Não foi possível receber id do usuário: %s"
+
+#: src/defrag.cc:1159
+#, c-format
+msgid "Cannot remove donor file: %s: %s"
+msgstr "Não foi possível remover arquivo doador: %s: %s"
+
+#: src/listener.cc:265
+#, c-format
+msgid "Cannot remove rules: %s"
+msgstr "Não foi possível remover regras: %s"
+
+#: src/defrag.cc:804
+#, c-format
+msgid "Cannot restore process's CPU affinity: %s"
+msgstr "Não foi possível restaurar afinidade de processos da CPU: %s"
+
+#: src/listener.cc:275
+msgid "Cannot set pid to audit"
+msgstr "Não foi possível definir pid para audit"
+
+#: src/defrag.cc:784
+#, c-format
+msgid "Cannot set process's CPU affinity mask to 1: %s"
+msgstr "Não foi possível definir máscara de afinidade de processos da CPU para 1: %s"
+
+#: src/defrag.cc:930
+#, c-format
+msgid "Cannot set thread priority to -20: %s"
+msgstr "Não foi possível definir prioridade do thread para -20: %s"
+
+#: src/defrag.cc:1146
+#, c-format
+msgid "Cannot unlink donor fd: %s"
+msgstr "Não foi possível deslinkar doador fd: %s"
+
+#: src/e4rat-collect.cc:470
+msgid "Connecting to the audit socket ..."
+msgstr "Conectando-se ao socket do audit ..."
+
+#: src/defrag.cc:219
+#, c-format
+msgid "Couldn't find valid filesystem superblock on %s."
+msgstr "Não foi possível encontrar sistema de arquivos válido, superblock em %s."
+
+#: src/defrag.cc:352
+#, c-format
+msgid "Defrag mode: %s"
+msgstr "Modo de desfragmentação: %s"
+
+#: src/logging.cc:88
+#, c-format
+msgid "Discard %zu unwritten log message(s).\n"
+msgstr "Descartar %zu mensagens de log não escritas.\n"
+
+#: src/defrag.cc:826 src/defrag.cc:912
+msgid "Do not throw an object not derived from std::exception"
+msgstr "Não derrubar um objeto não derivado de std::exception"
+
+#: src/defrag.cc:193
+#, c-format
+msgid "Does kernel support pre-alloc: %s: %d %s"
+msgstr "Suporte do kernel a pré allocação: %s: %d %s"
+
+#: src/defrag.cc:533
+msgid "EXT4_IOC_GET_PA failed"
+msgstr "EXT4_IOC_GET_PA falhou"
+
+#: src/e4rat-collect.cc:482 src/e4rat-collect.cc:487
+#, c-format
+msgid "Execute `%s' ..."
+msgstr "Executando `%s' ..."
+
+#: src/defrag.cc:226
+#, c-format
+msgid "Ext4 filesystem on %s has not extent feature enabled."
+msgstr "Sistema de arquivos ext4 em %s não tem recursos de extensão habilitados."
+
+#: src/e4rat-realloc.cc:151
+#, c-format
+msgid "File %s does not exist."
+msgstr "Arquivo %s does not exist."
+
+#: src/defrag.cc:456
+#, c-format
+msgid "File %s has no blocks."
+msgstr "Arquivo %s não possuí blocos."
+
+#: src/eventcatcher.cc:115
+#, c-format
+msgid "File was modified: \t%s"
+msgstr "O arquivo foi modificado: \t%s"
+
+#: src/listener.cc:645
+#, c-format
+msgid "Filesystem of %s is %s"
+msgstr "Sistema de arquivos de %s é %s"
+
+#: src/e4rat-collect.cc:117 src/e4rat-collect.cc:465
+#, c-format
+msgid "Fork failed: %s"
+msgstr "Falha na bifurcação: %s"
+
+#: src/defrag.cc:542
+#, c-format
+msgid "Found extent: %llu:%u"
+msgstr "Extenção encontrada: %llu:%u"
+
+#: src/e4rat-collect.cc:397
+msgid "Generating exclude file list ..."
+msgstr "Gerando lista de arquivos ignorados ..."
+
+#: src/e4rat-collect.cc:374
+msgid ""
+"In order to use this program you first have to stop the audit daemon "
+"auditd.\n"
+msgstr ""
+"Para utilizar este programa você primeiro tem que parar o daemon "
+"auditd.\n"
+
+#: src/eventcatcher.cc:146
+#, c-format
+msgid "Insert executable: \t%s"
+msgstr "Inserir executável: \t%s"
+
+#: src/eventcatcher.cc:157
+#, c-format
+msgid "Insert regular file: \t%s"
+msgstr "Inserir arquivo regular: \t%s"
+
+#: src/e4rat-collect.cc:413
+msgid "It seems that e4rat-lite-collect is already running.\n"
+msgstr "Parece que o e4rat-lite-collect já está em execução.\n"
+
+#: src/e4rat-realloc.cc:129
+msgid "It seems that e4rat-lite-realloc is already running.\n"
+msgstr "Parece que o e4rat-lite-realloc já está em execução.\n"
+
+#: src/defrag.cc:333
+msgid "Kernel does not support pre-allocation"
+msgstr "O kernel não suporta pré alocação"
+
+#: src/device.cc:159
+msgid "Neither /proc/mounts nor /etc/mtab is readable."
+msgstr "Nem /proc/mounts nem /etc/mtab são legíveis"
+
+#: src/eventcatcher.cc:130
+#, c-format
+msgid "Opened writable: \t%s"
+msgstr "Abriu gravável: \t%s"
+
+#: src/e4rat-collect.cc:353
+#, c-format
+msgid "Option requires an argument -- '%c'\n"
+msgstr "A opção requer um argumento -- '%c'\n"
+
+#: src/defrag.cc:685
+#, c-format
+msgid "Out of continued space: %s: will might fragmented"
+msgstr "Fora do espaço contínuo: %s: pode estar fragmentado"
+
+#: src/defrag.cc:518
+msgid "Out of disk space"
+msgstr "Sem espaço em disco"
+
+#: src/listener.cc:746
+#, c-format
+msgid "Parsed Event: %d %s"
+msgstr "Evento analisado: %d %s"
+
+#: src/e4rat-realloc.cc:154
+#, c-format
+msgid "Parsing file %s"
+msgstr "Analisando arquivo %s"
+
+#: src/e4rat-realloc.cc:175
+msgid "Parsing file ./e4rat-lite-collect.log"
+msgstr "Analisando arquivo ./e4rat-lite-collect.log"
+
+#: src/e4rat-realloc.cc:166
+msgid "Parsing from stdin"
+msgstr "Analisando a partir do stdin"
+
+#: src/e4rat-collect.cc:516
+msgid "Press 'Ctrl-C' to stop collecting files"
+msgstr "Pressione 'Ctrl-C' para parar a coleta de arquivos"
+
+#: src/listener.cc:72
+#, c-format
+msgid "Process %s [%d] has captured the audit socket."
+msgstr "O processo %s [%d] foi capturado pelo socket de auditoria."
+
+#: src/defrag.cc:1071
+#, c-format
+msgid "Processing %d file(s) on device %s (mount-point: %s)"
+msgstr "Processando %d arquivo(s) no dispositivo %s (ponto de montagem: %s)"
+
+#: src/e4rat-collect.cc:414 src/e4rat-realloc.cc:130
+msgid "Remove pid file "
+msgstr "Remover o arquivo pid "
+
+#: src/e4rat-collect.cc:542
+#, c-format
+msgid "Save file list to %s"
+msgstr "Salve a lista de arquivos em %s"
+
+#: src/e4rat-collect.cc:153
+msgid "Scan open files by calling lsof"
+msgstr "Verificar arquivos abertos chamando por lsof"
+
+#: src/e4rat-collect.cc:469
+#, c-format
+msgid "Set parent death signal: %s"
+msgstr "Definir sinal parental de morte: %s"
+
+#: src/e4rat-collect.cc:512
+msgid "Signal collector to stop by calling `collect -k'"
+msgstr "Sinal ao colletor para parar chamando `collect -k'"
+
+#: src/e4rat-collect.cc:510
+#, c-format
+msgid "Signal collector to stop by calling `killall %s'"
+msgstr "Sinal ao coletor para parar chamando `killall %s'"
+
+#: src/e4rat-collect.cc:518
+msgid "Starting event processing ..."
+msgstr "Inicianto processamento de eventos ..."
+
+#: src/e4rat-collect.cc:505
+#, c-format
+msgid "Stop collecting files automatically after %d seconds"
+msgstr "Parar a coleta de arquivos automaticamente depois de %d segundos"
+
+#: src/defrag.cc:1042
+msgid "There is no improvement possible."
+msgstr "Não há nenhuma melhoria possível."
+
+#: src/defrag.cc:1040
+#, c-format
+msgid "Total fragment count before/afterwards/best-case:  %d/%d/%d"
+msgstr "Contagem total de fragmentos antes/depois/melhor-caso: %d/%d/%d"
+
+#: src/e4rat-collect.cc:408
+#, c-format
+msgid "Total number of excluded files: %d"
+msgstr "Numero total de arquivos ignorados: %d"
+
+#: src/e4rat-collect.cc:234
+#, c-format
+msgid "Unable to load the configuration file: %s\n"
+msgstr "Não foi possível carregar o arquivo de configuração: %s\n"
+
+#: src/device.cc:279
+msgid "Unknown block device: devfs is not mounted"
+msgstr "Dispositivo de blocos desconhecido: devfs não está montado"
+
+#: src/device.cc:282
+msgid "Unknown block device: no such device found in /dev"
+msgstr "Dispositivo de blocos desconhecido: não existe dispositivo em /dev"
+
+#: src/defrag.cc:350 src/defrag.cc:942
+msgid "Unknown defrag mode: "
+msgstr "Modo de desfragmentação desconhecido: "
+
+#: src/listener.cc:248
+msgid "Unknown machine hardware name "
+msgstr "Nome de hardware da máquina desconhecido "
+
+#: src/listener.cc:544
+#, c-format
+msgid "Unknown syscall: %s = %d"
+msgstr "Syscall desconhecido: %s = %d"
+
+#: src/e4rat-collect.cc:129
+#, c-format
+msgid "Unknown username %s"
+msgstr "Nome de usuário desconhecido %s"
+
+#: src/e4rat-collect.cc:356
+#, c-format
+msgid "Unrecognised option -- '%c'\n"
+msgstr "Opção desconhecida -- '%c'\n"
+
+#: src/e4rat-realloc.cc:113
+msgid "Unrecognised option: "
+msgstr "Opção desconhecida: "
+
+#: src/e4rat-collect.cc:203
+msgid ""
+"Usage: e4rat-lite-collect [ option(s) ] [ application name(s) ]\n"
+"\n"
+"    -V --version                    print version and exit\n"
+"    -h --help                       print help and exit\n"
+"    -v --verbose                    increment verbosity level\n"
+"    -q --quiet                      set verbose level to 0\n"
+"    -l --loglevel <number>          set log level\n"
+"\n"
+"    -k --stop                       kill running collector\n"
+"    -x --execute <command>          quit after command has finished\n"
+"    -u --user <username>            execute command as user\n"
+"    -o --output [file]              dump generated file list to file\n"
+"    -d --device <dev>               watch a specific device\n"
+"                                    [example: /dev/sda1]\n"
+"    -D --exclude-device <dev>       exclude device\n"
+"    -p --path <path>                restrict watch on path [example: '*/bin/"
+"*']\n"
+"    -P --exclude-path <path>        exclude filesystem path\n"
+"    -L --exclude-list <file>        exclude paths listed in file\n"
+"\n"
+msgstr ""
+"Uso: e4rat-lite-collect [ opções ] [ nome do aplicativo(s) ]\n"
+"\n"
+"    -V --version                    imprime a versão e sai\n"
+"    -h --help                       imprime a ajuda e sai\n"
+"    -v --verbose                    incrementa o level verboso\n"
+"    -q --quiet                      define o level verboso para 0\n"
+"    -l --loglevel <numero>          define o level verboso\n"
+"\n"
+"    -k --stop                       finaliza processo do coletor\n"
+"    -x --execute <comando>          sai após o término do comando\n"
+"    -u --user <username>            executa comando como o usuario\n"
+"    -o --output [arquivo]           descarrega lista de arquivos\n"
+"                                    gerada para [arquivo]\n"
+"    -d --device <dev>               vigiar um dispositivo específico\n"
+"                                    [examplo: /dev/sda1]\n"
+"    -D --exclude-device <dev>       ignorar dispositivo\n"
+"    -p --path <caminho>             restringir vigia a uma pasta\n"
+"                                    [exemplo: '*/bin/*']\n"
+"    -P --exclude-path <caminho>     excluir caminho no sistema de arquivos\n"
+"    -L --exclude-list <arquivo>     excluir caminhos especificados no "
+"arquivo\n"
+"\n"
+
+#: src/e4rat-realloc.cc:58
+msgid ""
+"Usage: e4rat-lite-realloc [ option(s) ] [ mode ] files(s)\n"
+"\n"
+"  OPTIONS:\n"
+"    -V --version                    print version and exit\n"
+"    -h --help                       print help and exit\n"
+"    -v --verbose                    increment verbosity level\n"
+"    -q --quiet                      set verbose level to 0\n"
+"    -l --loglevel <number>          set log level\n"
+"\n"
+msgstr ""
+"Uso: e4rat-lite-realloc [ opções ] [ modo ] arquivo(s)\n"
+"\n"
+"  OPÇÕES:\n"
+"    -V --version                    imprime versão e sai\n"
+"    -h --help                       imprime a ajuda e sai\n"
+"    -v --verbose                    incrementa o level verboso\n"
+"    -q --quiet                      defime o level verboso para 0\n"
+"    -l --loglevel <numero>          define o level verboso\n"
+"\n"
+
+#: src/eventcatcher.cc:98
+msgid "Valid process name %. insert pid %d"
+msgstr "Nome de processo válido %. inserir pid %d"
+
+#: src/e4rat-collect.cc:369 src/e4rat-realloc.cc:123
+msgid "You need root privileges to run this program.\n"
+msgstr "Você precisa de privilégios de root para executar este programa.\n"
+
+#: src/device.cc:367
+msgid "Your actual Kernel does not support prefered block allocation."
+msgstr "Seu kernel atual não suporta prefered block allocation."
+
+#: src/defrag.cc:1089
+#, c-format
+msgid "[ %*d/%d ] %*llu block(s)    %s"
+msgstr "[ %*d/%d ] %*llu bloco(s)    %s"
+
+#: src/logging.cc:55 src/logging.cc:128
+#, c-format
+msgid "[Logging] %s\n"
+msgstr "[Logging] %s\n"
+
+#: src/listener.cc:508
+#, c-format
+msgid "audit_elf_to_machine failed: arch=%x: %s"
+msgstr "audit_elf_to_machine falhou: arch=%x: %s"
+
+#: src/listener.cc:197 src/listener.cc:205
+#, c-format
+msgid "audit_rule_fieldpair_data failed: %s"
+msgstr "audit_rule_fieldpair_data falhou: %s"
+
+#: src/listener.cc:517
+#, c-format
+msgid "audit_syscall_to_name failed: machine=%d arch=%x"
+msgstr "audit_syscall_to_name falhou: machine=%d arch=%x"
+
+#: src/listener.cc:433
+#, c-format
+msgid "auparse_next_event: %s"
+msgstr "auparse_next_event: %s"
+
+#: src/common.cc:66
+msgid "backtrace() returned "
+msgstr "backtrace() retornou "
+
+#: src/listener.cc:430
+msgid "cannot init auparse"
+msgstr "Não foi possível analisar o init"
+
+#: src/buddycache.cc:46
+msgid "cannot open buddy cache on device "
+msgstr "Não foi possível abrir o buddy cache no dispositivo "
+
+#: src/common.cc:118
+msgid "cannot read stdin flags\n"
+msgstr "Não foi possível ler flags do stdin\n"
+
+#: src/common.cc:123
+msgid "cannot set stdin to non-blocking\n"
+msgstr "Não foi possível definir stdin para non-blocking\n"
+
+#: src/defrag.cc:886 src/defrag.cc:903
+#, c-format
+msgid "cannot unlink base directory: %s: %s"
+msgstr "Não foi possível deslinkar diretório base: %s: %s"
+
+#: src/device.cc:421
+msgid "donor:   "
+msgstr "doador:   "
+
+#: src/listener.cc:73
+#, c-format
+msgid "e4rat-lite-collect is in conflict with %s. Abort"
+msgstr "e4rat-lite-collect está em conflito com %s. Abortar"
+
+#: src/defrag.cc:1142
+#, c-format
+msgid "fadvice failed: %s"
+msgstr "fadvice falhou: %s"
+
+#: src/defrag.cc:106
+msgid "fallocated failed: "
+msgstr "fallocated falhou: "
+
+#: src/defrag.cc:516
+msgid "ioctl EXT4_IOC_CONTROL_PA not supported"
+msgstr "ioctl EXT4_IOC_CONTROL_PA nao suportado"
+
+#: src/fiemap.cc:67
+#, c-format
+msgid "ioctl_fiemap and readlink failed: %s"
+msgstr "ioctl_fiemap e readlink falhou: %s"
+
+#: src/fiemap.cc:64
+#, c-format
+msgid "ioctl_fiemap: %s: %s"
+msgstr "ioctl_fiemap: %s: %s"
+
+#: src/device.cc:424
+msgid "len:     "
+msgstr "len:     "
+
+#: src/device.cc:423
+msgid "logical: "
+msgstr "lógico"
+
+#: src/buddycache.cc:119
+msgid "more blocks marked free than expected"
+msgstr "mais blocos marcados como livre do que o esperado"
+
+#: src/fiemap.cc:95
+#, c-format
+msgid "open: %s: %s"
+msgstr "abrir: %s: %s"
+
+#: src/device.cc:419
+msgid "orig:    "
+msgstr "orig:    "
+
+#: src/device.cc:376
+msgid "parameter:"
+msgstr "parametro:"
+
+#: src/defrag.cc:667 src/defrag.cc:705
+#, c-format
+msgid "pre-allocate failed: %s: blocks are already in use"
+msgstr "A pré alocação falhou: %s: os blocos já estão em uso"
+
+#: src/device.cc:382
+msgid "return values:"
+msgstr "valores retornados:"
+
+#: src/e4rat-collect.cc:166
+#, c-format
+msgid "scan lsof: %s"
+msgstr "scanear lsof: %s"
+
+#: src/e4rat-collect.cc:458
+#, c-format
+msgid "sem_init: %s"
+msgstr "sem_init: %s"
+
+#: src/e4rat-collect.cc:473
+#, c-format
+msgid "sem_post: %s"
+msgstr "sem_post: %s"
+
+#: src/e4rat-collect.cc:477
+#, c-format
+msgid "sem_wait: %s"
+msgstr "sem_wait: %s"
+
+#: src/eventcatcher.cc:102
+#, c-format
+msgid "syscall: %d RO: %d"
+msgstr "syscall: %d RO: %d"
+
+#: src/logging.cc:42
+msgid "syslog daemon is not running"
+msgstr "O daemon do syslog não está em execução"
