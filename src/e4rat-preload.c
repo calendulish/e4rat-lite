@@ -87,10 +87,8 @@ static void printUsage () {
 	"-V --version                           print version and exit\n"
 	"-h --help                              print help and exit\n"
 	"\n"
-	"Kernel Params:\n"
-	"\n"
-	"E4RL_INITFILE=<path to file>           alternate init file\n"
-	"E4RL_STARTUPLOG=<path to file>         alternate startup log file"
+	"-i --initfile <path to file>           alternate init file\n"
+	"-s --startuplog <path to file>         alternate startup log file"
 	"\n");
 }
 
@@ -198,12 +196,16 @@ int main (int argc, char * * argv) {
 	{
 		{"help",        no_argument,       0, 'h'},
 		{"version",     no_argument,       0, 'V'},
+		{"initfile",    required_argument, 0, 'i'},
+		{"startuplog",  required_argument, 0, 's'},
 		{0, 0, 0, 0}
 	};
 
     int c;
     int option_index = 0;
-    while ((c = getopt_long (argc, argv, "hV", long_options, &option_index)) != EOF)
+    const char* opt_init_file = 0;
+    const char* opt_startup_log_file = 0;
+    while ((c = getopt_long (argc, argv, "i:s:hV", long_options, &option_index)) != EOF)
 	{
         switch(c)
         {
@@ -211,14 +213,22 @@ int main (int argc, char * * argv) {
                 goto err1;
             case 'V':
 				goto err2;
+			case 'i':
+				opt_init_file = optarg;
+				break;
+			case 's':
+				opt_startup_log_file = optarg;
+				break;
         }
     }
-    
-   load_list (config.startup_log_file);
+
+   if(opt_startup_log_file != 0) load_list (opt_startup_log_file);
+   else load_list (config.startup_log_file);
    printf (_("Preloading %d files...\n"), listlen);
    load_inodes (0, EARLY);
    load_files (0, EARLY);
-   exec_init (argv, config.init_file);
+   if(opt_init_file != 0) exec_init (argv, opt_init_file);
+   else exec_init (argv, config.init_file);
    for (int i = EARLY; i < listlen; i += BLOCK) {
       load_inodes (i, i + BLOCK);
       load_files (i, i + BLOCK);
