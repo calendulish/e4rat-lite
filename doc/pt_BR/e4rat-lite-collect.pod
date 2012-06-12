@@ -1,0 +1,121 @@
+=pod
+
+=head1 NOME
+
+e4rat-lite-collect - Gera uma lista de arquivos relevantes pelo monitoramento de aplicativos
+
+=head1 SINOPSE
+
+B<e4rat-lite-collect>  B<[> opções B<]>  B<[> nome do(s) aplicativo(s) B<]>
+
+=head1 DESCRIÇÃO
+
+O e4rat-lite-collect escuta o socket de auditoria do Linux para monitorar as atividades do sistema de arquivos e gerar uma lista de arquivos revelantes retendo pela ordem de acesso.
+Arquivos temporários ou arquivos abertos com acesso de escrita, como arquivos de log, são ignorados automaticamente.
+
+Você pode monitorar aplicativos ou o sistema operacional inteiro. Se um l<nome de aplicativo> for fornecido, os processos monitorados serão selecionados de acordo com o nome do processo, que usualmente é o nome do executável em execução e é mostrado pelo comando ps(1). Os caminhos são removidos do nome do processo. O aplicativo que você especificar é somente monitorado e não executado. PAra executar o comando, leia l<--execute>
+
+Além disso, o coletor segue processos filhos, para permitir um monitoramento correto de shell scripts.
+
+Para parar o scaneamento do processo, precione CTRL-C ou rode `e4rat-lite-collect -k'. A lista de arquivos gerada será escrita em '/var/lib/e4rat-lite/startup.log' ou o arquivo specificado na configuração.
+
+=head1 OPÇÕES
+
+Algumas opções requerem o caminho para o arquivo, pasta ou dispositivo. Sinta-se livre para usar caminhos relativos e/ou caminhos contendo caracteres coringas como '*' ou '?'.
+
+=over
+
+=item -V --version
+
+mostra a versão e sai
+
+=item -h --help
+
+mostra a ajuda e sai
+
+=item -v --verbose
+
+incrementa o level verboso
+
+=item -q --quiet
+
+define o level verboso para 0. Isso faz com que nenhuma mensagem seja exibida.
+
+=item -l --loglevel <numero>
+
+define a mascara do loglevel para <numero>. Todas as mensagens são enviadas para o log do Kernel (veja dmesg(1) ou syslog(3)).
+
+=item -k --stop
+
+Mata um processo e4rat-lite-collect em execução
+
+=item -x --execute <comando>
+
+Coleta durante a execução do comando. O e4rat-lite-collect para após o <comando> terminar. Esteja ciente de que o <comando> é executado com privilégios de root se nenhum nome de usuário for especificado. Veja --user.
+
+=item -u --user <nome do usuário>
+
+Especifica um nome de usuário para o comando ser executado. Veja --execute.
+
+=item -o --output [arquivo]
+
+Define o arquivo de saída em que a lista de arquivos gerados serão gravados. Se nenhum caminho for especificado, a lista é escrita para o stdout.
+
+=item -d --device <dev>
+
+=item -D --exclude-device <dev>
+
+limita o monitoramento a um dispositivo em especial. <dev> é o caminho para o dispositivo, normalmente em /dev.
+[examplo: /dev/sda1]
+
+=item -p --path         <path>
+
+=item -P --exclude-path <caminho>
+
+Limita o monitoramento a uma pasta específica:
+[examplo: '*/bin/*']
+
+=item -L --exclude-list <arquivo>
+
+O <arquivo> contém uma lista de arquivos para serem ignorados pelo e4rat-lite-collect
+
+=back
+
+=head1 EXEMPLOS
+
+=head2 Scanear o Thunderbird a localmente rodar o Imap daemon
+
+=head4 Rode o coletor como ROOT
+
+    ~# sudo e4rat-lite-collect thunderbird imapd
+
+=head4 Uma vez que esteja rodando o coletor, executar o Thunderbird como um usuário normal:
+
+    ~# thunderbird
+
+=head4 Alternativamente combine-os com uma chamada:
+
+    ~# sudo e4rat-lite-collect thunderbird imapd --execute 'thunderbird' --user `whoami`
+
+=head2 Scanear processos do boot
+
+Rode o e4rat-lite-collec o mais antes possível para scanear todo o processo de inicialização. É recomendado rodar o e4rat-lite-collect como um processo de inicialização. Para isso, adiciona a seguinte linha aos parametros do kernel em grub(8) ou lilo(8).
+  init=/sbin/e4rat-lite-collect
+
+=head1 ARQUIVOS
+
+F</etc/e4rat-lite.conf>
+     Arquivo de configuração do e4rat-lite.
+
+=head1 AUTOR
+
+e4rat foi escrito por Andreas Rid e Gunfolf Kiefer.
+e4rat-lite escrito por Lara Maia.
+
+=head1 REPORTANDO BUGS
+
+Reporte bugs para Lara Maia <lara@craft.net.br>
+
+=head1 LEIA TAMBÉM
+
+e4rat-lite-realloc(8), e4rat-lite-preload(8), e4rat-lite.conf(8)

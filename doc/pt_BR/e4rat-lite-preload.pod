@@ -1,0 +1,59 @@
+=encoding utf8
+=pod
+
+=head1 NOME
+
+e4rat-lite-preload - Pré carrega arquivos na memória.
+
+=head1 SINOPSE
+
+B<e4rat-lite-preload>  B<[> opções B<]> arquivo(s)
+
+=head1 DESCRIÇÃO
+
+O e4rat-lite-preload transfere os arquivos para a memória para obter um alta taxa de acerto no cache.
+A lista de l<arquivos> precisa estar no formato gerado pelo e4rat-lite-collect.
+Assume-se que todos os arquivos tenham sido realocados antes pelo e4rat-lite-realloc.
+
+A fim de evitar a busca no disco o processo de pré carregamento é dividido em duas etapas.
+Primeiro, ele lê as informações de I-Node dos arquivos. No segundo passo, ele lê o conteúdo dos arquivos, paralelamente. Se o e4rat-lite-preload for executado como um processo de inicialização pela adição dele aos parametros do kernel, o /sbin/init (ou o processo indicado na configuração) é chamado.
+
+=head1 OPÇÕES
+
+=over
+
+=item -V --version
+
+mostra informações sobre a versão e sai.
+
+=item -h --help
+
+mostra a ajuda e sai.
+
+=back
+
+=head1 EXEMPLOS
+
+=head2 Acelerando o processo de boot
+
+Execute o e4rat-lite-preload o mais cedo possível. É recomendado executa-lo como um processo de inicialização, para isso insira a seguinte linha aos parametros do kernel em grub(8) ou lilo(8).
+  init=/sbin/e4rat-lite-preload
+
+=head1 ARQUIVOS
+
+F</etc/e4rat-lite.conf>
+     Arquivo de configuração do e4rat-lite
+
+=head1 AUTOR
+
+e4rat foi escrito por Andreas Rid e Gunfolf Kiefer.
+e4rat-preload-lite foi escrito por John Lindgren
+e4rat-lite escrito por Lara Maia.
+
+=head1 REPORTANDO BUGS
+
+Reporte bugs para Lara Maia <lara@craft.net.br>
+
+=head1 LEIA TAMBÉM
+
+e4rat-lite-collect(8), e4rat-lite-realloc(8), e4rat-lite.conf(8)

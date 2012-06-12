@@ -15,6 +15,7 @@
 #include <inttypes.h>
 #include <stdio.h>
 #include <stdlib.h>
+#include <getopt.h>
 #include <string.h>
 #include <sys/stat.h>
 #include <unistd.h>
@@ -78,6 +79,17 @@ static FileDesc * parse_line (int n, const char * line) {
    f->inode = inode;
    f->path = strdup (line);
    return f;
+}
+
+static void printUsage () {
+	printf("Usage: e4rat-lite-preload [ option(s) ]\n"
+	"\n"
+	"-V --version                           print version and exit\n"
+	"-h --help                              print help and exit\n"
+	"\n"
+	"-i --initfile <path to file>           alternate init file\n"
+	"-s --startuplog <path to file>         alternate startup log file"
+	"\n");
 }
 
 static void load_list (const char* LIST) {
@@ -180,14 +192,53 @@ int main (int argc, char * * argv) {
 	   exit (EXIT_FAILURE);
    }
    
-   load_list (config.startup_log_file);
+   static struct option long_options[] =
+	{
+		{"help",        no_argument,       0, 'h'},
+		{"version",     no_argument,       0, 'V'},
+		{"initfile",    required_argument, 0, 'i'},
+		{"startuplog",  required_argument, 0, 's'},
+		{0, 0, 0, 0}
+	};
+
+    int c;
+    int option_index = 0;
+    const char* opt_init_file = 0;
+    const char* opt_startup_log_file = 0;
+    while ((c = getopt_long (argc, argv, "i:s:hV", long_options, &option_index)) != EOF)
+	{
+        switch(c)
+        {
+            case 'h':
+                goto err1;
+            case 'V':
+				goto err2;
+			case 'i':
+				opt_init_file = optarg;
+				break;
+			case 's':
+				opt_startup_log_file = optarg;
+				break;
+        }
+    }
+
+   if(opt_startup_log_file != 0) load_list (opt_startup_log_file);
+   else load_list (config.startup_log_file);
    printf (_("Preloading %d files...\n"), listlen);
    load_inodes (0, EARLY);
    load_files (0, EARLY);
-   exec_init (argv, config.init_file);
+   if(opt_init_file != 0) exec_init (argv, opt_init_file);
+   else exec_init (argv, config.init_file);
    for (int i = EARLY; i < listlen; i += BLOCK) {
       load_inodes (i, i + BLOCK);
       load_files (i, i + BLOCK);
    }
    exit (EXIT_SUCCESS);
+
+err1:
+    printUsage();
+    exit(1);
+err2:
+	printf("%s %s\n", PROGRAM_NAME, VERSION);
+	exit(1);
 }
