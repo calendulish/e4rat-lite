@@ -11,7 +11,7 @@ msgstr ""
 "Project-Id-Version: e4rat-lite 2.6\n"
 "Report-Msgid-Bugs-To: lara@craft.net.br\n"
 "POT-Creation-Date: 2012-06-03 18:15-0300\n"
-"PO-Revision-Date: 2012-06-06 11:30-0300\n"
+"PO-Revision-Date: 2012-06-12 22:55-0300\n"
 "Last-Translator: Lara Maia <lara@craft.net.br>\n"
 "Language-Team: Brazillian Portuguese"
 "Language: pt_BR\n"
@@ -89,7 +89,8 @@ msgstr "%*d/%d arquivo(s) atualmente não graváveis"
 msgid ""
 "%*d/%d file(s) are sparse-files which will retain gaps of unallocated blocks."
 msgstr ""
-"%*d/%d arquivo(s) são arquivos esparsos, isso irá reter os intervalos de blocos não alocados."
+"%*d/%d arquivo(s) são arquivos esparsos, isso irá reter os intervalos de "
+"blocos não alocados."
 
 #: src/defrag.cc:301
 #, c-format
@@ -156,8 +157,8 @@ msgid ""
 "Bug detected in ioctl EXT4_IOC_MOVE_EXT: %s: file fragment count does not "
 "match"
 msgstr ""
-"Bug detectado em ioctl EXT4_IOC_MOVE_EXT: %s: contagem de fragmento do arquivo não "
-"corresponde"
+"Bug detectado em ioctl EXT4_IOC_MOVE_EXT: %s: contagem de fragmento do "
+"arquivo não corresponde"
 
 #: src/device.cc:127
 msgid "Cannot access "
@@ -177,7 +178,8 @@ msgstr "não foi possível converter arquivo %s para a extensão baseada: %s"
 msgid ""
 "Cannot convert hex string `%s' to a valid path. Unrecognised character 0x%x"
 msgstr ""
-"não foi possível converter string hexa `%s' para um caminho válido. Caractere não conhecido 0x%x"
+"não foi possível converter string hexa `%s' para um caminho válido. "
+"Caractere não conhecido 0x%x"
 
 #: src/listener.cc:160
 msgid "Cannot convert syscall to number"
@@ -194,7 +196,8 @@ msgstr "não foi possível criar arquivo doador:"
 #: src/common.cc:283
 #, c-format
 msgid "Cannot create pid file %s on read-only filesystem"
-msgstr "não é possível criar arquivo pid %s em sistema de arquivo somente leitura"
+msgstr ""
+"não é possível criar arquivo pid %s em sistema de arquivo somente leitura"
 
 #: src/listener.cc:289
 msgid "Cannot disable audit socket"
@@ -297,7 +300,9 @@ msgstr "Não foi possível abrir arquivo pid: %s"
 #: src/defrag.cc:182
 #, c-format
 msgid "Cannot pre-allocation support: Cannot open file on device: %s: %s"
-msgstr "Sem suporte a pré alocação: Não foi possível abrir o arquivo no dispositivo: %s: %s"
+msgstr ""
+"Sem suporte a pré alocação: Não foi possível abrir o arquivo no dispositivo: "
+"%s: %s"
 
 #: src/device.cc:373
 msgid "Cannot preallocate blocks: "
@@ -353,7 +358,8 @@ msgstr "Não foi possível definir pid para audit"
 #: src/defrag.cc:784
 #, c-format
 msgid "Cannot set process's CPU affinity mask to 1: %s"
-msgstr "Não foi possível definir máscara de afinidade de processos da CPU para 1: %s"
+msgstr ""
+"Não foi possível definir máscara de afinidade de processos da CPU para 1: %s"
 
 #: src/defrag.cc:930
 #, c-format
@@ -372,7 +378,8 @@ msgstr "Conectando-se ao socket do audit ..."
 #: src/defrag.cc:219
 #, c-format
 msgid "Couldn't find valid filesystem superblock on %s."
-msgstr "Não foi possível encontrar sistema de arquivos válido, superblock em %s."
+msgstr ""
+"Não foi possível encontrar sistema de arquivos válido, superblock em %s."
 
 #: src/defrag.cc:352
 #, c-format
@@ -397,6 +404,11 @@ msgstr "Suporte do kernel a pré allocação: %s: %d %s"
 msgid "EXT4_IOC_GET_PA failed"
 msgstr "EXT4_IOC_GET_PA falhou"
 
+#: src/e4rat-preload.c:99 src/e4rat-preload.c:138 src/e4rat-preload.c:144
+#, c-format
+msgid "Error: %s.\n"
+msgstr "Erro: %s.\n"
+
 #: src/e4rat-collect.cc:482 src/e4rat-collect.cc:487
 #, c-format
 msgid "Execute `%s' ..."
@@ -405,7 +417,8 @@ msgstr "Executando `%s' ..."
 #: src/defrag.cc:226
 #, c-format
 msgid "Ext4 filesystem on %s has not extent feature enabled."
-msgstr "Sistema de arquivos ext4 em %s não tem recursos de extensão habilitados."
+msgstr ""
+"Sistema de arquivos ext4 em %s não tem recursos de extensão habilitados."
 
 #: src/e4rat-realloc.cc:151
 #, c-format
@@ -446,8 +459,7 @@ msgid ""
 "In order to use this program you first have to stop the audit daemon "
 "auditd.\n"
 msgstr ""
-"Para utilizar este programa você primeiro tem que parar o daemon "
-"auditd.\n"
+"Para utilizar este programa você primeiro tem que parar o daemon auditd.\n"
 
 #: src/eventcatcher.cc:146
 #, c-format
@@ -471,6 +483,11 @@ msgstr "Parece que o e4rat-lite-realloc já está em execução.\n"
 msgid "Kernel does not support pre-allocation"
 msgstr "O kernel não suporta pré alocação"
 
+#: src/e4rat-preload.c:96
+#, c-format
+msgid "Loading %s.\n"
+msgstr "Carregando %s.\n"
+
 #: src/device.cc:159
 msgid "Neither /proc/mounts nor /etc/mtab is readable."
 msgstr "Nem /proc/mounts nem /etc/mtab são legíveis"
@@ -485,7 +502,7 @@ msgstr "Abriu gravável: \t%s"
 msgid "Option requires an argument -- '%c'\n"
 msgstr "A opção requer um argumento -- '%c'\n"
 
-#: src/defrag.cc:685
+#: src/defrag.cc:685 src/defrag.cc:647
 #, c-format
 msgid "Out of continued space: %s: will might fragmented"
 msgstr "Fora do espaço contínuo: %s: pode estar fragmentado"
@@ -512,6 +529,11 @@ msgstr "Analisando arquivo ./e4rat-lite-collect.log"
 msgid "Parsing from stdin"
 msgstr "Analisando a partir do stdin"
 
+#: src/e4rat-preload.c:227
+#, c-format
+msgid "Preloading %d files...\n"
+msgstr "Pré carregando %d arquivos...\n"
+
 #: src/e4rat-collect.cc:516
 msgid "Press 'Ctrl-C' to stop collecting files"
 msgstr "Pressione 'Ctrl-C' para parar a coleta de arquivos"
@@ -529,6 +551,11 @@ msgstr "Processando %d arquivo(s) no dispositivo %s (ponto de montagem: %s)"
 #: src/e4rat-collect.cc:414 src/e4rat-realloc.cc:130
 msgid "Remove pid file "
 msgstr "Remover o arquivo pid "
+
+#: src/e4rat-preload.c:135
+#, c-format
+msgid "Running %s.\n"
+msgstr "Executando %s.\n"
 
 #: src/e4rat-collect.cc:542
 #, c-format
@@ -577,6 +604,11 @@ msgid "Total number of excluded files: %d"
 msgstr "Numero total de arquivos ignorados: %d"
 
 #: src/e4rat-collect.cc:234
+#, c-format
+msgid "Unable to load the configuration file: %s\n"
+msgstr "Não foi possível carregar o arquivo de configuração: %s\n"
+
+#: src/e4rat-preload.c:191
 #, c-format
 msgid "Unable to load the configuration file: %s\n"
 msgstr "Não foi possível carregar o arquivo de configuração: %s\n"
@@ -661,6 +693,26 @@ msgstr ""
 "    -L --exclude-list <arquivo>     excluir caminhos especificados no "
 "arquivo\n"
 "\n"
+
+#: src/e4rat-preload.c:85
+#, c-format
+msgid ""
+"Usage: e4rat-lite-preload [ option(s) ]\n"
+"\n"
+"-V --version                           print version and exit\n"
+"-h --help                              print help and exit\n"
+"\n"
+"-i --initfile <path to file>           alternate init file\n"
+"-s --startuplog <path to file>         alternate startup log file\n"
+msgstr ""
+"Uso: e4rat-lite-preload [ opções ]\n"
+"\n"
+"-V --version                           mostra a versão e sai\n"
+"-h --help                              mostra a ajuda e sai\n"
+"\n"
+"-i --initfile <caminho para o arquivo>   arquivo init alternativo\n"
+"-s --startuplog <caminho para o arquivo> arquivo alternativo para o\n"
+"                                         log de inicialização\n"
 
 #: src/e4rat-realloc.cc:58
 msgid ""
