@@ -82,14 +82,14 @@ static FileDesc * parse_line (int n, const char * line) {
 }
 
 static void printUsage () {
-	printf("Usage: e4rat-lite-preload [ option(s) ]\n"
+	printf(_("Usage: e4rat-lite-preload [ option(s) ]\n"
 	"\n"
 	"-V --version                           print version and exit\n"
 	"-h --help                              print help and exit\n"
 	"\n"
 	"-i --initfile <path to file>           alternate init file\n"
 	"-s --startuplog <path to file>         alternate startup log file"
-	"\n");
+	"\n"));
 }
 
 static void load_list (const char* LIST) {
@@ -188,7 +188,7 @@ int main (int argc, char * * argv) {
    textdomain("e4rat-lite");
    
    if (ini_parse("/etc/e4rat-lite.conf", config_handler, &config) < 0) {
-	   printf(_("Unable to load the configuration file:: %s\n"), strerror (errno));
+	   printf(_("Unable to load the configuration file: %s\n"), strerror (errno));
 	   exit (EXIT_FAILURE);
    }
    
