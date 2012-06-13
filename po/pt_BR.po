@@ -603,12 +603,7 @@ msgstr "Contagem total de fragmentos antes/depois/melhor-caso: %d/%d/%d"
 msgid "Total number of excluded files: %d"
 msgstr "Numero total de arquivos ignorados: %d"
 
-#: src/e4rat-collect.cc:234
-#, c-format
-msgid "Unable to load the configuration file: %s\n"
-msgstr "Não foi possível carregar o arquivo de configuração: %s\n"
-
-#: src/e4rat-preload.c:191
+#: src/e4rat-collect.cc:234 src/e4rat-preload.c:191
 #, c-format
 msgid "Unable to load the configuration file: %s\n"
 msgstr "Não foi possível carregar o arquivo de configuração: %s\n"
