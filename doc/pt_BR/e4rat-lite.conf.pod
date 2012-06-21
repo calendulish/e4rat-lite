@@ -3,7 +3,7 @@
 
 =head1 NOME
 
-/etc/e4rat-lite.conf - Arquivo de configuração para o e4rat-lite
+/etc/e4rat-lite.conf - Arquivo de configuração para o conjunto de ferramentas do e4rat-lite
 
 =head1 DESCRIÇÃO
 
@@ -11,33 +11,32 @@ B<e4rat-lite.conf> é o arquivo configurador de todos os binários do e4rat-lite
 
 =head1 FORMATO DE ARQUIVO
 
-O arquivo é baseado no estilo Python's ConfigParser de arquivos .INI, incluindo  a sintaxe RFC 822-style multi-linha e entradas de nome:valores. Para mais informações leia I<http://docs.python.org/library/configparser.html>
+O arquivo é baseado no estilo Python's ConfigParser de arquivos .INI, incluindo a sintaxe RFC 822-style multi-linha e entradas de nome:valores. Para mais informações leia I<http://docs.python.org/library/configparser.html>
 
 Uma opção pode ser declarada assim:
 opcao1=valor1
 
 As opções devem ser declaradas a baixo de uma seção. 
-Options can either be declared below a section. Derivado do nome sufixo do executável, cada binário tem sua própria seção. Valores além dessa seção se aplica ao binário somente.
+Derivado do nome sufixo do executável, cada binário tem sua própria seção. Valores da seção Global se aplica a todos os binários.
 
-Examplo:
+Exemplo:
 
 [Collect]
-
 ; comentário
 opcao=valor
 
 =head1 OPÇÕES
 
-O e4rat-lite possui uma estrutura de log simples. Cada evento 
-
-e4rat-lite has a simple logging structure. Cada evento possui uma prioridade. As seguintes prioridades existem:
+O e4rat-lite possui uma estrutura de log simples. Cada evento possui uma prioridade. As seguintes prioridades existem:
     1   erros
     2   avisos
-    4   estatisticas da tarefa
+    4   estatísticas da tarefa
     8   informação sobre uma única etapa
    16   mensagens de debug
 
 =over
+
+=head2 Seção Global (Para todos os binários)
 
 =item B<verbose>
 
@@ -53,7 +52,7 @@ Define o nível das mensagens para enviar ao L<log_target>. [Padrão: 3]
 
 (ainda não implementado no arquivo de configuração)
 define o diretório alvo onde as mensagens de log devem ser gravadas. O valor padrão é /dev/kmsg. Isto envia as mensagens para o log buffer do kernel. (veja também dmesg(1))
-Defina o <log_targe> para 'syslog' caso queira enviar as mensagens para o daemon do syslog.
+Defina o <log_target> para 'syslog' caso queira enviar as mensagens para o daemon do syslog.
 
 =item B<init_file>
 
@@ -75,12 +74,11 @@ Restringe a vigia para sistemas de arquivo ext4 somente. [Padrão: true]
 
 =item B<exclude_open_files>
 
-Ignora arquivo que estão abertos. [Padrão: true]
+Ignora arquivos abertos (em execução). [Padrão: true]
 
-=item B<timeout>
+=item B<timeout> (em segundos)
 
-Depois da expiração desse valor em segundos, o e4rat-lite-collect vai automaticamente terminar a coleta. 
-O Timeout apenas é funcional quando o e4rat-lite-collect é executado como um processo de inicialização (init). [Padrão: 120]
+Depois da expiração desse valor, o e4rat-lite-collect vai automaticamente terminar a coleta. O Timeout apenas é funcional quando o e4rat-lite-collect é executado como um processo de inicialização (init). [Padrão: 120]
 
 =back
 
@@ -92,9 +90,9 @@ O Timeout apenas é funcional quando o e4rat-lite-collect é executado como um p
 
 Define o modo padrão de realocação do e4rat-lite-realloc. [Padrão: auto]
    auto                 seleciona o modo automaticamente
-   pa                    usa a pré alocação ioctl no espaço do usuário
-   locality-group    cria arquivos em grupos de localidades
-   tld                    cria arquivo no diretório de nível superior
+   pa                   usa a pré alocação ioctl no espaço do usuário
+   locality-group       cria arquivos em grupos de localidades
+   tld                  cria arquivo no diretório de nível superior
 
 =back
 
