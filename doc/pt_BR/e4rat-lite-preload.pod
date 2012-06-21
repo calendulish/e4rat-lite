@@ -11,12 +11,17 @@ B<e4rat-lite-preload>  B<[> opções B<]> arquivo(s)
 
 =head1 DESCRIÇÃO
 
-O e4rat-lite-preload transfere os arquivos para a memória para obter um alta taxa de acerto no cache.
-A lista de l<arquivos> precisa estar no formato gerado pelo e4rat-lite-collect.
-Assume-se que todos os arquivos tenham sido realocados antes pelo e4rat-lite-realloc.
+O e4rat-lite-preload transfere os arquivos para a memória a fim de obter um alta taxa de acertos no cache.
 
-A fim de evitar a busca no disco o processo de pré carregamento é dividido em duas etapas.
-Primeiro, ele lê as informações de I-Node dos arquivos. No segundo passo, ele lê o conteúdo dos arquivos, paralelamente. Se o e4rat-lite-preload for executado como um processo de inicialização pela adição dele aos parametros do kernel, o /sbin/init (ou o processo indicado na configuração) é chamado.
+A fim de evitar a busca no disco, o processo de pré carregamento é dividido em duas etapas:
+
+Primeiro, ele lê as informações de I-Node dos arquivos, depois ele lê o conteúdo dos arquivos. Isso pode ser feito paralelamente com a execução do arquivo especificado em --execute. Se o e4rat-lite-preload for executado como um processo de inicialização pela adição dele aos parametros do kernel, o /sbin/init (ou o processo indicado na configuração) é chamado.
+
+=head2 Observações
+
+A lista de l<arquivos> precisa estar no formato gerado pelo e4rat-lite-collect.
+
+Assume-se que todos os arquivos tenham sido realocados antes pelo e4rat-lite-realloc.
 
 =head1 OPÇÕES
 
@@ -29,6 +34,14 @@ mostra informações sobre a versão e sai.
 =item -h --help
 
 mostra a ajuda e sai.
+
+=item -i --initfile
+
+Arquivo de inicialização alternativo.
+
+=item -s --startuplog
+
+Arquivo alternativo para o log de inicialização
 
 =back
 
