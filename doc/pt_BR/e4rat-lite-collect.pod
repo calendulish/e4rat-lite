@@ -10,14 +10,13 @@ B<e4rat-lite-collect>  B<[> opções B<]>  B<[> nome do(s) aplicativo(s) B<]>
 
 =head1 DESCRIÇÃO
 
-O e4rat-lite-collect escuta o socket de auditoria do Linux para monitorar as atividades do sistema de arquivos e gerar uma lista de arquivos revelantes retendo pela ordem de acesso.
-Arquivos temporários ou arquivos abertos com acesso de escrita, como arquivos de log, são ignorados automaticamente.
+O e4rat-lite-collect escuta o socket de auditoria do Linux para monitorar as atividades do sistema de arquivos e gerar uma lista de arquivos revelantes, retendo pela ordem de acesso.
+Arquivos temporários e/ou arquivos abertos (em execução) como arquivos de log, são ignorados automaticamente.
 
-Você pode monitorar aplicativos ou o sistema operacional inteiro. Se um l<nome de aplicativo> for fornecido, os processos monitorados serão selecionados de acordo com o nome do processo, que usualmente é o nome do executável em execução e é mostrado pelo comando ps(1). Os caminhos são removidos do nome do processo. O aplicativo que você especificar é somente monitorado e não executado. PAra executar o comando, leia l<--execute>
-
+Você pode monitorar aplicativos ou o sistema operacional inteiro. Se um l<nome de aplicativo> for fornecido, os processos monitorados serão selecionados de acordo com o nome do processo, que usualmente é o nome do executável em execução e é mostrado pelo comando ps(1). Os caminhos são removidos do nome do processo. O aplicativo que você especificar é somente monitorado e não executado. leia l<--execute>
 Além disso, o coletor segue processos filhos, para permitir um monitoramento correto de shell scripts.
 
-Para parar o scaneamento do processo, precione CTRL-C ou rode `e4rat-lite-collect -k'. A lista de arquivos gerada será escrita em '/var/lib/e4rat-lite/startup.log' ou o arquivo specificado na configuração.
+Para parar o escaneamento do processo, precione CTRL-C ou rode `e4rat-lite-collect -k'. A lista de arquivos gerada será escrita em '/var/lib/e4rat-lite/startup.log' ou o arquivo specificado na configuração.
 
 =head1 OPÇÕES
 
@@ -47,15 +46,15 @@ define a mascara do loglevel para <numero>. Todas as mensagens são enviadas par
 
 =item -k --stop
 
-Mata um processo e4rat-lite-collect em execução
+Mata o processo do e4rat-lite-collect em execução.
 
 =item -x --execute <comando>
 
-Coleta durante a execução do comando. O e4rat-lite-collect para após o <comando> terminar. Esteja ciente de que o <comando> é executado com privilégios de root se nenhum nome de usuário for especificado. Veja --user.
+Coleta durante a execução do comando. O e4rat-lite-collect para após o <comando> terminar. Esteja ciente de que o <comando> é executado com privilégios de root se nenhum nome de usuário for especificado. Veja l<--user>.
 
 =item -u --user <nome do usuário>
 
-Especifica um nome de usuário para o comando ser executado. Veja --execute.
+Especifica um nome de usuário para o comando ser executado. Veja l<--execute>.
 
 =item -o --output [arquivo]
 
@@ -65,25 +64,25 @@ Define o arquivo de saída em que a lista de arquivos gerados serão gravados. S
 
 =item -D --exclude-device <dev>
 
-limita o monitoramento a um dispositivo em especial. <dev> é o caminho para o dispositivo, normalmente em /dev.
-[examplo: /dev/sda1]
+Limita o monitoramento a um dispositivo em especial. <dev> é o caminho para o dispositivo, normalmente em /dev.
+[exemplo: /dev/sda1]
 
 =item -p --path         <path>
 
 =item -P --exclude-path <caminho>
 
 Limita o monitoramento a uma pasta específica:
-[examplo: '*/bin/*']
+[exemplo: '*/bin/*']
 
 =item -L --exclude-list <arquivo>
 
-O <arquivo> contém uma lista de arquivos para serem ignorados pelo e4rat-lite-collect
+O <arquivo> contém uma lista de arquivos a serem ignorados pelo e4rat-lite-collect
 
 =back
 
 =head1 EXEMPLOS
 
-=head2 Scanear o Thunderbird a localmente rodar o Imap daemon
+=head2 Escanear o Thunderbird e localmente rodar o Imap daemon
 
 =head4 Rode o coletor como ROOT
 
@@ -97,10 +96,10 @@ O <arquivo> contém uma lista de arquivos para serem ignorados pelo e4rat-lite-c
 
     ~# sudo e4rat-lite-collect thunderbird imapd --execute 'thunderbird' --user `whoami`
 
-=head2 Scanear processos do boot
+=head2 Escanear processos do boot
 
-Rode o e4rat-lite-collec o mais antes possível para scanear todo o processo de inicialização. É recomendado rodar o e4rat-lite-collect como um processo de inicialização. Para isso, adiciona a seguinte linha aos parametros do kernel em grub(8) ou lilo(8).
-  init=/sbin/e4rat-lite-collect
+Rode o e4rat-lite-collect o mais antes possível para escanear todo o processo de inicialização. É recomendado executar o e4rat-lite-collect como um processo de inicialização. Para isso, adicione a seguinte linha aos parâmetros do kernel em grub(8) ou lilo(8).
+init=/sbin/e4rat-lite-collect
 
 =head1 ARQUIVOS
 
