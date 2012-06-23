@@ -16,12 +16,11 @@ The file is based on Python's ConfigParser style of .INI files, including RFC 82
 An option is declared like this:
 option1=value1
 
-Options can either be declared below a section. Derived from its executable suffix name, each binary owns its own section. Values beyond this section applies to the binary only.
+Options can either be declared below a section. Derived from its executable suffix name, each binary owns its own section. Values in section Global applies to all binaries.
 
 Example:
 
 [Collect]
-
 ; comment
 option=value
 
@@ -35,6 +34,8 @@ e4rat-lite has a simple logging structure. Each event has a priority bit. The fo
    16   debug message
 
 =over
+
+=head2 Global Section (For all binaries)
 
 =item B<verbose>
 
@@ -73,11 +74,11 @@ Restrict file watches to ext4 filesystem types only. [Default: true]
 
 =item B<exclude_open_files>
 
-exclude files which are already opened. [Default: true]
+exclude files which are already opened (running). [Default: true]
 
-=item B<timeout>
+=item B<timeout> (in seconds)
 
-After the expiration of this value in seconds e4rat-lite-collect automatically quits collecting. Timeout takes only into account when e4rat-lite-collect was executed as init process. [Default: 120]
+After the expiration of this value, the e4rat-lite-collect automatically quits collecting. Timeout takes only into account when e4rat-lite-collect was executed as init process. [Default: 120]
 
 =back
 
@@ -89,9 +90,9 @@ After the expiration of this value in seconds e4rat-lite-collect automatically q
 
 set default rearrangement mode of e4rat-lite-realloc. [Default: auto]
     auto               choose mode automatically
-    pa                  use user-space pre-allocate ioctl
-    locality-group  create files in locality group
-    tld                  create files in top level directory
+    pa                 use user-space pre-allocate ioctl
+    locality-group     create files in locality group
+    tld                create files in top level directory
 
 =back
 

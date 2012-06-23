@@ -11,11 +11,11 @@ B<e4rat-lite-realloc>  B<[> opções B<]> B<[> modo B<]> arquivo(s)
 
 =head1 DESCRIÇÃO
 
-e4rat-lite-realloc é um relevante programa de desfragmentação de arquivos baseado no EXT4_IOC_MOVE_EXT ioctl de sistemas de arquivos ext4. Ele coloca fisicamente os arquivos em uma sequencia de blocos vizinhos no disco. O processo de realocação pode ser feito quando o sistema de arquivos ainda está montado. Por razões de segurança o acesso de gravação para cada arquivo é necessário.
+e4rat-lite-realloc é um relevante programa de desfragmentação de arquivos baseado no ioctl EXT4_IOC_MOVE_EXT de sistemas de arquivos ext4. Ele coloca fisicamente os arquivos em uma sequencia de blocos vizinhos no disco. O processo de realocação pode ser feito quando o sistema de arquivos ainda está montado. Por razões de segurança o acesso de gravação para cada arquivo é necessário.
 
 Se você quiser processar arquivos de um programa, é recomendado matar o processo primeiro. O Linux não permite que se escreva em arquivos abertos ou em execução. Portanto, não é possível processar o executável binário do programa, estes arquivos são excluidos automaticamente.
 
-Você pode usar uma lista de arquivos para serem processados.  A lista l<arquivo(s)> precisa estar no formato gerado pelo e4rat-lite-collect.
+Você pode usar uma lista de arquivos para serem processados. A lista de l<arquivo(s)> precisa estar no formato gerado pelo e4rat-lite-collect.
 
 =head1 OPÇÕES
 
@@ -39,7 +39,7 @@ define o level verboso para 0. Isso faz com que nenhuma mensagem seja exibida.
 
 =item -l --loglevel <numbero>
 
-define o loglevel para <numero>. Todas as mensagens de logo são enviadas para o log do Kernel (leia dmesh(1) ou syslog(3)).
+define o loglevel para <numero>. Todas as mensagens de log são enviadas para o log do Kernel (leia dmesh(1) ou syslog(3)).
 
 =back
 
@@ -51,18 +51,17 @@ Use o arquivo de configuração para alterar os modos de desfragmentação.
 
 =item Pré Alocação (pa)
 
-Use a pré alocação ioctl para reorganizar os arquivos no disco. Este modo foi eliminado do
-use the pre-allocation ioctl to rearrange files on disk. Este modo também remove lacunas de blocos não alocados em arquivos esparsos. Infelizmente, esse ioctl está atualmente sobre pesado desenvolvimento por Kazuya Mio e não está inserido no Kernel Linux. Por isso você tem que aplicar este patch ao kernel primeiro: http://kt1.osuosl.org/mailarchive/linux-fsdevel/2010/12/1/6887724
+Use a pré alocação ioctl para reorganizar os arquivos no disco. Este modo também remove lacunas de blocos não alocados em arquivos esparsos. Infelizmente, esse ioctl está atualmente sobre pesado desenvolvimento por Kazuya Mio e não está inserido no Kernel Linux. Por isso você tem que aplicar este patch ao kernel primeiro: http://kt1.osuosl.org/mailarchive/linux-fsdevel/2010/12/1/6887724
 Faça isso por sua própria conta e risco.
 
 =item Grupos de localidades (locality-group)
 
-O sistema de arquivos ext4 aloca pequenos arquivos em grupos chamados de localidade. Cada CPU gerencia o seu próprio grupo. O método de "grupo de localidades" faz uso desse recurso a fim de organizar os arquivos no disco. Em contraste com o método de pré alocação, não é necessário patchear o kernel. No entanto, a atribuição deste é ideal.
+O sistema de arquivos ext4 aloca pequenos arquivos em grupos chamados de localidade. Cada CPU gerencia o seu próprio grupo. O método de "grupo de localidades" faz uso deste recurso a fim de organizar os arquivos no disco. Em contraste com o método de pré alocação, não é necessário patchear o kernel, no entanto, a atribuição deste é ideal.
 Enquanto a criação de arquivos doadores está em progresso, é necessário aumentar o limite de arquivos pequenos. Como resultado de outros pedidos de alocação que ocorrem ao mesmo tempo, também estará de acordo com blocos dos grupos de localidades. Esse é o melhor se você quiser evitar a escrita pesada no disco.
 
 =item Diretório de nível superior (tld)
 
-Com esse método, todos os arquivos doadores são criados em uma novo diretório de nível superior.
+Com este método, todos os arquivos doadores são criados em uma novo diretório de nível superior.
 O chamado algorítimo de Orlov coloca o diretório de nível superior em um grupo de blocos vazio. Como resultado, todos os arquivos doadores serão alocados nesse diretório. Mas não há garantia de que os arquivos doadores serão alocados em sua ordem de acesso.
 
 Além disso, o alocador de blocos ext4's normaliza todas as requisições de blocos para uma potencia de 2. Isso normalmente leva a pequenos buracos entre os arquivos.

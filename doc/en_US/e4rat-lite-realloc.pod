@@ -39,7 +39,7 @@ set verbosity level to 0. This means that no messages will be displayed.
 
 =item -l --loglevel <number>
 
-set loglevel to <number>. All log messages are sent either to the Kernel log (see dmesg(1)) or to syslog(3).
+set loglevel to <number>. All log messages are sent either to the Kernel log (see dmesg(1) or to syslog(3)).
 
 =back
 
@@ -58,7 +58,7 @@ Do this at your own risk.
 =item locality group
 
 The ext4 filesystem allocates small files in so-called locality groups. Each CPU manages its own group. 
-The "locality-group" method makes use of this feature in order to rearrange the files on disk. In contrast to the "prealloc" method, no kernel patch is required. However, the placement may me suboptimal.
+The "locality-group" method makes use of this feature in order to rearrange the files on disk. In contrast to the "prealloc" method, no kernel patch is required, however, the placement may me suboptimal.
 While creating donor files is in progress, it is necessary to increase the limit which indicates small files. 
 As a result other allocation requests occurring at the same time will be also satisfied with blocks from the locality group as well. It is the best if you just avoid heavy write access to disk.
 
