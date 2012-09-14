@@ -160,7 +160,7 @@ std::vector<std::string> matchPath( const std::string & filesearch )
         p /= filesearch;
     }
     // Initialize regex filter - use * as default if nothing is given in filesearch
-    std::string f( p.has_filename() ? p.filename() : "*");
+    std::string f( p.has_filename() ? p.filename().string() : "*");
 
     fs::path dir(system_complete(p).parent_path());
     if( is_directory(dir) )
@@ -169,8 +169,8 @@ std::vector<std::string> matchPath( const std::string & filesearch )
              it!=boost::filesystem::directory_iterator();
              ++it )
         {
-            if( boost::regex_match( it->leaf(), path2regex(f) ) )
-                fileset.push_back(it->string());
+            if( boost::regex_match( it->path().filename().string(), path2regex(f) ) )
+                fileset.push_back(it->path().filename().string());
         }
     return fileset;
 }
