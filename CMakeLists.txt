@@ -1,7 +1,7 @@
 cmake_minimum_required(VERSION 2.6)
 
 PROJECT(e4rat-lite)
-set(E4RAT-LITE_VERSION "2.6-git")
+set(E4RAT-LITE_VERSION "2.7-git")
 set(CMAKE_VERBOSE_MAKEFILE off)
 set(LOCALE_INSTALL_DIR "/usr/share/locale")
 
