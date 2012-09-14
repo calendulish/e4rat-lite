@@ -199,13 +199,13 @@ int Device::getDevNameFromDevfs()
         it != end_itr;
         ++it )
     {
-        if(it->filename() == "root")
+        if(it->path().filename().string() == "root")
             continue;
-        if(lstat(it->string().c_str(), &st))
+        if(lstat(it->path().filename().c_str(), &st))
             continue;
         if(st.st_rdev == get()->devno)
         {
-            get()->deviceName = it->filename();
+            get()->deviceName = it->path().filename().string();
             get()->devicePath = "/dev/" + get()->deviceName;
             return 0;
         }
@@ -228,7 +228,7 @@ int Device::getDevNameFromMajorMinor()
             // the minor number of virtual filesystems are allocated dynamically in function set_anon_super() in fs/super.c
             // for convenience set deviceName and devicePath to a common name
             get()->deviceName = "virtual file system";
-            get()->devicePath = get()->mount_point.filename();
+            get()->devicePath = get()->mount_point.filename().string();
             return 0;
         case 2:
             ss << "fd";
