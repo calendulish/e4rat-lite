@@ -424,7 +424,7 @@ int main(int argc, char* argv[])
          * Parse application list given as arguments
          */
         for ( ; optind < argc; optind++)
-            project.observeApp(fs::path(argv[optind]).filename());
+            project.observeApp(fs::path(argv[optind]).filename().string());
 
         /*
          * Parse application list on stdin
