@@ -38,6 +38,7 @@
 #define _(x) gettext(x)
 
 #define PID_FILE "/var/run/e4rat-lite-realloc.pid"
+#define LOG_FILE "/var/lib/e4rat-lite/startup.log"
 
 /*
  * FileInfo is a wrapper class of fs::path
@@ -169,10 +170,10 @@ int main(int argc, char* argv[])
 
         if(filelist.empty() && optind == argc)
         {
-            file = fopen("./e4rat-lite-collect.log", "r");
+            file = fopen(LOG_FILE, "r");
             if(NULL != file)
             {
-                notice(_("Parsing file ./e4rat-lite-collect.log"));
+                notice(_("Parsing file %s"), LOG_FILE);
                 parseInputStream(file, filelist);
                 fclose(file);
             }

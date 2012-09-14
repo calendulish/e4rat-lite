@@ -516,14 +516,10 @@ msgstr "Sem espaço em disco"
 msgid "Parsed Event: %d %s"
 msgstr "Evento analisado: %d %s"
 
-#: src/e4rat-realloc.cc:154
+#: src/e4rat-realloc.cc:154 src/e4rat-realloc.cc:175
 #, c-format
 msgid "Parsing file %s"
 msgstr "Analisando arquivo %s"
-
-#: src/e4rat-realloc.cc:175
-msgid "Parsing file ./e4rat-lite-collect.log"
-msgstr "Analisando arquivo ./e4rat-lite-collect.log"
 
 #: src/e4rat-realloc.cc:166
 msgid "Parsing from stdin"

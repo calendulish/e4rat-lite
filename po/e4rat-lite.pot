@@ -504,13 +504,9 @@ msgstr ""
 msgid "Parsed Event: %d %s"
 msgstr ""
 
-#: src/e4rat-realloc.cc:154
+#: src/e4rat-realloc.cc:154 src/e4rat-realloc.cc:175
 #, c-format
 msgid "Parsing file %s"
-msgstr ""
-
-#: src/e4rat-realloc.cc:175
-msgid "Parsing file ./e4rat-lite-collect.log"
 msgstr ""
 
 #: src/e4rat-realloc.cc:166
