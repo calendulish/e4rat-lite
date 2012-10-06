@@ -877,7 +877,7 @@ void Defrag::createDonorFiles_TLD(Device& device,
             }
             catch(std::runtime_error& e)
             {
-                if(-1 == remove(tmpFile.c+str()))
+                if(-1 == remove(tmpFile.c_str()))
                     if(errno != ENOENT)
                         error(_("Cannot remove temp file: %s: %s"),
                             tmpFile.c_str(), strerror(errno));
