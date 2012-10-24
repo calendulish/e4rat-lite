@@ -37,69 +37,109 @@ a seguinte linha aos parâmetros do kernel:
 
 init=/sbin/e4rat-lite-collect
 
-Após o processo e4rat-collect terminar ele vai gerar uma lista de arquivos,
-que está gravada em /var/lib/e4rat-lite/startup.log (ou no local indicado
-em seu arquivo de configuração `/etc/e4rat-lite.conf').
+Isso também pode ser feito alterando os arquivos de configuração do seu carregador de
+boot (grub, lilo, syslinux, etc).
 
-Antes de começar o processo de realocação, é recomendado que você mude para o
-runlevel 1, assim você garante acesso de gravação a todos os processos binários:
+Verifique o arquivo de configuração (/etc/e4rat-lite.conf), e altere a variável init_file
+para o processo de inicialização usado em seu sistema.
 
-init 1
+Exemplos:
 
-Faça então a realocação:
+init_file=/bin/systemd
 
-e4rat-lite-realloc <log de inicialização>
+ou
 
-onde <log de inicialização> é o arquivo usado para gravar o log do
-e4rat-lite-collect (contído na variável startup_log_file em /etc/e4rat-lite.conf).
+init_file=/sbin/init
 
-Exemplo de uso: e4rat-lite-realloc /var/lib/e4rat-lite/startup.log
+Reinicie o computador para completar a primeira coleta de dados. Após o processo do
+e4rat-lite-collect terminar ele vai gerar uma lista de arquivos, que é gravada por
+padrão em /var/lib/e4rat-lite/startup.log (Você pode alterar o caminho de destino
+no arquivo de configuração, em /etc/e4rat-lite.conf).
 
-Altere agora os paramêtros do kernel para carregar o preload do e4rat:
+Após a inicialização completa do seu sistema, você pode finalizar o processo do
+e4rat-lite-collec, executando:
+
+# e4rat-lite-collect -k
+
+Agora é necessário executar o e4rat-lite-realloc para iniciar o processo de realocação.
+É recomendado que você mude para o runlevel 1, assim você garante acesso de gravação a
+todos os processos binários (Consulte man e4rat-lite-realloc para mais informações).
+
+Se está utilizando o sistema de inicialização padrão (System V), você pode utilizar o
+seguinte comando para entrar em runlevel 1:
+
+# init 1 ou # telinit 1
+
+e pode voltar a sua interface gráfica utilizando # init 5 ou # telinit 5
+
+Se estiver utilizando systemd, uma situação equivalente seria alternar para o modo rescue:
+
+# systemctl isolate rescue.target
+
+E para voltar a sua interface gráfica, pode-se utilizar:
+
+# systemctl isolate graphical.target
+
+Faça então a realocação utilizando o comando:
+
+# e4rat-lite-realloc
+
+Por padrão, o e4rat-lite-realloc procura pelo arquivo de log da inicialização em
+/var/lib/e4rat-lite/startup.log. Caso esteja em outro local, você pode indicar o caminho
+como parâmetro.
+
+Ao final de todo esse processo, o parâmetro do kernel deve ser alterado para carregar o
+e4rat-lite-preload, que vai de fato acelerar o boot do seu sistema:
 
 init=/sbin/e4rat-lite-preload
 
-Isso basta. É necessário fazer uma nova coleta de arquivos após váriadas
-modificações em programas instalados, bem como atualizações e/ou arquivos
-relacionados ao boot, como bibliotecas e afins. O tempo para isso varia de
-acordo com a frequencia de modificações que realiza em seu disco.
+Isso basta.
+
+É necessário fazer uma nova coleta de arquivos após váriadas modificações em programas
+instalados, bem como atualizações e/ou arquivos relacionados ao boot, como bibliotecas
+e afins. O tempo para isso varia de acordo com a frequencia de modificações que realiza
+em seu disco, faça isso ao seu gosto.
 
 ---------- Dependências ----------
 
-O e4rat possuí algumas dependências externas, são elas:
+O e4rat-lite possuí algumas dependências externas, são elas:
  - Kernel Linux (>= 2.6.31)
- - Um sistema de arquivo ext compatível com journa
+ - Um sistema de arquivo ext compatível com journal
  - CMake (>= 2.6)
  - Boost Library (>=1.41)
       [Necessita dos componentes: system, filesystem, regex, signals2]
  - Linux Audit Library (libaudit >=0.1.7)
  - Ext2 File System Utilities (e2fsprogs)
+ - gettext (>=0.18)
 
 ---------- Compilando ----------
 
-O sistema de compilação do e4rat é baseado no CMake, que irá gerar o Makefile.
-Para compilar um release cria a pasta de build:
+O sistema de compilação do e4rat-lite é baseado no CMake, que irá gerar o Makefile.
+Para compilar um release, crie a pasta de build:
 
-mkdir build
-cd build
+$ mkdir build
+$ cd build
 
 E execute o comando:
 
-cmake ../ -DCMAKE_BUILD_TYPE=release
+$ cmake ../ -DCMAKE_BUILD_TYPE=release
 
 Isso vai gerar um Makefile apropriado. Compile com o comando:
 
-make
+$ make
 
 E para instalar:
 
-sudo make install
+# make install
 
 Se você está rodando uma distribuição Linux baseada no Debian, você
 também pode gerar um pacote debian para a instalação:
 
 make package
 dpkg -i e4rat-lite_<version>_<arch>.deb
+
+ATENÇÃO: O comando 'make package' está desatualizado no e4rat-lite. Por isso,
+pode haver problemas na criação de pacotes. Será atualizado em breve.
 
 ---------- Autores ----------
 
@@ -122,7 +162,6 @@ MERCADO ou APLICAÇÃO EM PARTICULAR. Veja a Licença Pública Geral GNU
 para maiores detalhes.
 
 Você deve ter recebido uma cópia da Licença Pública Geral GNU junto
-com este programa, se não, escreva para a Fundação do Software Livre
-(FSF) Inc., 51 Franklin St, Fifth Floor, Boston, MA 02110-1301 USA
+com este programa, se não, consulte em <http://www.gnu.org/licenses/>.
 
 Lara Maia - Lara Maia <lara@craft.net.br>
