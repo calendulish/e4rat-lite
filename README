@@ -132,15 +132,6 @@ E para instalar:
 
 # make install
 
-Se você está rodando uma distribuição Linux baseada no Debian, você
-também pode gerar um pacote debian para a instalação:
-
-make package
-dpkg -i e4rat-lite_<version>_<arch>.deb
-
-ATENÇÃO: O comando 'make package' está desatualizado no e4rat-lite. Por isso,
-pode haver problemas na criação de pacotes. Será atualizado em breve.
-
 ---------- Autores ----------
 
 e4rat foi desenvolvido por Andreas Rid <conso@hs-augsburg.de> sob a orientação
