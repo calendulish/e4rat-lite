@@ -34,9 +34,9 @@ O e4rat-lite possui uma estrutura de log simples. Cada evento possui uma priorid
     8   informação sobre uma única etapa
    16   mensagens de debug
 
-=over
-
 =head2 Seção Global (Para todos os binários)
+
+=over
 
 =item B<verbose>
 

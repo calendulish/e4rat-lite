@@ -33,9 +33,9 @@ e4rat-lite has a simple logging structure. Each event has a priority bit. The fo
     8   information about a single step
    16   debug message
 
-=over
-
 =head2 Global Section (For all binaries)
+
+=over
 
 =item B<verbose>
 
