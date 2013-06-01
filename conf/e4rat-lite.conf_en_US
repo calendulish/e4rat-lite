@@ -3,7 +3,7 @@
 [Global]
 
 ; Path to the main initialization process
-init_file=/sbin/init
+init_file=/usr/lib/systemd/systemd
 
 ; Default location of the boot log
 startup_log_file=/var/lib/e4rat-lite/startup.log
