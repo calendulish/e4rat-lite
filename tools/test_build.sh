@@ -5,7 +5,7 @@ if [ "$2" == "global" ] && [ `id -u` != 0 ]; then exit 1; fi
 if [ -e build ]; then rm -rfv build; fi
 mkdir build && cd build
 echo "---~---"
-cmake .. -DCMAKE_BUILD_TYPE=$type -DCMAKE_INSTALL_PREFIX=""
+cmake .. -DCMAKE_BUILD_TYPE=$type -DCMAKE_INSTALL_PREFIX="/usr"
 echo "---~---"
 make -j5
 echo "---~---"
