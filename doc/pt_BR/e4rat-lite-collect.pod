@@ -100,7 +100,7 @@ O <arquivo> contém uma lista de arquivos a serem ignorados pelo e4rat-lite-coll
 =head2 Escanear processos do boot
 
 Rode o e4rat-lite-collect o mais antes possível para escanear todo o processo de inicialização. É recomendado executar o e4rat-lite-collect como um processo de inicialização. Para isso, adicione a seguinte linha aos parâmetros do kernel em grub(8) ou lilo(8).
-init=/sbin/e4rat-lite-collect
+init=/usr/bin/e4rat-lite-collect
 
 =head1 ARQUIVOS
 

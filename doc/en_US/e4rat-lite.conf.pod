@@ -56,7 +56,7 @@ Set <log_target> to 'syslog' to send the message to the syslog daemon.
 
 =item B<init_file>
 
-Set an alternative init process instead of /sbin/init
+Set an alternative init process instead of /usr/lib/systemd/systemd
 
 =item B<startup_log_file>
 

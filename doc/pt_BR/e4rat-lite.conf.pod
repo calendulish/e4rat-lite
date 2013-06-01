@@ -56,7 +56,7 @@ Defina o <log_target> para 'syslog' caso queira enviar as mensagens para o daemo
 
 =item B<init_file>
 
-Define um processo de inicialização alternativo, substituindo o /sbin/init
+Define um processo de inicialização alternativo, substituindo o /usr/lib/systemd/systemd
 
 =item B<startup_log_file>
 

@@ -15,7 +15,7 @@ e4rat-lite-preload transfers files into memory to gain a high cache hit rate.
 
 In order to prevent disk seeks the preloading process is divided into two steps:
 
-First, it reads the files' I-Node information, after it reads the files' content. This can be done in parallel of executing the command specified with --execute. If e4rat-lite-preload is executed as the init process by adding it to the kernel parameters, /sbin/init is called.
+First, it reads the files' I-Node information, after it reads the files' content. This can be done in parallel of executing the command specified with --execute. If e4rat-lite-preload is executed as the init process by adding it to the kernel parameters, /usr/lib/systemd/systemd is called.
 
 =head2 Observations
 
@@ -50,7 +50,7 @@ Alternate startup log file
 =head2 Accelerate the boot process:
 
 Run e4rat-lite-preload as early as possible. It is recommended to run it as the init process. To do so, append the following line to the Kernel parameters in grub(8) or lilo(8):
-   init=/sbin/e4rat-lite-preload
+   init=/usr/bin/e4rat-lite-preload
 
 =head1 FILES
 

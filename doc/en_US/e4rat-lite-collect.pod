@@ -100,7 +100,7 @@ The <file> contains a list of files, which e4rat-lite-collect should exclude.
 =head2 Scan boot process:
 
 Run e4rat-lite-collect as early as possible to scan the whole startup process. It is recommended to run e4rat-lite-collect as init process. To do so, add the following lines to the Kernel parameters in grub(8) or lilo(8).
-init=/sbin/e4rat-lite-collect
+init=/usr/bin/e4rat-lite-collect
 
 =head1 FILES
 

@@ -15,7 +15,7 @@ O e4rat-lite-preload transfere os arquivos para a memória a fim de obter um alt
 
 A fim de evitar a busca no disco, o processo de pré carregamento é dividido em duas etapas:
 
-Primeiro, ele lê as informações de I-Node dos arquivos, depois ele lê o conteúdo dos arquivos. Isso pode ser feito paralelamente com a execução do arquivo especificado em --execute. Se o e4rat-lite-preload for executado como um processo de inicialização pela adição dele aos parametros do kernel, o /sbin/init (ou o processo indicado na configuração) é chamado.
+Primeiro, ele lê as informações de I-Node dos arquivos, depois ele lê o conteúdo dos arquivos. Isso pode ser feito paralelamente com a execução do arquivo especificado em --execute. Se o e4rat-lite-preload for executado como um processo de inicialização pela adição dele aos parametros do kernel, o /usr/lib/systemd/systemd (ou o processo indicado na configuração) é chamado.
 
 =head2 Observações
 
@@ -50,7 +50,7 @@ Arquivo alternativo para o log de inicialização
 =head2 Acelerando o processo de boot
 
 Execute o e4rat-lite-preload o mais cedo possível. É recomendado executa-lo como um processo de inicialização, para isso insira a seguinte linha aos parametros do kernel em grub(8) ou lilo(8).
-  init=/sbin/e4rat-lite-preload
+  init=/usr/bin/e4rat-lite-preload
 
 =head1 ARQUIVOS
 
