@@ -2,6 +2,7 @@
 cd ..
 rm -fv *.a
 rm -fv e4rat-lite-*
+rm -fv libe4rat-lite-*
 rm -rfv build
 potd=(`find doc/ -type d -exec basename {} \;`)
 for ((i=1;i<${#potd[@]};i++)); do

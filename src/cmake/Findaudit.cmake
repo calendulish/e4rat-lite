@@ -1,7 +1,7 @@
 FIND_PATH(AUDIT_INCLUDE_DIR libaudit.h /usr/include
     /usr/local/include)
 
-FIND_LIBRARY(AUDIT_LIBRARY NAMES libaudit.a PATH /usr/lib /usr/local/lib) 
+FIND_LIBRARY(AUDIT_LIBRARY NAMES audit PATH /usr/lib /usr/local/lib) 
 
 IF (AUDIT_INCLUDE_DIR AND AUDIT_LIBRARY)
    SET(AUDIT_FOUND TRUE)

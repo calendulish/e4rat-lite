@@ -1,7 +1,7 @@
 FIND_PATH(AUPARSE_INCLUDE_DIR auparse.h /usr/include
     /usr/local/include)
 
-FIND_LIBRARY(AUPARSE_LIBRARY NAMES libauparse.a PATH /usr/lib /usr/local/lib) 
+FIND_LIBRARY(AUPARSE_LIBRARY NAMES auparse PATH /usr/lib /usr/local/lib) 
 
 IF (AUPARSE_INCLUDE_DIR AND AUPARSE_LIBRARY)
    SET(AUPARSE_FOUND TRUE)

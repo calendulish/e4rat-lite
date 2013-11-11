@@ -133,21 +133,12 @@ IF(CMAKE_BUILD_TYPE STREQUAL "debug")
     )
 ENDIF(CMAKE_BUILD_TYPE STREQUAL "debug")
 
-# On 64 bit architecture you cannot link a static to a shared library
-# Therefore -static-libstdc++ will fail.
-if(BUILD_CORE_LIBRARY_STATIC)
-    add_library(${PROJECT_NAME}-core STATIC
+add_library(${PROJECT_NAME}-core SHARED
         ${${PROJECT_NAME}-core_SRC}
-    )
-else(BUILD_CORE_LIBRARY_STATIC)
-    add_library(${PROJECT_NAME}-core SHARED
-        ${${PROJECT_NAME}-core_SRC}
-    )
-    set_target_properties(${PROJECT_NAME}-core  PROPERTIES
-        SOVERSION   0
-        LINK_FLAGS  "-static-libgcc -static-libstdc++"
-    )
-endif(BUILD_CORE_LIBRARY_STATIC)
+)
+set_target_properties(${PROJECT_NAME}-core PROPERTIES
+        SOVERSION 0
+)
 
 target_link_libraries(${PROJECT_NAME}-core
         ${${PROJECT_NAME}_LIBRARIES}
@@ -160,15 +151,13 @@ foreach( EXE     ${PROJECT_NAME}-collect
     TARGET_LINK_LIBRARIES(${EXE}
         ${PROJECT_NAME}-core
     )
-    set_target_properties(${EXE}  PROPERTIES
-        LINK_FLAGS  "-static-libgcc -static-libstdc++"
-    )
 endforeach( EXE )
 
 ###
 # install project targets
 ###
 set(${PROJECT_NAME}_TARGETS
+    ${PROJECT_NAME}-core
     ${PROJECT_NAME}-collect
     ${PROJECT_NAME}-preload
     ${PROJECT_NAME}-realloc
@@ -183,8 +172,7 @@ endif(NOT BUILD_CORE_LIBRARY_STATIC)
 
 INSTALL(TARGETS ${${PROJECT_NAME}_TARGETS}
         RUNTIME DESTINATION "bin"
-        LIBRARY DESTINATION "lib"
-        ARCHIVE DESTINATION "lib"
+        LIBRARY DESTINATION "${CMAKE_INSTALL_PREFIX}/lib"
 )
 
 INSTALL(DIRECTORY DESTINATION "/var/lib/${PROJECT_NAME}")
