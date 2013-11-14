@@ -170,7 +170,7 @@ std::vector<std::string> matchPath( const std::string & filesearch )
              ++it )
         {
             if( boost::regex_match( it->path().filename().string(), path2regex(f) ) )
-                fileset.push_back(it->path().filename().string());
+                fileset.push_back(it->path().string());
         }
     return fileset;
 }
