@@ -109,6 +109,7 @@ class AuditListener : public Interruptible
         std::set<dev_t> exclude_devices;
         std::set<long>  watch_fs_types;
         bool ext4_only;
+        std::set<dev_t>ext4_devices_cache;
 };
 
 /*

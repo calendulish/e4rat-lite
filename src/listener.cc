@@ -627,15 +627,15 @@ bool AuditListener::ignoreDevice(dev_t dev)
         return true;
 
     if(!watch_devices.empty())
-        if(watch_devices.end() != watch_devices.find(dev))
-            return false;
+        if(watch_devices.end() == watch_devices.find(dev))
+            return true;
 
-    if(ext4_only)
+    if(ext4_only && ext4_devices_cache.end() == ext4_devices_cache.find(dev))
     {
         try {
             Device device(dev);
             if(device.getFileSystem() == "ext4")
-                watch_devices.insert(dev);
+                ext4_devices_cache.insert(dev);
             else
             {
                 std::string dev_name = device.getDevicePath();

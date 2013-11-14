@@ -800,7 +800,7 @@ void Defrag::createDonorFiles_LocalityGroup(Device& device,
          * Restore CPU affinity
          */
         if(ret_get_affinity == 0)
-            if(0 > sched_setaffinity(gettid(), sizeof(new_sched_mask), &new_sched_mask))
+            if(0 > sched_setaffinity(gettid(), sizeof(cur_sched_mask), &cur_sched_mask))
                 warn(_("Cannot restore process's CPU affinity: %s"), strerror(errno));
         
         /*
