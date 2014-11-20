@@ -91,13 +91,13 @@ void ScanFsAccess::handleAuditEvent(boost::shared_ptr<AuditEvent> event)
     if(!observe_apps.empty())
     {
         if(observe_pids.find(event->pid) == observe_pids.end())
-	{
+    {
             if(observe_apps.find(event->comm) == observe_apps.end())
-	        return;
+            return;
 
-	    debug(_("Valid process name %. insert pid %d"), event->comm.c_str(), event->pid);
+        debug(_("Valid process name %. insert pid %d"), event->comm.c_str(), event->pid);
             observe_pids.insert(event->pid);
-	}
+    }
     }
     debug(_("syscall: %d RO: %d"), event->type, event->readOnly);
     

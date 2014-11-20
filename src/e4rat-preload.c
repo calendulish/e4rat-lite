@@ -31,10 +31,10 @@
 
 #ifdef __STRICT_ANSI__
 char *strdup(const char *str) {
-	unsigned int n = strlen(str) + 1;
-	char *dup = malloc(n);
-	if(dup) strcpy(dup, str);
-	return dup;
+    unsigned int n = strlen(str) + 1;
+    char *dup = malloc(n);
+    if(dup) strcpy(dup, str);
+    return dup;
 }
 #endif
 
@@ -82,14 +82,14 @@ static FileDesc * parse_line (int n, const char * line) {
 }
 
 static void printUsage () {
-	printf(_("Usage: e4rat-lite-preload [ option(s) ]\n"
-	"\n"
-	"-V --version                           print version and exit\n"
-	"-h --help                              print help and exit\n"
-	"\n"
-	"-i --initfile <path to file>           alternate init file\n"
-	"-s --startuplog <path to file>         alternate startup log file"
-	"\n"));
+    printf(_("Usage: e4rat-lite-preload [ option(s) ]\n"
+    "\n"
+    "-V --version                           print version and exit\n"
+    "-h --help                              print help and exit\n"
+    "\n"
+    "-i --initfile <path to file>           alternate init file\n"
+    "-s --startuplog <path to file>         alternate startup log file"
+    "\n"));
 }
 
 static void load_list (const char* LIST) {
@@ -188,37 +188,37 @@ int main (int argc, char * * argv) {
    textdomain("e4rat-lite");
    
    if (ini_parse("/etc/e4rat-lite.conf", config_handler, &config) < 0) {
-	   printf(_("Unable to load the configuration file: %s\n"), strerror (errno));
-	   exit (EXIT_FAILURE);
+       printf(_("Unable to load the configuration file: %s\n"), strerror (errno));
+       exit (EXIT_FAILURE);
    }
    
    static struct option long_options[] =
-	{
-		{"help",        no_argument,       0, 'h'},
-		{"version",     no_argument,       0, 'V'},
-		{"initfile",    required_argument, 0, 'i'},
-		{"startuplog",  required_argument, 0, 's'},
-		{0, 0, 0, 0}
-	};
+    {
+        {"help",        no_argument,       0, 'h'},
+        {"version",     no_argument,       0, 'V'},
+        {"initfile",    required_argument, 0, 'i'},
+        {"startuplog",  required_argument, 0, 's'},
+        {0, 0, 0, 0}
+    };
 
     int c;
     int option_index = 0;
     const char* opt_init_file = 0;
     const char* opt_startup_log_file = 0;
     while ((c = getopt_long (argc, argv, "i:s:hV", long_options, &option_index)) != EOF)
-	{
+    {
         switch(c)
         {
             case 'h':
                 goto err1;
             case 'V':
-				goto err2;
-			case 'i':
-				opt_init_file = optarg;
-				break;
-			case 's':
-				opt_startup_log_file = optarg;
-				break;
+                goto err2;
+            case 'i':
+                opt_init_file = optarg;
+                break;
+            case 's':
+                opt_startup_log_file = optarg;
+                break;
         }
     }
 
@@ -239,6 +239,6 @@ err1:
     printUsage();
     exit(1);
 err2:
-	printf("%s %s\n", PROGRAM_NAME, VERSION);
-	exit(1);
+    printf("%s %s\n", PROGRAM_NAME, VERSION);
+    exit(1);
 }

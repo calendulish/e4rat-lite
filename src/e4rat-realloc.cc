@@ -178,7 +178,7 @@ int main(int argc, char* argv[])
                 fclose(file);
             }
             else
-	        goto out;
+            goto out;
         }
         //type casting necessary not to break strict-aliasing rules
         std::vector<fs::path>* fp = (std::vector<fs::path>*)&filelist;

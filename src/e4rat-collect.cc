@@ -21,7 +21,7 @@
 #include "listener.hh"
 #include "common.hh"
 extern "C" {
-	#include "config.h"
+    #include "config.h"
 }
 #include "eventcatcher.hh"
 #include "logging.hh"
@@ -55,10 +55,10 @@ extern "C" {
 
 #ifdef __STRICT_ANSI__
 char *strdup(const char *str) {
-	unsigned int n = strlen(str) + 1;
-	char *dup = malloc(n);
-	if(dup) strcpy(dup, str);
-	return dup;
+    unsigned int n = strlen(str) + 1;
+    char *dup = malloc(n);
+    if(dup) strcpy(dup, str);
+    return dup;
 }
 #endif
 
@@ -230,10 +230,10 @@ int main(int argc, char* argv[])
     bindtextdomain("e4rat-lite", "/usr/share/locale");
     textdomain("e4rat-lite");
 
-	if (ini_parse("/etc/e4rat-lite.conf", config_handler, &config) < 0) {
-	   printf(_("Unable to load the configuration file: %s\n"), strerror (errno));
-	   exit (EXIT_FAILURE);
-	}
+    if (ini_parse("/etc/e4rat-lite.conf", config_handler, &config) < 0) {
+       printf(_("Unable to load the configuration file: %s\n"), strerror (errno));
+       exit (EXIT_FAILURE);
+    }
 
     int loglevel = 3; //FIXME
     int verbose  = 7; //FIXME
@@ -420,7 +420,7 @@ int main(int argc, char* argv[])
         else if(!outPath)
             outPath = "./e4rat-lite-collect.log";
 
-	/*
+    /*
          * Parse application list given as arguments
          */
         for ( ; optind < argc; optind++)

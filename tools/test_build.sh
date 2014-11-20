@@ -10,13 +10,13 @@ echo "---~---"
 make -j5
 echo "---~---"
 if [ "$2" != "global" ]; then
-	mkdir test
-	make DESTDIR="test" install
-	echo "---~---"
-	ls test/
+    mkdir test
+    make DESTDIR="test" install
+    echo "---~---"
+    ls test/
 else
-	make install
-	mandb
+    make install
+    mandb
 fi
 echo "---~---"
 ls

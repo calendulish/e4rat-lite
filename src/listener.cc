@@ -808,7 +808,7 @@ void Listener::connect()
 {
     try {
         insertAuditRules();
-	activateAuditSocket();
+    activateAuditSocket();
     }
     catch(std::exception&e)
     {

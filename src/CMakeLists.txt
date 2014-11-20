@@ -22,13 +22,13 @@ if(CMAKE_COMPILER_IS_GNUCXX)
 
     if(GCC_VERSION VERSION_LESS 4.5)
         message(WARNING "GCC <4.5 does not support -static-libstdc++")
-	execute_process(COMMAND stat -c %d /
+    execute_process(COMMAND stat -c %d /
                         OUTPUT_VARIABLE DEV_ROOT_DIR)
         execute_process(COMMAND stat -c %d /usr
                         OUTPUT_VARIABLE DEV_USR_DIR)
         if(NOT ${DEV_ROOT_DIR} STREQUAL ${DEV_USR_DIR})
-	    message(FATAL_ERROR "Your /usr directory is not part of the root device. Upgrade to gcc >=4.5.")
-	endif(NOT ${DEV_ROOT_DIR} STREQUAL ${DEV_USR_DIR})
+        message(FATAL_ERROR "Your /usr directory is not part of the root device. Upgrade to gcc >=4.5.")
+    endif(NOT ${DEV_ROOT_DIR} STREQUAL ${DEV_USR_DIR})
     endif(GCC_VERSION VERSION_LESS 4.5)
 endif(CMAKE_COMPILER_IS_GNUCXX)
 

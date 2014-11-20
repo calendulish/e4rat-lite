@@ -24,7 +24,7 @@
 #include "logging.hh"
 #include "buddycache.hh"
 extern "C" {
-	#include "config.h"
+    #include "config.h"
 }
 
 #include <errno.h>
@@ -54,10 +54,10 @@ std::string defrag_mode;
 
 #ifdef __STRICT_ANSI__
 char *strdup(const char *str) {
-	unsigned int n = strlen(str) + 1;
-	char *dup = malloc(n);
-	if(dup) strcpy(dup, str);
-	return dup;
+    unsigned int n = strlen(str) + 1;
+    char *dup = malloc(n);
+    if(dup) strcpy(dup, str);
+    return dup;
 }
 #endif
 
@@ -310,36 +310,36 @@ void Optimizer::relatedFiles(std::vector<fs::path>& files)
         /*
          * Apply defrag mode
          */
-		configuration config;
-		if (ini_parse("/etc/e4rat-lite.conf", config_handler, &config) < 0) {
-			throw std::logic_error(std::string(_("Cannot open file: "))+"/etc/e4rat-lite.conf: " + strerror(errno));
-		} else {
-			defrag_mode = config.defrag_mode;
-		}
+        configuration config;
+        if (ini_parse("/etc/e4rat-lite.conf", config_handler, &config) < 0) {
+            throw std::logic_error(std::string(_("Cannot open file: "))+"/etc/e4rat-lite.conf: " + strerror(errno));
+        } else {
+            defrag_mode = config.defrag_mode;
+        }
         if("auto" == defrag_mode || "pa" == defrag_mode)
         {
-			bool ret;
-			const char* file = NULL;
-			BOOST_FOREACH(OrigDonorPair& odp, filemap.begin()->second)
-				if(odp.blocks)
-				{
-					file = odp.origPath.string().c_str();
-					break;
-				}
-			ret = doesKernelSupportPA(file);
-			if("auto" == defrag_mode && ret)
-				defrag_mode = "pa";
-			else if("pa" == defrag_mode && !ret)
-				throw std::logic_error(_("Kernel does not support pre-allocation"));
-			else
-				defrag_mode = "locality_group";
-		}
+            bool ret;
+            const char* file = NULL;
+            BOOST_FOREACH(OrigDonorPair& odp, filemap.begin()->second)
+                if(odp.blocks)
+                {
+                    file = odp.origPath.string().c_str();
+                    break;
+                }
+            ret = doesKernelSupportPA(file);
+            if("auto" == defrag_mode && ret)
+                defrag_mode = "pa";
+            else if("pa" == defrag_mode && !ret)
+                throw std::logic_error(_("Kernel does not support pre-allocation"));
+            else
+                defrag_mode = "locality_group";
+        }
 
         if(defrag_mode != "pa" && sparse_files)
             notice(_("%*d/%d file(s) are sparse-files which will retain gaps of unallocated blocks."),
                    (int)(log10(files.size())+1), sparse_files , files.size());
 
-		const char* defrag_mode_msg;
+        const char* defrag_mode_msg;
         if(defrag_mode == "pa")
             defrag_mode_msg = "pre-allocation";
         else if(defrag_mode == "locality_group")
