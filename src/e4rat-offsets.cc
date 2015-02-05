@@ -1,6 +1,6 @@
 /*
- * e4rat-offsets.cc - display physical block allocation and their offset
- *                 of a list of files
+ * e4rat-offsets.cc - display physical block allocation
+ *                    and their offset of a list of files
  *
  * Copyright (C) 2011 by Andreas Rid
  * 
@@ -48,53 +48,47 @@ class FileInfo : public boost::filesystem::path
 
 void printUsage()
 {
-    std::cout <<
-        "Usage: "PROGRAM_NAME"-offsets [file(s)]\n"
-        ;
+    std::cout << "Usage: "PROGRAM_NAME"-offsets [file(s)]\n";
 }
+
 int main(int argc, char* argv[])
 {
     struct fiemap* fmap;
     int fd;
     int prev_block = 0;
     int l = 13;
-
-    
     std::vector<FileInfo> filelist;
 
     try {
         FILE* file;
-        /*
-         * parse file list given as arguments
-         */
+
+        // parse file list given as arguments
         for(int i=optind; i < argc; i++)
         {
             file = fopen(argv[i], "r");
-            if(NULL == file)
+            if(NULL == file) {
                 fprintf(stderr, "File %s does not exists: %s\n", argv[i], strerror(errno));
-            else
-            {
+            } else {
                 printf("Parsing file %s\n", argv[i]);
+
                 parseInputStream(file, filelist);
+
                 fclose(file);
             }
         }
 
-        /*
-         * parse file list on stdin
-         */
+        // parse file list on stdin
         setStdIn2NonBlocking();
         if(EOF != peek(stdin))
         {
              printf("Parsing from stdin\n");
              parseInputStream(stdin, filelist);
         }
-    }
-    catch(std::exception&e )
-    {
+    } catch(std::exception&e ) {
         std::cerr << e.what() << std::endl;
         return 1;
     }
+
     if(filelist.empty())
         goto out;
 
@@ -108,6 +102,7 @@ int main(int argc, char* argv[])
             std::cerr << "Cannot open file: "
                       << file.string() << ": "
                       << strerror(errno) << std::endl;
+
             continue;
         }
         
@@ -118,6 +113,7 @@ int main(int argc, char* argv[])
                       << file.string() << ": "
                       << strerror(errno) << std::endl;
             close(fd);
+
             continue;
         }
 
@@ -125,25 +121,31 @@ int main(int argc, char* argv[])
         {
             int start = fmap->fm_extents[i].fe_physical>>12;
             int end   = start + (fmap->fm_extents[i].fe_length>>12) - 1;
+
             if(1 == fmap->fm_mapped_extents)
                 printf("%*s", 3, " ");
             else
                 printf("%*d", 3, i+1);
+
             printf("%*d", l, start);
             printf("%*d", l, end);
             printf("%*d", l, end - start + 1);
             printf("%*d", l, start - prev_block  -1);
+
             prev_block = end;
+
             if(0 == i)
                 printf("   %s", file.string().c_str());
+
             printf("\n");
-                    
         }
         free(fmap);
         close(fd);
     }
-    exit(0);
+
+    exit(EXIT_SUCCESS);
+
 out:
     printUsage();
-    exit(1);
+    exit(EXIT_FAILURE);
 }

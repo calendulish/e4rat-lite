@@ -1,8 +1,8 @@
 /*
  * e4rat-realloc.cc - Relevant file defragmentation tool
  *
- * Copyright (C) 2011 by Andreas Rid
- * Copyright (C) 2012 by Lara Maia
+ * Copyright: 2011 Andreas Rid.
+ *            2012 ~ 2015 Lara Maia <lara@craft.net.br>
  *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -64,7 +64,7 @@ _("Usage: e4rat-lite-realloc [ option(s) ] [ mode ] files(s)\n"
         ;
 }
 
-int main(int argc, char* argv[])
+int main(int argc, char *argv[])
 {
     Optimizer optimizer;
     std::vector<FileInfo> filelist;
@@ -88,7 +88,7 @@ int main(int argc, char* argv[])
 
     char c;
     int option_index = 0;
-    while ((c = getopt_long (argc, argv, "Vvhql", long_options, &option_index)) != EOF)
+    while((c = getopt_long(argc, argv, "Vvhql", long_options, &option_index)) != EOF)
     {
         switch(c)
         {
@@ -128,9 +128,8 @@ int main(int argc, char* argv[])
         std::cerr << _("Remove pid file ") << PID_FILE << _(" to unlock.\n");
         exit(1);
     }
-    /*
-     * Register signal handler
-     */
+
+    // Register signal handler
     struct sigaction sa;
     memset(&sa, '\0', sizeof(struct sigaction));
     sa.sa_handler = signalHandler;
@@ -138,10 +137,9 @@ int main(int argc, char* argv[])
     sigaction(SIGTERM, &sa, NULL);
 
     try {
-        FILE* file;
-        /*
-         * parse file list given as arguments
-         */
+        FILE *file;
+
+        // parse file list given as arguments
         for(int i=optind; i < argc; i++)
         {
             file = fopen(argv[i], "r");
@@ -155,9 +153,7 @@ int main(int argc, char* argv[])
             }
         }
 
-        /*
-         * parse file list on stdin
-         */
+        // parse file list on stdin
         setStdIn2NonBlocking();
         if(EOF != peek(stdin))
         {
@@ -177,19 +173,20 @@ int main(int argc, char* argv[])
             else
             goto out;
         }
-        //type casting necessary not to break strict-aliasing rules
-        std::vector<fs::path>* fp = (std::vector<fs::path>*)&filelist;
+        // type casting necessary not to break strict-aliasing rules
+        std::vector<fs::path> *fp = (std::vector<fs::path>*)&filelist;
         optimizer.relatedFiles(*fp);
-    }
-    catch(std::exception& e)
-    {
+    } catch(std::exception& e) {
         std::cerr << e.what() << std::endl;
     }
 
     unlink(PID_FILE);
+
     return 0;
+
 out:
     unlink(PID_FILE);
     printUsage();
-    exit(1);
+
+    exit(EXIT_FAILURE);
 }
