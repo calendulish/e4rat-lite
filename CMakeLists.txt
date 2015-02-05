@@ -2,7 +2,13 @@ cmake_minimum_required(VERSION 2.6)
 
 PROJECT(e4rat-lite)
 set(E4RAT-LITE_VERSION "2.7-git")
+
+IF(CMAKE_BUILD_TYPE STREQUAL "release")
 set(CMAKE_VERBOSE_MAKEFILE off)
+else(CMAKE_BUILD_TYPE STREQUAL "release")
+set(CMAKE_VERBOSE_MAKEFILE on)
+endif(CMAKE_BUILD_TYPE STREQUAL "release")
+
 set(LOCALE_INSTALL_DIR "/usr/share/locale")
 
 IF( NOT CMAKE_BUILD_TYPE )

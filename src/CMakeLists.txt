@@ -1,7 +1,5 @@
 cmake_minimum_required(VERSION 2.6)
 
-SET (CMAKE_C_FLAGS_RELEASE "-std=c99" )
-
 # test weather variables from top level directories are missing
 IF( NOT CMAKE_BUILD_TYPE )
   MESSAGE(FATAL_ERROR "Do not run cmake on subdirectories")
@@ -46,6 +44,8 @@ if(MOVE_EXT_RDONLY_FLAG)
     add_definitions(-DMOVE_EXT_RDONLY_FLAG)
 endif(MOVE_EXT_RDONLY_FLAG)
 
+SET(CMAKE_C_FLAGS_RELEASE "-std=c99" )
+SET(CMAKE_C_FLAGS_DEBUG ${CMAKE_C_FLAGS_RELEASE})
 SET(CMAKE_MODULE_PATH ${CMAKE_CURRENT_SOURCE_DIR}/cmake)
 SET(LIBRARY_OUTPUT_PATH ${CMAKE_CURRENT_SOURCE_DIR}/..)
 SET(EXECUTABLE_OUTPUT_PATH ${CMAKE_CURRENT_SOURCE_DIR}/..)

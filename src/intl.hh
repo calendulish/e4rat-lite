@@ -24,7 +24,11 @@
 #include <libintl.h>
 
 #ifndef _
-#define _(string) gettext(string)
+  #ifdef DEBUG_ENABLED
+    #define _(string) string
+  #else
+    #define _(string) gettext(string)
+  #endif
 #endif
 
 #endif
