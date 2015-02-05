@@ -1,5 +1,0 @@
-#!/bin/bash
-
-if [ ! -d /var/lib/e4rat ]; then
-	mkdir /var/lib/e4rat
-fi
