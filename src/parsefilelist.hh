@@ -23,9 +23,6 @@
 
 #include "logging.hh"
 #include <sstream>
-#include <libintl.h>
-
-#define _(x) gettext(x)
 
 int peek(FILE* in)
 {

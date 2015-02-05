@@ -31,7 +31,6 @@ extern "C" {
 #include <cstring>
 #include <sys/stat.h>
 #include <fcntl.h>
-#include <libintl.h>
 #include <linux/fs.h>
 #include <sys/ioctl.h>
 #include <mntent.h>
@@ -48,7 +47,6 @@ extern "C" {
 #include <sys/resource.h>
 
 #define gettid() syscall(__NR_gettid)
-#define _(x) gettext(x)
 
 std::string defrag_mode;
 

@@ -20,6 +20,8 @@
 #ifndef COMMON_HH
 #define COMMON_HH
 
+#include "intl.hh"
+
 #include <linux/types.h>
 #include <boost/filesystem.hpp>
 #include <boost/regex.hpp>

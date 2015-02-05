@@ -9,6 +9,8 @@
  * 
  */
 
+#include "config.h"
+#include "intl.hh"
 
 #include <errno.h>
 #include <fcntl.h>
@@ -19,11 +21,6 @@
 #include <string.h>
 #include <sys/stat.h>
 #include <unistd.h>
-#include <libintl.h>
-
-#include "config.h"
-
-#define _(x) gettext(x)
 
 #define EARLY 200
 #define BLOCK 300

@@ -41,6 +41,8 @@
 #ifndef LOGGING_HH
 #define LOGGING_HH
 
+#include "intl.hh"
+
 #include <ostream>
 #include <deque>
 

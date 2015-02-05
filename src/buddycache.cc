@@ -22,9 +22,6 @@
 #include <fstream>
 #include <sys/stat.h>
 #include <fcntl.h>
-#include <libintl.h>
-
-#define _(x) gettext(x)
 
 BuddyCache::BuddyCache(Device _device)
     : device(_device)

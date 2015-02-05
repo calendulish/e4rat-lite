@@ -27,14 +27,11 @@
 #include <ext2fs/ext2fs.h>
 #include <ext2fs/ext2_fs.h>
 #include <errno.h>
-#include <libintl.h>
 #include <sys/stat.h>
 #include <fcntl.h>
 #include <mntent.h>
 #include <execinfo.h>
 #include <signal.h>
-
-#define _(x) gettext(x)
 
 /*
  * Setup SIGABRT and SIGSEGV signal handler for backtracing

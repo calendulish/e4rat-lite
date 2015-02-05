@@ -20,11 +20,8 @@
 #include "eventcatcher.hh"
 #include "listener.hh"
 #include "logging.hh"
-#include <libintl.h>
 
 #include <boost/foreach.hpp>
-
-#define _(x) gettext(x)
 
 void ScanFsAccess::insert(FilePtr& f)
 {

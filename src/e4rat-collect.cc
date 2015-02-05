@@ -33,7 +33,6 @@ extern "C" {
 #include <getopt.h>
 #include <unistd.h>
 #include <fcntl.h>
-#include <libintl.h>
 #include <fstream>
 #include <signal.h>
 
@@ -48,8 +47,6 @@ extern "C" {
 #include <pwd.h>
 
 #include <boost/foreach.hpp>
-
-#define _(x) gettext(x)
 
 #define PID_FILE "/dev/.e4rat-lite-collect.pid"
 

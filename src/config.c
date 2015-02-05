@@ -3,11 +3,11 @@
  * http://code.google.com/p/inih/
  */
 
+#include "config.h"
+
 #include <stdio.h>
 #include <ctype.h>
 #include <string.h>
-
-#include "config.h"
 
 #define MAX_LINE 200
 #define MAX_SECTION 50

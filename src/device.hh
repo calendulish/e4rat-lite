@@ -21,6 +21,7 @@
 #define DEVICE_HH
 
 #include "common.hh"
+
 #include <string>
 #include <ext2fs/ext2fs.h>
 #include <ext2fs/ext2_fs.h>

@@ -24,13 +24,10 @@
 #include <errno.h>
 #include <sys/stat.h>
 #include <fcntl.h>
-#include <libintl.h>
 #include <limits.h>
 #include <string.h>
 #include <stdlib.h>
 #include <unistd.h>
-
-#define _(x) gettext(x)
 
 /*
  * Call fiemap ioctl on file descriptor fd.

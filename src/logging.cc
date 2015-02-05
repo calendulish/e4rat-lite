@@ -19,18 +19,16 @@
  */
 
 #include "logging.hh"
+#include "common.hh"
+
 #include <syslog.h>
 #include <stdarg.h>
 #include <stdio.h>
 #include <sys/types.h>
 #include <sys/stat.h>
 #include <fcntl.h>
-#include <libintl.h>
 #include <string.h>
 #include <errno.h>
-#include "common.hh"
-
-#define _(x) gettext(x)
 
 Logging logger;
 

@@ -26,7 +26,6 @@
 #include <auparse.h>
 #include <auparse-defs.h>
 #include <errno.h>
-#include <libintl.h>
 #include <unistd.h>
 #include <sys/stat.h>
 #include <cstring>
@@ -43,8 +42,6 @@
 #include <sys/utsname.h>
 
 #include <fstream>
-
-#define _(x) gettext(x)
 
 std::string getProcessName(pid_t pid)
 {

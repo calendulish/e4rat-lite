@@ -24,7 +24,6 @@
 #include <fstream>
 #include <stdexcept>
 #include <errno.h>
-#include <libintl.h>
 
 #include <sys/stat.h>
 #include <fcntl.h>
@@ -41,8 +40,6 @@
                               )
 
 #define FREE_BLOCKS_PER_FLEX(fs)  (FREE_BLOCKS_PER_GROUP(fs) << fs->super->s_log_groups_per_flex)
-
-#define _(x) gettext(x)
 
 /*
  * get mount-point from arbitrary path

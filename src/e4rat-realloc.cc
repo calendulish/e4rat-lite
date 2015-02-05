@@ -24,7 +24,6 @@
 #include "parsefilelist.hh"
 
 #include <iostream>
-#include <libintl.h>
 #include <sys/types.h>
 #include <sys/stat.h>
 #include <getopt.h>
@@ -34,8 +33,6 @@
 #include <linux/limits.h>
 
 #include <boost/foreach.hpp>
-
-#define _(x) gettext(x)
 
 #define PID_FILE "/var/run/e4rat-lite-realloc.pid"
 #define LOG_FILE "/var/lib/e4rat-lite/startup.log"
