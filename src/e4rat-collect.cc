@@ -97,9 +97,9 @@ bool isAuditDaemonRunning()
     pid_t pid = readPidFile("/var/run/auditd.pid");
     if(pid)
         if(0 == kill(pid, 0))
-            return 0;
+            return 1;
 
-    return 1;
+    return 0;
 }
 
 // Execute a command as user
