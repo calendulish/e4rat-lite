@@ -36,10 +36,10 @@ For more information see: e4rat-lite-collect(8), e4rat-lite-realloc(8)
 How to use
 ----------
 
-**1)** Run e4rat-collect as init process through adding following line to Kernel
+**1)** Run e4rat-lite-collect as init process through adding following line to Kernel
 parameters:
 
-    init=/usr/bin/e4rat-collect
+    init=/usr/bin/e4rat-lite-collect
 
 This can also be done by changing the configuration files of your boot
 manager (grub, lilo, syslinux, etc).
